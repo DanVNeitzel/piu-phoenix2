@@ -144,6 +144,7 @@ class Steps extends GameObject {
 
         // clean empty step slots.
         this.stepQueue.cleanUpStepQueue() ;
+        if (this.ignoredHoldEnds) console.warn('Chart com finais de hold sem início: ignorados', this.ignoredHoldEnds, this._song.pathToSSCFile, this._level);
 
     }
 
@@ -286,7 +287,10 @@ class Steps extends GameObject {
 
 
     processNote(note, kind, currentYPosition, XStepPosition , steps, currentTimeInSong, index,  padId, i,j, beat ) {
-
+        // StepF2 CO-OP uses upper-case taps and lower-case hold heads for P1/P2/P3.
+        // Play their lanes together in this local single-player engine.
+        if (note === 'X' || note === 'Y' || note === 'Z') note = '1';
+        else if (note === 'x' || note === 'y' || note === 'z') note = '2';
 
         // Process StepNote
         if ( note === '1' || note === '2' ) {
@@ -329,11 +333,16 @@ class Steps extends GameObject {
         if ( note === '3' ) {
 
             let holdObject = this.stepQueue.getHold( kind , padId ) ;
+            if (!holdObject) {
+                this.ignoredHoldEnds = (this.ignoredHoldEnds || 0) + 1;
+                return;
+            }
 
             holdObject.constructHoldExtensible(currentYPosition, this._noteskin) ;
 
             holdObject.endTimeStamp = currentTimeInSong ;
             steps.add(holdObject.object) ;
+            this.stepQueue.setHold(kind, padId, null);
 
         }
 

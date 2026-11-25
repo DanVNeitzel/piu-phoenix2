@@ -195,6 +195,30 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertTrue(actual['cropped'])
         self.assertFalse(self.errors)
 
+    def test_double_99_coop_notes_and_orphan_hold_ends(self):
+        ssc='''#TITLE:Double 99;\n#ARTIST:PIUWeb;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:99;\n#DESCRIPTION:CO-OP;\n#DIFFICULTY:Edit;
+          #NOTES:\nXYZ0000000\nxyz0000000\n3330000000\n00000123XY\n0000003000\n0000003000\n;'''
+        self.open_frozen_stage('pump-double',False,{'sscContent':ssc})
+        actual=self.page.evaluate("""()=>{
+          const stage=engine.stage._playerStages[0],steps=stage._steps;
+          const holds=steps.stepList.filter(step=>step instanceof StepHold);
+          const other=sscParser.parse(config.sscContent.replace('XYZ0000000','XYZM000000')).levels[0];
+          return {level:engine.song.getLevelDifficulty(0),taps:steps.stepList.filter(step=>step instanceof StepNote).length,
+            holds:holds.length,complete:holds.every(hold=>hold._holdExtensible && Number.isFinite(hold.endTimeStamp)),
+            ignored:steps.ignoredHoldEnds,rightEnd:holds.find(hold=>hold.padId==='1' && hold.kind==='ul').endTimeStamp,
+            special:[...engine.song.levels[0].SPECIALNOTES],otherSpecial:[...other.SPECIALNOTES]};
+        }""")
+        self.assertEqual(actual['level'],99)
+        self.assertEqual(actual['taps'],6)
+        self.assertEqual(actual['holds'],4)
+        self.assertTrue(actual['complete'])
+        self.assertEqual(actual['ignored'],2)
+        self.assertAlmostEqual(actual['rightEnd'],4/3,places=6)
+        self.assertEqual(actual['special'],[])
+        self.assertEqual(actual['otherSpecial'],['M'])
+        self.assertFalse(self.errors)
+
     def test_half_double_touch_six_panels_and_separate_preferences(self):
         self.open_frozen_stage('pump-halfdouble',True)
         for width,height in [(390,844),(844,390),(1280,800)]:

@@ -1,7 +1,15 @@
 {
-  "version": "0.8.18",
+  "version": "0.8.19",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Charts Double nível 99",
+      "items": [
+        "Corrigido o erro constructHoldExtensible ao iniciar charts com notas CO-OP do StepF2, comuns em Double nível 99.",
+        "Símbolos X/Y/Z e x/y/z são lidos como notas e inícios de hold na partida local, preservando as colunas e os tempos do chart.",
+        "Finais de hold sem início são ignorados com diagnóstico no console; finais duplicados não reconstroem um hold já encerrado."
+      ]
+    },
     {
       "category": "Ícones da gameplay",
       "items": [

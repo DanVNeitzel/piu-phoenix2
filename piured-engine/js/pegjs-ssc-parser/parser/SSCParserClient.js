@@ -1800,7 +1800,7 @@
                 for (let notes of bar) {
                     for (let i = 0; i < notes.length; i++) {
                         const note = notes[i];
-                        if ( note !== '0' && note !== '1' && note !== '2' && note !== '3' ) {
+                        if ( !['0','1','2','3','X','x','Y','y','Z','z'].includes(note) ) {
                             if ( typeof note === 'object' ) {
                                 specialNotes.add('StepF2') ;
                             } else {
