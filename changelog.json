@@ -1,5 +1,5 @@
 {
-  "version": "0.8.5",
+  "version": "0.8.6",
   "date": "2026-11-25",
   "updates": [
     {
@@ -39,7 +39,7 @@
         "Favoritar ou desfavoritar não reinicia o carrossel nem troca a música selecionada; removendo a faixa atual dos favoritos, a seleção segue para a vizinha.",
         "Crédito Developed by Daniel Neitzel exibido abaixo da versão na tela inicial.",
         "Tela inicial identificada como PIUWEB PHOENIX 2, com a versão atual no lugar de SINGLE PLAYER.",
-        "Grade e plate entram da esquerda para a direita no desktop e da direita para a esquerda no mobile.",
+        "Grade e plate entram da esquerda para a direita na horizontal e da direita para a esquerda na vertical, em qualquer aparelho.",
         "Banners dos canais carregados dos arquivos locais do projeto.",
         "Ícones mobile derivados do favicon, incluindo o ícone para iPhone e iPad.",
         "Changelog em português com visual alinhado às configurações, categorias e leitura adaptada a telas menores."

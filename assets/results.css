@@ -484,8 +484,8 @@ body.results-active .assign_play {
  from{opacity:0;transform:translateX(var(--award-entry-offset)) scale(.94)}
  to{opacity:1;transform:translateX(0) scale(1)}
 }
-/* Desktop awards enter from the left; mobile touch devices enter from the right. */
-@media(hover:none) and (pointer:coarse){
+/* Landscape awards enter from the left; portrait awards enter from the right. */
+@media(orientation:portrait){
  #performance.phoenix-results{--award-entry-offset:100vw}
 }
 
