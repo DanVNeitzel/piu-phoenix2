@@ -1,7 +1,15 @@
 {
-  "version": "0.8.22",
+  "version": "0.8.23",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Noteskin CO-OP",
+      "items": [
+        "CO-OP usa setas clássicas com centro de pés, receptores cinza e bordas brancas, seguindo a referência visual.",
+        "Notas e holds identificam P1 em vermelho, P2 em azul, P3 em amarelo e P4 em verde, preservando o contorno branco e as animações.",
+        "A base FIESTA é aplicada automaticamente no CO-OP e indicada na confirmação e na gameplay. A coloração permanece correta com Vanish."
+      ]
+    },
     {
       "category": "Catálogo completo de CO-OP / Routine",
       "items": [

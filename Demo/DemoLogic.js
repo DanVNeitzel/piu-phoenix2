@@ -102,6 +102,7 @@ function createSingleConfig(settings = null) {
     config.touchLayout = PiuTouchLayout.read(level.STEPSTYPE);
     config.record.playback = config.playback;
     config.noteskin = PiuGameSettings.resolveNoteskin({skin:config.noteskin,randomNote:config.randomNote});
+    if(level.COOP){config.noteskin=PiuCoop.noteskin;config.randomNote=false;}
     return config;
 }
 

@@ -122,6 +122,7 @@
     byId('ps-artist').textContent=selsong.meta.ARTIST || '';
     byId('ps-player').textContent=byId('nameUserGame').textContent || 'PIUWEB';byId('ps-avatar').src=byId('profileUserGame').src;
     const commands=PiuGameSettings.read();
+    if(selsong.levels[chart_level].COOP){commands.skin=PiuCoop.noteskin;commands.randomNote=false;}
     PiuActiveModifiers.render(modal.querySelector('.ps-commands'),commands,{tag:'div',onSelect:openCommand});
     PiuControlMode.render(byId('ps-control-mode'),commands.touch);
     byId('ps-speed-kind').textContent=commands.mode==='auto'?'AV':'SPEED';

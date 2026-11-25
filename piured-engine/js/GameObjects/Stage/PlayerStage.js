@@ -55,7 +55,7 @@ class PlayerStage extends GameObject {
         this._level = playerConfig.level ;
         this._userSpeed = playerConfig.speed ;
         this._id = id ;
-        this._noteskin = playerConfig.noteskin ;
+        this._noteskin = song.levels[playerConfig.level].COOP ? PiuCoop.noteskin : playerConfig.noteskin;
         this._object = new THREE.Object3D() ;
         this._scaled_object = new THREE.Object3D() ;
         this._scaled_object.add(this._object) ;
@@ -265,7 +265,10 @@ class PlayerStage extends GameObject {
             const vanishMaterial = original => {
                 if (materials.has(original)) return materials.get(original);
                 const material = original.clone();
-                material.onBeforeCompile = shader => {
+                const compileOriginal=original.onBeforeCompile;
+                const originalKey=original.customProgramCacheKey();
+                material.onBeforeCompile = (shader,renderer) => {
+                    compileOriginal.call(material,shader,renderer);
                     shader.vertexShader = shader.vertexShader
                         .replace('#include <common>', '#include <common>\nvarying vec4 vVanishPosition;')
                         .replace('#include <project_vertex>', '#include <project_vertex>\nvVanishPosition = gl_Position;');
@@ -273,7 +276,7 @@ class PlayerStage extends GameObject {
                         .replace('#include <common>', '#include <common>\nvarying vec4 vVanishPosition;')
                         .replace('#include <clipping_planes_fragment>', '#include <clipping_planes_fragment>\nif (vVanishPosition.y >= 0.0) discard;');
                 };
-                material.customProgramCacheKey = () => 'vanish-screen-midpoint';
+                material.customProgramCacheKey = () => originalKey+'|vanish-screen-midpoint';
                 materials.set(original, material);
                 return material;
             };
@@ -292,6 +295,7 @@ class PlayerStage extends GameObject {
     // Construct generic receptor
     getReceptor(padId) {
         let receptor = new Receptor(this._resourceManager, this.beatManager, this.keyListener, padId, this.stepTextureAnimationRate, this._noteskin ) ;
+        if(this._song.levels[this._level].COOP)PiuCoop.neutralReceptor(receptor._receptor);
         if (this.keyListener.halfDouble) receptor.setActiveKinds(this.keyListener.padsDic[padId].activeKinds);
         receptor.object.position.z = this.receptorZDepth;
         return receptor ;

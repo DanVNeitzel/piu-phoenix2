@@ -236,9 +236,50 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertEqual(actual['coop']['players'],[1,2])
         self.assertTrue(actual['stillHeld'])
         self.assertTrue(actual['released'])
-        self.assertEqual(actual['taps'],[[1,'ff527d'],[2,'51cfff']])
+        self.assertEqual(actual['taps'],[[1,'ff3030'],[2,'00bfff']])
         self.assertEqual(actual['holds'],actual['taps'])
         expect(self.page.locator('#game-coop>span')).to_have_text(['P1','P2'])
+        self.assertFalse(self.errors)
+
+    def test_coop_noteskin_white_borders_gray_receptors_and_vanish(self):
+        ssc='''#TITLE:CO-OP;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:18;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;
+          #NOTES:\nXY00000000\nxy00000000\n3300000000\n;'''
+        for vanish in [False,True]:
+            self.open_frozen_stage('pump-double',False,{'sscContent':ssc,'noteskin':'PRIME','vanish':vanish})
+            self.page.wait_for_function("engine.stage._playerStages[0]._steps.stepList[0].object.material.map.image?.complete")
+            self.page.wait_for_function("engine.stage._playerStages[0].padReceptors['0']._receptor.material.uniforms.textureReceptor.value.image?.complete")
+            actual=self.page.evaluate("""()=>{
+              const stage=engine.stage._playerStages[0],renderer=engine.renderer;
+              const taps=stage._steps.stepList.filter(step=>step instanceof StepNote);
+              function sample(mesh,receptor=false){
+                const scene=new THREE.Scene(),camera=new THREE.OrthographicCamera(receptor?-2.5:-.5,receptor?2.5:.5,.5,-.5,.1,10);
+                camera.position.z=2;
+                const copy=new THREE.Mesh(mesh.geometry,mesh.material);scene.add(copy);
+                const target=new THREE.WebGLRenderTarget(256,128),previous=renderer.getRenderTarget();
+                renderer.setRenderTarget(target);renderer.clear();renderer.render(scene,camera);
+                const pixels=new Uint8Array(256*128*4);renderer.readRenderTargetPixels(target,0,0,256,128,pixels);
+                renderer.setRenderTarget(previous);target.dispose();
+                let white=0,red=0,blue=0,colored=0;
+                for(let i=0;i<pixels.length;i+=4){const [r,g,b]=pixels.slice(i,i+3);
+                  if(Math.min(r,g,b)>220)white++;
+                  if(r>100 && r>g*2 && r>b*2)red++;
+                  if(b>100 && b>r*2)blue++;
+                  if(Math.max(r,g,b)-Math.min(r,g,b)>5)colored++;
+                }
+                return {white,red,blue,colored};
+              }
+              return {skin:stage._noteskin,configured:config.noteskin,red:sample(taps[0].object),blue:sample(taps[1].object),
+                receptor:sample(stage.padReceptors['0']._receptor,true)};
+            }""")
+            self.assertEqual(actual['skin'],'FIESTA')
+            self.assertEqual(actual['configured'],'FIESTA')
+            self.assertGreater(actual['red']['white'],100)
+            self.assertGreater(actual['red']['red'],100)
+            self.assertGreater(actual['blue']['white'],100)
+            self.assertGreater(actual['blue']['blue'],100)
+            self.assertGreater(actual['receptor']['white'],100)
+            self.assertEqual(actual['receptor']['colored'],0)
         self.assertFalse(self.errors)
 
     def test_coop_routes_selection_controls_result_and_return(self):

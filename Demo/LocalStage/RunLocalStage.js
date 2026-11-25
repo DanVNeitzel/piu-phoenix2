@@ -193,6 +193,10 @@ try {
                 revealGameScreen();
             });
         engine.configureStage(stageConfig);
+        if(engine.song.levels[config.chartLevel].COOP){
+            config.noteskin=PiuCoop.noteskin;config.randomNote=false;
+            PiuActiveModifiers.render(document.querySelector('.options-block-r'),config,{tag:'p'});
+        }
         engine.song.onLoadError = error => {
             showStageLoadError('Áudio indisponível. ' + (error?.message || 'Não foi possível carregar o arquivo da biblioteca.'));
             const retry = document.createElement('button');

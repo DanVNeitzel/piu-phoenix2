@@ -4,7 +4,8 @@
  */
 (function(root){
   'use strict';
-  const colors=['#ff527d','#51cfff','#ffe25a','#75f28d'];
+  const colors=['#ff3030','#00bfff','#ffe230','#35ed65'];
+  const noteskin='FIESTA';
   const kinds=['dl','ul','c','ur','dr'];
   const symbols={X:1,x:1,Y:2,y:2,Z:3,z:3};
   const type=note=>typeof note==='object' && note ? note.type : note;
@@ -137,15 +138,34 @@
           const value=source.clone();value.color.set(colors[player-1]);
           value.onBeforeCompile=shader=>{
             shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',
-              '#ifdef USE_MAP\nvec4 texelColor = mapTexelToLinear(texture2D(map,vUv));\ntexelColor.rgb=vec3(max(max(texelColor.r,texelColor.g),texelColor.b));\ndiffuseColor *= texelColor;\n#endif');
+              '#ifdef USE_MAP\n'+
+              'vec4 texelColor=mapTexelToLinear(texture2D(map,vUv));\n'+
+              'float hi=max(max(texelColor.r,texelColor.g),texelColor.b);\n'+
+              'float lo=min(min(texelColor.r,texelColor.g),texelColor.b);\n'+
+              'float fill=smoothstep(0.08,0.28,(hi-lo)/max(hi,0.0001));\n'+
+              'vec3 neutral=vec3(dot(texelColor.rgb,vec3(0.299,0.587,0.114)));\n'+
+              'diffuseColor.rgb=mix(neutral,diffuseColor.rgb*(0.35+0.65*hi),fill);\n'+
+              'diffuseColor.a*=texelColor.a;\n#endif');
           };
-          value.customProgramCacheKey=()=> 'coop-tint';cache.set(player,value);
+          value.customProgramCacheKey=()=> 'coop-white-outline-v2';cache.set(player,value);
         }
         return cache.get(player);
       }
       mesh.material=Array.isArray(mesh.material)?mesh.material.map(material):material(mesh.material);
     });
   }
-  root.PiuCoop={analyze,owner,parse,summaries,type,colors,kinds,bindings,validBindings,legend,controls,tint};
+  function neutralReceptor(mesh){
+    const material=mesh.material.clone();
+    // Keep the loader-owned texture: a clone made before its image arrives would
+    // never receive PNGTexture's asynchronous image update.
+    material.uniforms.textureReceptor.value=mesh.material.uniforms.textureReceptor.value;
+    material.onBeforeCompile=shader=>{
+      shader.fragmentShader=shader.fragmentShader.replace(/}\s*$/,
+        'gl_FragColor.rgb=vec3(dot(gl_FragColor.rgb,vec3(0.299,0.587,0.114)));\n}');
+    };
+    material.customProgramCacheKey=()=> 'coop-neutral-receptor-v1';
+    material.userData.coopNeutralReceptor=true;mesh.material=material;
+  }
+  root.PiuCoop={analyze,owner,parse,summaries,type,colors,noteskin,kinds,bindings,validBindings,legend,controls,tint,neutralReceptor};
   if(typeof module!=='undefined')module.exports=root.PiuCoop;
 })(globalThis);

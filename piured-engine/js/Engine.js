@@ -246,8 +246,10 @@ class Engine {
         this.resourcePath = stageConfig.resourcePath ;
         this.playBackSpeed = stageConfig.playBackSpeed ;
         this.song = new Song(stageConfig.SSCFile, stageConfig.audioFile, stageConfig.offset, stageConfig.playBackSpeed, stageConfig.onReadyToStart);
-        let resourceManager = new ResourceManager(stageConfig.resourcePath, 'noteskins/', stageConfig.noteskins, 'stage_UHD') ;
-        this.stage = new Stage(resourceManager, this.song, stageConfig.noteskins) ;
+        const noteskins=typeof PiuCoop!=='undefined' && this.song.levels.some(chart=>chart.COOP) ?
+            [...new Set([...stageConfig.noteskins,PiuCoop.noteskin])] : stageConfig.noteskins;
+        let resourceManager = new ResourceManager(stageConfig.resourcePath, 'noteskins/', noteskins, 'stage_UHD') ;
+        this.stage = new Stage(resourceManager, this.song, noteskins) ;
         this.scene.add(this.stage.object) ;
 
     }
