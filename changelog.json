@@ -1,5 +1,5 @@
 {
-  "version": "0.8.3",
+  "version": "0.8.4",
   "date": "2026-11-25",
   "updates": [
     {
@@ -15,6 +15,7 @@
     {
       "category": "Tela e orientação",
       "items": [
+        "Zoom por pinça, duplo toque e atalhos bloqueado nos menus e na gameplay, preservando os toques simultâneos do touchpad.",
         "Configurações com Sensor, Vertical e Horizontal; a preferência também se aplica à gameplay.",
         "Removida a trava em retrato do webapp para permitir rotação automática.",
         "Blocos de Vanish, FD, HJ e Random Note visíveis na seleção de música, seleção de nível e gameplay quando ativados.",

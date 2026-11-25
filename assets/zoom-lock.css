@@ -1,0 +1,2 @@
+/* Allow normal scrolling without pinch or double-tap page zoom. */
+html,body{touch-action:pan-x pan-y}
