@@ -1,7 +1,16 @@
 {
-  "version": "0.8.21",
+  "version": "0.8.22",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Catálogo completo de CO-OP / Routine",
+      "items": [
+        "Canal CO-OP preenchido a partir das marcações dos charts de toda a biblioteca, incluindo músicas ausentes da lista original do canal, como Super Fantasy.",
+        "Incluído índice verificado de 229 músicas cooperativas, com Passacaglia para três jogadores e Super Fantasy para quatro jogadores, sem depender de visitas prévias a outros canais.",
+        "Bibliotecas locais e arquivos novos são verificados ao abrir os canais; arquivos indisponíveis continuam sem bloquear os charts válidos.",
+        "Scripts da seleção versionados para carregar esta correção sem reutilizar suas cópias antigas em cache."
+      ]
+    },
     {
       "category": "Carregamento do canal CO-OP",
       "items": [

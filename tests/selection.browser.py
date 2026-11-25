@@ -327,6 +327,27 @@ class SelectionBrowserTests(unittest.TestCase):
         expect(self.page.locator('#level .circle-coop')).to_have_count(1)
         self.assertFalse(self.errors)
 
+    def test_coop_discovers_charts_outside_the_channel_on_a_fresh_library(self):
+        for index,notes in [(7,'XYZ0000000'),(8,'XYZ1000000')]:
+            ssc=f'''#TITLE:Team {index};\n#MUSIC:Test{index}.wav;\n#BPMS:0=120;\n#OFFSET:0;
+              #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:99;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;
+              #NOTES:\n{notes}\n0000000000\n;'''
+            self.context.route(f'**/Test{index}.ssc',lambda route,request,body=ssc:route.fulfill(status=200,body=body,content_type='text/plain'))
+        self.load()
+        self.assertEqual(self.page.evaluate('songIndex'),0)
+        self.page.evaluate('selectChannel(true)')
+        self.page.wait_for_function("songsJson.children.find(stage=>stage.channelId==='co-op').children.length===2")
+        card=self.page.locator('#stage [data-channel-id="co-op"]')
+        expect(card).to_have_attribute('aria-disabled','false')
+        card.focus();card.click()
+        self.page.wait_for_function('channelChartFilter?.coop && chart_level===0 && selsong?.levels[0].COOP')
+        expect(self.page.locator('#online-song .listSong:not(.wheel-ghost)')).to_have_count(2)
+        for index,players in [(7,3),(8,4)]:
+            self.page.evaluate("async index=>{const stage=songsJson.children[stageIndex];await changeOnlineSong(stage.children.findIndex(song=>song.name==='Test '+index));}",index)
+            self.assertEqual(self.page.evaluate('selsong.levels[chart_level].COOP.count'),players)
+            expect(self.page.locator('#level .circle-coop')).to_have_text(re.compile('×'+str(players)))
+        self.assertFalse(self.errors)
+
     def test_native_routine_and_four_player_touch(self):
         header='#TITLE:Team;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;\n#NOTEDATA:;\n'
         for style,rows,players in [('pump-routine','1000000000\n&\n0000010000\n&\n0000000001',[1,2,3]),

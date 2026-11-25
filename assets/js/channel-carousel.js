@@ -119,6 +119,7 @@
     choose(list[(index+delta+list.length)%list.length]);
   }
   function open(){
+    ensureCoopIndex();
     const list=cards();
     selected=levelMode?list.find(card=>card.dataset.level===String(channelChartFilter?.level || 1)) || list[0]:
       list.find(card=>card.classList.contains('active')) || list[0] || null;

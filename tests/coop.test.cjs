@@ -56,3 +56,15 @@ test('three native owners do not create a fourth player; Routine also accepts St
   assert.equal(coop.owner(level.NOTES[0][0][1],level.COOP),2);
   assert.deepEqual(coop.summaries(stepf2)[0].COOP,level.COOP);
 });
+
+test('the shipped library index includes Passacaglia P3 and Super Fantasy P4',()=>{
+  const index=require('../assets/data/coop-index.json');
+  assert.equal(index.schema,1);
+  for(const [title,players] of [['Passacaglia',3],['Super Fantasy',4]]){
+    const song=index.songs.find(song=>song.sscPath.includes(title));
+    assert.ok(song,title+' must be indexed without browsing it first');
+    assert.ok(song.charts.some(chart=>chart.COOP?.count===players));
+    assert.ok(index.indexedPaths.includes(song.sscPath));
+  }
+  assert.ok(index.songs.every(song=>song.charts.some(chart=>chart.COOP)));
+});

@@ -32,6 +32,35 @@ let selectionReady = Promise.resolve();
 const chartInfoCache = new Map();
 const chartInfoQueue=[];
 let chartInfoActive=0;
+const coopIndexedPaths=new Set();
+let coopIndexScan=null;
+function chartPath(entry){return entry.children.find(file=>/\.ssc$/i.test(file.name))?.path.replace(/^\.\//,'');}
+async function loadCoopIndex(){
+  if(resources!==publishedLibrary)return;
+  try{
+    const index=await difficultyFile('assets/data/coop-index.json');
+    if(index.schema!==1 || index.library!==resources || !Array.isArray(index.songs) || !Array.isArray(index.indexedPaths))return;
+    const entries=new Map(PiuLibrary.entries(songsJson).map(({song})=>[chartPath(song),song]));
+    index.indexedPaths.forEach(path=>coopIndexedPaths.add(path));
+    index.songs.forEach(({sscPath,charts})=>{
+      const entry=entries.get(sscPath);if(!entry || !Array.isArray(charts))return;
+      registerCoop(entry,charts);
+      const url=libraryUrl(entry.children.find(file=>/\.ssc$/i.test(file.name)).path);
+      if(!chartInfoCache.has(url))chartInfoCache.set(url,Promise.resolve(charts));
+    });
+  }catch(error){console.warn('Índice CO-OP indisponível; os charts serão verificados ao abrir os canais.',error);}
+}
+function ensureCoopIndex(){
+  if(coopIndexScan)return coopIndexScan;
+  // A channel supplied by songs.json is only a hint. Search every physical song,
+  // including custom libraries and files added since the shipped index was built.
+  const entries=PiuLibrary.entries(songsJson).map(({song})=>song).filter(entry=>!coopIndexedPaths.has(chartPath(entry)));
+  if(!entries.length)return Promise.resolve();
+  coopIndexScan=Promise.allSettled(entries.map(async entry=>{
+    await chartInfo(entry);coopIndexedPaths.add(chartPath(entry));
+  })).finally(()=>{coopIndexScan=null;document.dispatchEvent(new CustomEvent('piu:coopchange'));});
+  return coopIndexScan;
+}
 function pumpChartInfoQueue(){
   while(chartInfoActive<4 && chartInfoQueue.length){
     const task=chartInfoQueue.shift();chartInfoActive++;
@@ -649,6 +678,8 @@ async function change_stage(i, selectedSong = 0, selection = null) {
     showEmptyChannel('VERIFICANDO CO-OP','Identificando os participantes dos charts deste canal…');
     const version=songLoadVersion;
     try{
+      await ensureCoopIndex();
+      if(version!==songLoadVersion)return;
       const paths=await playablePaths(stage.children,channelChartFilter);
       stage.coopPaths=paths;document.dispatchEvent(new CustomEvent('piu:coopchange'));
       if(version!==songLoadVersion)return;
@@ -903,6 +934,7 @@ async function readSongList() {
     PiuLibrary.entries(songsJson).filter(entry=>coopKeys.includes(entry.key)).forEach(({song})=>{
       if(!coopStage.children.some(entry=>PiuLibrary.songKey(entry)===PiuLibrary.songKey(song)))coopStage.children.push(song);
     });
+    await loadCoopIndex();
     const holder = document.getElementById('stage');
     holder.replaceChildren();
     holder.append(createFavoritesChannelLink());

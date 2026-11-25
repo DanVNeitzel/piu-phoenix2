@@ -70,7 +70,9 @@ As teclas podem ser alteradas nas configurações.
 
 O ajuste do touchpad possui perfis **SINGLE**, **DOUBLE** e **HALFDOUBLE**, selecionados automaticamente pelo chart. Cada perfil mantém suas configurações de retrato e paisagem. Salvar ou restaurar uma orientação afeta somente o perfil em uso; ajustes antigos compartilhados são preservados como ponto inicial para Single e Double.
 
-**CO-OP / Routine** é identificado pelas marcações dos participantes no chart, sem depender do nível 99. Esses charts ficam no canal **CO-OP** e não entram no filtro Double do Difficulty Zone. Novos charts identificados durante a navegação são adicionados ao canal; músicas com charts individuais e cooperativos mostram um botão para abrir a opção CO-OP.
+**CO-OP / Routine** é identificado pelas marcações dos participantes no chart, sem depender do nível 99. Esses charts ficam no canal **CO-OP** e não entram no filtro Double do Difficulty Zone. O aplicativo inclui um índice das músicas cooperativas de toda a biblioteca publicada, sem depender da lista parcial do canal ou de visitas prévias a outros canais. Bibliotecas locais e arquivos novos são verificados ao abrir os canais. Músicas com charts individuais e cooperativos também mostram um botão para abrir a opção CO-OP.
+
+O índice publicado em `assets/data/coop-index.json` é gerado pela leitura das notas dos arquivos SSC. Após atualizar a biblioteca, regenere-o com `node scripts/build-coop-index.cjs`. O comando aceita a URL da biblioteca e a data local `YYYY-MM-DD` como argumentos opcionais; arquivos indisponíveis são registrados no índice e não impedem sua geração.
 
 Cada participante tem sua cor nas notas e nos holds: **P1 rosa, P2 azul, P3 amarelo e P4 verde**. A plataforma, a vida e a pontuação são compartilhadas pela equipe. Abra **CONTROLES CO-OP** na confirmação da música ou no menu de pausa para consultar e alterar as teclas dos participantes. Os controles CO-OP são salvos separadamente dos controles individuais. No toque, os participantes compartilham os sensores do modo e seu perfil de touchpad.
 
