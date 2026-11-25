@@ -1,7 +1,14 @@
 {
-  "version": "0.8.20",
+  "version": "0.8.21",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Carregamento do canal CO-OP",
+      "items": [
+        "Arquivos SSC ausentes ou indisponíveis não impedem mais a exibição dos outros charts válidos no canal CO-OP.",
+        "Falhas de download podem ser consultadas novamente ao reabrir o canal, sem tratá-lo como vazio nem bloquear a entrada indevidamente."
+      ]
+    },
     {
       "category": "CO-OP / Routine",
       "items": [

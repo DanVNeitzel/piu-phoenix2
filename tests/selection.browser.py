@@ -284,6 +284,49 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertFalse(self.page.evaluate('PiuChannels.isLevelPicker()'))
         self.assertFalse(self.errors)
 
+    def test_coop_channel_keeps_valid_charts_when_an_entry_is_missing(self):
+        data=catalog()
+        data['children'][0]['children'].append({'name':'CO-OP','channelId':'co-op','children':[track(1),track(2),track(3)]})
+        self.context.route('**/piu-songs/songs.json',lambda route:route.fulfill(status=200,body=json.dumps(data),content_type='application/json'))
+        ssc='''#TITLE:Team;\n#MUSIC:Test1.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:18;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;
+          #NOTES:\nXY00000000\n0000000000\n;'''
+        self.context.route('**/Test1.ssc',lambda route:route.fulfill(status=200,body=ssc,content_type='text/plain'))
+        self.context.route('**/Test2.ssc',lambda route:route.fulfill(status=404,body='Not found'))
+        for width,height in [(1280,800),(390,844)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.load()
+            self.page.evaluate('selectChannel(true)')
+            card=self.page.locator('#stage [data-channel-id="co-op"]')
+            card.focus()
+            expect(card).to_have_class(re.compile(r'\bchannel-highlight\b'))
+            card.click()
+            self.page.wait_for_function("selsong?.meta.TITLE==='Team' && chart_level===0 && channelChartFilter?.coop")
+            expect(self.page.locator('.blockSelectChannel')).to_have_class(re.compile(r'\bhide\b'))
+            expect(self.page.locator('#online-song .listSong:not(.wheel-ghost)')).to_have_count(1)
+            expect(self.page.locator('#level .circle-coop')).to_have_count(1)
+            self.assertEqual(self.page.evaluate('channelSongCount(stageIndex)'),1)
+        self.assertFalse(self.errors)
+
+    def test_coop_failed_downloads_can_retry_without_false_empty_lock(self):
+        self.load()
+        self.page.evaluate("songsJson.children.find(stage=>stage.channelId==='co-op').children.push(songsJson.children[0].children[1])")
+        def failed(route):
+            route.fulfill(status=404,body='Not found')
+        self.context.route('**/Test1.ssc',failed)
+        self.page.evaluate("change_stage(songsJson.children.findIndex(stage=>stage.channelId==='co-op'))")
+        expect(self.page.locator('.channel-empty strong')).to_have_text('CO-OP INDISPONÍVEL')
+        self.assertEqual(self.page.evaluate('channelSongCount(stageIndex)'),1)
+        self.context.unroute('**/Test1.ssc',failed)
+        ssc='''#TITLE:Restored;\n#MUSIC:Test1.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:18;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;
+          #NOTES:\nXY00000000\n0000000000\n;'''
+        self.context.route('**/Test1.ssc',lambda route:route.fulfill(status=200,body=ssc,content_type='text/plain'))
+        self.page.evaluate('change_stage(stageIndex)')
+        self.page.wait_for_function("selsong?.meta.TITLE==='Restored' && chart_level===0")
+        expect(self.page.locator('#level .circle-coop')).to_have_count(1)
+        self.assertFalse(self.errors)
+
     def test_native_routine_and_four_player_touch(self):
         header='#TITLE:Team;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;\n#NOTEDATA:;\n'
         for style,rows,players in [('pump-routine','1000000000\n&\n0000010000\n&\n0000000001',[1,2,3]),

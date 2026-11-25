@@ -61,8 +61,21 @@ function registerCoop(entry,charts){
   }
 }
 async function playablePaths(entries,filter){
-  const matches=await Promise.all(entries.filter(hasChart).map(async entry=>({entry,charts:await chartInfo(entry)})));
-  return new Set(matches.filter(({charts})=>charts.some(chart=>PiuLibrary.matchesChart(chart,filter))).map(({entry})=>entry.path));
+  const candidates=entries.filter(hasChart);
+  const results=await Promise.allSettled(candidates.map(async entry=>({entry,charts:await chartInfo(entry)})));
+  const failures=results.flatMap((result,index)=>result.status==='rejected'?[{path:candidates[index].path,error:result.reason}]:[]);
+  // Difficulty availability must remain unknown on failure. CO-OP can still show
+  // verified charts when an unrelated catalogue entry is missing or offline.
+  if(failures.length && !filter?.coop)throw failures[0].error;
+  const matches=results.filter(result=>result.status==='fulfilled').map(result=>result.value);
+  const paths=new Set(matches.filter(({charts})=>charts.some(chart=>PiuLibrary.matchesChart(chart,filter))).map(({entry})=>entry.path));
+  if(failures.length){
+    console.warn('Arquivos indisponíveis ao verificar CO-OP:',failures);
+    // No verified CO-OP plus failed downloads is not an empty channel: keep it
+    // retryable. Failed entries are evicted from chartInfoCache by chartInfo().
+    if(!paths.size)throw failures[0].error;
+  }
+  return paths;
 }
 
 function resetSongSelection() {
