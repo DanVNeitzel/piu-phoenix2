@@ -12,6 +12,7 @@
 #settingsMenu .settings-options{display:flex;gap:8px;flex-wrap:wrap}
 #settingsMenu :is(.settings-option,.settings-secondary,.settings-danger,.settings-done){appearance:none;min-height:44px;padding:10px 14px;border:1px solid #648350;border-radius:4px;background:#0b1811;color:#dae7d3;font:600 15px/1.3 system-ui;text-shadow:none;box-shadow:none;animation:none;cursor:pointer;touch-action:manipulation}
 #settingsMenu .settings-option{flex:1;min-width:90px}
+#settingsMenu button:disabled{opacity:.6;cursor:wait}
 #settingsMenu .settings-option[aria-pressed=true]{background:#244f1b;border:2px solid #b1f16a;padding:9px 13px;color:#efffcf}
 #settingsMenu .settings-option[aria-pressed=true]:before{content:'✓ ';color:#d7ff9c}
 #settingsMenu .settings-data{display:flex;flex-direction:column;gap:10px}

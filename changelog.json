@@ -44,6 +44,7 @@
     {
       "category": "Projeto e execução local",
       "items": [
+        "Botão Reiniciar jogo nas configurações busca os arquivos atualizados e volta à tela inicial, preservando recordes e preferências.",
         "README com capturas de abertura, seleção de música, seleção de nível, gameplay e pontuação.",
         "Documentadas a engine PIURED, a biblioteca de músicas e as instruções de execução.",
         "Adicionado iniciar-local.cmd para executar o projeto com um servidor HTTP local."
