@@ -476,7 +476,7 @@ body.results-active .assign_play {
 }
 
 /* Awards enter only after the final score and their images are ready. */
-#performance.phoenix-results{--award-entry-offset:100vw}
+#performance.phoenix-results{--award-entry-offset:-100vw}
 #performance.phoenix-results.awards-pending :is(.result-rank,.result-plate){visibility:hidden!important;opacity:0!important;animation:none!important}
 #performance.phoenix-results.awards-ready .result-rank{animation:result-award-slide .9s cubic-bezier(.16,1,.3,1) both}
 #performance.phoenix-results.awards-ready .result-plate{animation:result-award-slide .9s .15s cubic-bezier(.16,1,.3,1) both}
@@ -484,9 +484,9 @@ body.results-active .assign_play {
  from{opacity:0;transform:translateX(var(--award-entry-offset)) scale(.94)}
  to{opacity:1;transform:translateX(0) scale(1)}
 }
-/* A narrow or portrait desktop window still enters from the right. */
+/* Desktop awards enter from the left; mobile touch devices enter from the right. */
 @media(hover:none) and (pointer:coarse){
- #performance.phoenix-results{--award-entry-offset:-100vw}
+ #performance.phoenix-results{--award-entry-offset:100vw}
 }
 
 @media (max-width:1023px),

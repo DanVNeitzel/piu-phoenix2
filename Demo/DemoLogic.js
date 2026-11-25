@@ -77,7 +77,7 @@ function createSingleConfig(settings = null) {
         randomNote: PiuGameSettings.read().randomNote,
         playback: Number(document.querySelector('.rush-option.focus').value),
         offset: Number(document.getElementById('offset').value),
-        noteskin: document.querySelector('.noteskin-option.focus').value,
+        noteskin: PiuGameSettings.read().skin,
         touchpadSize: 1.2 - Number(document.getElementById('touchpadSize').value) / 10,
         useTouchInput: document.getElementById('touchInput').checked,
         resources:'', sscpath:libraryUrl(sscpath), mp3path:libraryUrl(mp3path), resourcePath: 'piured-engine/',

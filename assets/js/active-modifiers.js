@@ -36,8 +36,18 @@
         }
         container.append(block);
       }
-      block.hidden = state?.[command.key] !== true;
+      const hidden = state?.[command.key] !== true;
+      if (block.hidden !== hidden) block.hidden = hidden;
     }
   }
   root.PiuActiveModifiers = {render};
+  // Keep the song selector synchronized even when its other UI updates are skipped.
+  function refreshSelection() {
+    const container = document.getElementById('desktop-options');
+    if (container && root.PiuGameSettings) render(container,root.PiuGameSettings.read());
+  }
+  document.addEventListener('DOMContentLoaded',refreshSelection);
+  document.addEventListener('piu:settingschange',refreshSelection);
+  document.addEventListener('hidden.bs.modal',refreshSelection);
+  document.addEventListener('piu:stagechange',refreshSelection);
 })(globalThis);

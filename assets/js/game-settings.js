@@ -7,13 +7,18 @@
     'ZERO-CANOND':'CANON','ZERO-EASY':'EASY','ZERO-MUSICAL':'MUSIC','ZERO-POKER':'POKER','ZERO-SLIME':'SLIME'};
   const value = selector => document.querySelector(selector + '.focus')?.value;
   const bounded = (n,min,max,fallback) => Number.isFinite(Number(n)) ? Math.max(min,Math.min(max,Number(n))) : fallback;
+  function selectedNoteskin() {
+    const saved = localStorage.getItem('last_noteskin');
+    const skins = [...document.querySelectorAll('.noteskin-option')];
+    return skins.find(button => button.value === saved)?.value || value('.noteskin-option') || 'EXCEED2-OLD';
+  }
   function defaults() {
     const touch = matchMedia('(pointer:coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
     return {mode:'multiplier',speed:1,av:300,skin:'EXCEED2-OLD',bga:'on',vanish:false,fd:false,hj:false,randomNote:false,rush:1,offset:0,touch,size:touch ? 1 : 0,touchLayout:PiuTouchLayout.defaults()};
   }
   function read() {
     const scroll = PiuScroll.state();
-    return {mode:scroll.mode,speed:scroll.multiplier,av:scroll.target,skin:value('.noteskin-option') || 'EXCEED2-OLD',
+    return {mode:scroll.mode,speed:scroll.multiplier,av:scroll.target,skin:selectedNoteskin(),
       bga:value('.bga-option') || 'on',vanish:localStorage.getItem('piu_vanish') === 'true',fd:localStorage.getItem('piu_fd') === 'true',hj:localStorage.getItem('piu_hj') === 'true',randomNote:localStorage.getItem('piu_random_note') === 'true',rush:Number(value('.rush-option') || 1),offset:Number(document.getElementById('offset').value || 0),
       touch:document.getElementById('touchInput').checked,size:Number(document.getElementById('touchpadSize').value),touchLayout:PiuTouchLayout.read()};
   }
@@ -23,10 +28,6 @@
   }
   function skinImage(value) { return 'assets/img/CW_settings/noteskin_cover/' + (covers[value] || value) + '.png'; }
   function apply(state) {
-    if (typeof state.vanish === 'boolean') setVanish(state.vanish);
-    if (typeof state.fd === 'boolean') setFD(state.fd);
-    if (typeof state.hj === 'boolean') setHJ(state.hj);
-    if (typeof state.randomNote === 'boolean') setRandomNote(state.randomNote);
     const choose = (selector,key,value,select) => {
       const button = [...document.querySelectorAll(selector)].find(el => el.value === String(value));
       if (button) { select(button); localStorage.setItem(key,String(value)); }
@@ -34,6 +35,10 @@
     choose('.noteskin-option','last_noteskin',state.skin,selectNote);
     choose('.bga-option','last_bga',state.bga,selectBGA);
     choose('.rush-option','last_playback',state.rush,selectRush);
+    if (typeof state.vanish === 'boolean') setVanish(state.vanish);
+    if (typeof state.fd === 'boolean') setFD(state.fd);
+    if (typeof state.hj === 'boolean') setHJ(state.hj);
+    if (typeof state.randomNote === 'boolean') setRandomNote(state.randomNote);
     const input = (id,value) => { const el=document.getElementById(id);el.value=String(value);el.dispatchEvent(new Event('change',{bubbles:true})); };
     input('offset',bounded(state.offset,-5,5,0));
     input('touchpadSize',Math.round(bounded(state.size,0,6,1)));

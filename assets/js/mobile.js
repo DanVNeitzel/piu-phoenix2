@@ -131,10 +131,13 @@ function selectRush(el) {
 }
 
 function selectNote(el) {
+  if (!el || !el.matches('.noteskin-option')) return;
   for (var i = 0, l = radiosNote.length; i < l; i++) {
     var fn = radiosNote[i] == el ? 'add' : 'remove';
     radiosNote[i].classList[fn]('focus');
   }
+  localStorage.setItem('last_noteskin',el.value);
+  window.PiuScroll?.changed();
 }
 
 function selectSpeed(el) {

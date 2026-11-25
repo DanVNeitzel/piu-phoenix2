@@ -108,7 +108,7 @@
     feedback = '';
     if (group().id === 'reset') { detail = false; cursor = 0; reset(); render(); return; }
     detail = true;
-    const value = {speed:String(PiuScroll.state().multiplier),display:selected('.bga-option'),noteskin:selected('.noteskin-option'),rush:selected('.rush-option')}[group().id];
+    const value = {speed:String(PiuScroll.state().multiplier),display:selected('.bga-option'),noteskin:PiuGameSettings.read().skin,rush:selected('.rush-option')}[group().id];
     cursor = group().id === 'auto' ? 3 : group().id === 'offset' ? 2 : Math.max(0, options().findIndex(item => item.value === value));
     render();
   }
@@ -159,7 +159,7 @@
       } else {
         value = document.createElement('strong');
         value.textContent = {judge:commandModifier === 'hj' ? (PiuGameSettings.read().hj ? 'ON' : 'OFF') : (PiuGameSettings.read().hj ? 'HJ' : 'NORMAL'),speed:PiuScroll.state().multiplier + 'X',display:commandModifier ? (PiuGameSettings.read()[commandModifier] ? 'ON' : 'OFF') : (selected('.bga-option') || 'on').toUpperCase(),
-          noteskin:(selected('.noteskin-option') || '').replace('EXCEED2-',''),rush:Math.round(Number(selected('.rush-option') || 1) * 100) + '%',touch:PiuGameSettings.read().touch?'ON':'OFF',offset:Number(byId('offset').value || 0) + 's'}[group().id];
+          noteskin:PiuGameSettings.read().skin.replace('EXCEED2-',''),rush:Math.round(Number(selected('.rush-option') || 1) * 100) + '%',touch:PiuGameSettings.read().touch?'ON':'OFF',offset:Number(byId('offset').value || 0) + 's'}[group().id];
       }
       readout.append(value);
       wheel(byId('cw-choices'),options(),cursor, delta => delta === 0 ? apply() : move(delta));

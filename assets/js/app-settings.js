@@ -10,7 +10,25 @@
   panel.setAttribute('aria-labelledby','app-settings-title');panel.tabIndex=-1;
   panel.querySelector('.modal-content').innerHTML='<header class="settings-header"><div><span>PIUWEB · SINGLE PLAYER</span><h2 id="app-settings-title">Configurações</h2></div><button type="button" class="settings-close" data-bs-dismiss="modal" aria-label="Fechar configurações">×</button></header><div class="settings-body"><section class="settings-card"><h3>Tela cheia</h3><p>Use toda a tela para jogar.</p><div class="settings-options" id="settings-fullscreen" role="group" aria-label="Tela cheia"></div></section><section class="settings-card"><h3>Fundo da interface</h3><p>Preferência visual. Na seleção, o fundo acompanha o banner da música; a abertura tem vídeo próprio.</p><div class="settings-options" id="settings-background" role="group" aria-label="Fundo da interface"></div></section><div id="settings-keys-slot"></div><section class="settings-card settings-data"><h3>Dados neste navegador</h3><p>Recordes, histórico e preferências ficam salvos neste dispositivo.</p><button type="button" id="settings-changelog" class="settings-secondary">Ver novidades</button><button type="button" id="settings-erase" class="settings-danger">Apagar dados e cache</button><div class="settings-confirm" id="settings-clear-confirm" hidden><strong>Apagar todos os dados locais?</strong><p>Seus recordes, histórico e preferências serão removidos. Essa ação não pode ser desfeita.</p><div><button type="button" id="settings-clear-cancel" class="settings-secondary">Cancelar</button><button type="button" id="settings-clear-do" class="settings-danger">Apagar tudo</button></div></div></section></div><footer class="settings-footer"><p id="settings-status" role="status" aria-live="polite">As alterações são salvas automaticamente.</p><button type="button" class="settings-done" data-bs-dismiss="modal">Concluído</button></footer>';
   function status(text){byId('settings-status').textContent=text;}
+  const orientationCard=document.createElement('section');
+  orientationCard.className='settings-card';
+  orientationCard.innerHTML='<h3>Orientação da tela</h3><p>Sensor acompanha a rotação do aparelho. Vertical e Horizontal travam a orientação. O bloqueio pode exigir tela cheia.</p><div class="settings-options" id="settings-orientation" role="group" aria-label="Orientação da tela"></div>';
+  byId('settings-fullscreen').closest('section').after(orientationCard);
+  const orientations=[];
+  for(const [mode,label] of [['sensor','Sensor'],['vertical','Vertical'],['horizontal','Horizontal']]){
+    const button=document.createElement('button');button.type='button';button.className='settings-option';button.textContent=label;button.dataset.orientation=mode;
+    button.addEventListener('click',async()=>{
+      try{
+        const operation=PiuOrientation.set(mode);sync();
+        const result=await operation;
+        status(result.applied ? 'Orientação salva: '+label+'.' : result.reason==='unsupported' ? 'Preferência salva. Este navegador não oferece bloqueio de orientação.' : 'Preferência salva. O bloqueio não foi permitido agora; tente em tela cheia.');
+      }catch(_){status('Não foi possível salvar a orientação.');}
+      sync();
+    });
+    orientations.push(button);byId('settings-orientation').append(button);
+  }
   function sync(){
+    orientations.forEach(button=>{const selected=button.dataset.orientation===PiuOrientation.read();button.classList.toggle('focus',selected);button.setAttribute('aria-pressed',String(selected));});
     const active=!!(document.fullscreenElement || document.webkitFullscreenElement);
     fullscreen.forEach((button,i)=>{const selected=active===(i===0);button.classList.toggle('focus',selected);button.setAttribute('aria-pressed',String(selected));});
     let background='static';try{background=localStorage.getItem('background') || 'static';}catch(_){}

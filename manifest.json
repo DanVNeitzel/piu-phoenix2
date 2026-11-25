@@ -12,7 +12,7 @@
   "theme_color": "#10151c",
   "lang": "pt-BR",
   "background_color": "#10151c",
-  "orientation": "portrait",
+  "orientation": "any",
   "icons": [
     {
       "src": "icon/piuweb32.png",
