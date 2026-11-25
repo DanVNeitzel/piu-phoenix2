@@ -70,6 +70,12 @@ As teclas podem ser alteradas nas configurações.
 
 O ajuste do touchpad possui perfis **SINGLE**, **DOUBLE** e **HALFDOUBLE**, selecionados automaticamente pelo chart. Cada perfil mantém suas configurações de retrato e paisagem. Salvar ou restaurar uma orientação afeta somente o perfil em uso; ajustes antigos compartilhados são preservados como ponto inicial para Single e Double.
 
+**CO-OP / Routine** é identificado pelas marcações dos participantes no chart, sem depender do nível 99. Esses charts ficam no canal **CO-OP** e não entram no filtro Double do Difficulty Zone. Novos charts identificados durante a navegação são adicionados ao canal; músicas com charts individuais e cooperativos mostram um botão para abrir a opção CO-OP.
+
+Cada participante tem sua cor nas notas e nos holds: **P1 rosa, P2 azul, P3 amarelo e P4 verde**. A plataforma, a vida e a pontuação são compartilhadas pela equipe. Abra **CONTROLES CO-OP** na confirmação da música ou no menu de pausa para consultar e alterar as teclas dos participantes. Os controles CO-OP são salvos separadamente dos controles individuais. No toque, os participantes compartilham os sensores do modo e seu perfil de touchpad.
+
+O suporte inclui as notas cooperativas do StepF2 e charts `pump-routine` com campos separados por `&`, para até quatro participantes. Routine com notas sobrepostas no mesmo sensor retorna uma mensagem de formato não suportado.
+
 Na seleção desktop, use **← / →** para navegar pelas músicas e **Enter** para confirmar. Durante a partida, **Esc** pausa ou retoma o jogo. Em dispositivos móveis, selecione o modo de controle por toque.
 
 ## Biblioteca de músicas

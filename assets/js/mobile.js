@@ -295,7 +295,8 @@ function selectionBack() {
 }
 
 function selectChannel(main = false) {
-  if(!main && channelChartFilter && currentChannel!=='favorites' && !blockSelectSong.classList.contains('hide') && window.PiuChannels){
+  if(channelChartFilter?.coop && !selsong)resetSongSelection();
+  if(!main && channelChartFilter?.type && currentChannel!=='favorites' && !blockSelectSong.classList.contains('hide') && window.PiuChannels){
     window.PiuChannels.openLevels();return;
   }
   window.PiuChannels?.restoreChannels();

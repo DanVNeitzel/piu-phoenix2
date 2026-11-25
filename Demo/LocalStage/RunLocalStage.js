@@ -74,6 +74,7 @@ function clearGameInput() {
         }
         input.touchEvents?.fill(null);
         input.clearTouches?.();
+        input.clearCoop?.();
     }
 }
 function pauseGame() {
@@ -227,6 +228,20 @@ try {
         playerConfig.fd = config.fd === true;
         playerConfig.hardJudgment = config.hj === true;
         engine.addPlayer(playerConfig);
+        const coop=engine.song.levels[config.chartLevel].COOP;
+        config.coop=coop;config.record.coop=coop;
+        if(coop){
+            const legend=document.createElement('div');legend.id='game-coop';legend.className='coop-legend';
+            PiuCoop.legend(legend,coop);document.body.append(legend);
+            const hint=document.createElement('small');hint.textContent='CO-OP · PLATAFORMA E PONTUAÇÃO COMPARTILHADAS';legend.append(hint);
+            const button=document.createElement('button');button.type='button';button.textContent='CONTROLES CO-OP';
+            button.onclick=()=>PiuCoop.controls(coop,maps=>{
+                config.coopBindings=maps;clearGameInput();
+                if(!config.useTouchInput)engine.stage._playerStages[0].keyListener.configureCoop(coop,maps);
+            });pauseDialog.append(button);
+            if(!config.useTouchInput)engine.stage._playerStages[0].keyListener.configureCoop(coop,
+                PiuCoop.validBindings(config.coopBindings)?config.coopBindings:PiuCoop.bindings());
+        }
         if (config.bga === 'dark') {
             // The dark layer sits behind the WebGL notes, so it never dims the arrows.
             if (engine.stage._bg) engine.stage._bg.object.visible = false;

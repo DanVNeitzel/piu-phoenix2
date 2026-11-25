@@ -1,7 +1,16 @@
 {
-  "version": "0.8.19",
+  "version": "0.8.20",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "CO-OP / Routine",
+      "items": [
+        "Charts CO-OP identificados pelas notas de participantes do StepF2 ou pelo tipo Routine; nível 99 sozinho permanece Double.",
+        "Canal CO-OP filtra os charts cooperativos, recebe os identificados na navegação e preserva a seleção após o resultado. Difficulty Zone Double exclui os charts CO-OP.",
+        "Quantidade de jogadores exibida na seleção e no resultado, com legenda e cores próprias nas notas e nos holds de cada participante.",
+        "Controles de teclado próprios e configuráveis para até quatro participantes, com sensores, vida e pontuação compartilhados. No touch, os participantes compartilham os sensores do modo."
+      ]
+    },
     {
       "category": "Charts Double nível 99",
       "items": [

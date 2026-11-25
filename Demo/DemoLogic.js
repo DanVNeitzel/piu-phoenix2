@@ -83,11 +83,12 @@ function createSingleConfig(settings = null) {
         resources:'', sscpath:libraryUrl(sscpath), mp3path:libraryUrl(mp3path), resourcePath: 'piured-engine/',
         sscContent: chartCache.get(libraryUrl(sscpath)),
         leftKeyMap, rightKeyMap, chartLevel: chart_level,
+        coop:level.COOP, coopBindings:level.COOP ? PiuCoop.bindings() : null,
         selection: {library:resources, channelId:songsJson.children[stageIndex].channelId || songsJson.children[stageIndex].path,
             channelName:songsJson.children[stageIndex].name, songKey:PiuLibrary.songKey(song),
             difficultyLevel:channelChartFilter?.level ?? null, chart:chart_level},
         record: { ssc:sscpath, chart:chart_level, title:selsong.meta.TITLE,
-            artist:selsong.meta.ARTIST || '', type:level.STEPSTYPE, level:String(level.METER),
+            artist:selsong.meta.ARTIST || '', type:level.STEPSTYPE, level:String(level.METER), coop:level.COOP,
             channel:songsJson.children[stageIndex].name, stage_index:stageIndex, song_index:songIndex,
             banner_path:imgpath ? libraryUrl(imgpath) : '',
             background_path:libraryUrl(song.children.find(f => /(?:_B|background)\.(png|jpe?g|webp)$/i.test(f.name))?.path || imgpath || songBanner(song)) }

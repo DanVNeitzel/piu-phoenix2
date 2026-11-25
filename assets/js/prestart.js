@@ -63,8 +63,20 @@
   }
   function updateChart() {
     const level=selsong?.levels[chart_level];if(!level) return;
-    const label=typeName(level.STEPSTYPE);
-    byId('ps-type').textContent=label;byId('ps-level').textContent=String(level.METER).padStart(2,'0');
+    const label=level.COOP?'CO-OP':typeName(level.STEPSTYPE);
+    byId('ps-type').textContent=label;byId('ps-level').textContent=level.COOP?'×'+level.COOP.count:String(level.METER).padStart(2,'0');
+    byId('ps-large-level').classList.toggle('ps-coop',!!level.COOP);
+    modal.querySelector('.ps-profile span').textContent=level.COOP?level.COOP.count+' JOGADORES · EQUIPE':'SINGLE PLAYER';
+    modal.querySelector('.ps-sp').textContent=level.COOP?'CO':'SP';
+    let panel=byId('ps-coop-panel');
+    if(!panel){
+      panel=document.createElement('div');panel.id='ps-coop-panel';panel.className='coop-panel';
+      const legend=document.createElement('div');legend.className='coop-legend';
+      const button=document.createElement('button');button.type='button';button.textContent='CONTROLES CO-OP';
+      button.onclick=()=>{const coop=selsong?.levels[chart_level]?.COOP;if(coop)PiuCoop.controls(coop);};
+      panel.append(legend,button);modal.querySelector('.ps-scene').append(panel);
+    }
+    panel.hidden=!level.COOP;PiuCoop.legend(panel.querySelector('.coop-legend'),level.COOP);
     byId('ps-large-level').classList.toggle('ps-double',level.STEPSTYPE!=='pump-single');
     byId('ps-large-level').classList.toggle('ps-half',level.STEPSTYPE==='pump-halfdouble');
     byId('ps-large-level').setAttribute('aria-label',label+' '+level.METER);
@@ -85,8 +97,10 @@
       const chart=selsong.levels[index],button=document.createElement('button');button.type='button';
       button.className='ps-orb'+(chart.STEPSTYPE==='pump-single'?'':chart.STEPSTYPE==='pump-halfdouble'?' ps-double ps-half':' ps-double');button.dataset.chart=String(index);
       button.textContent=String(chart.METER).padStart(2,'0');
+      if(chart.COOP){button.classList.add('ps-coop');button.textContent='×'+chart.COOP.count;}
       button.setAttribute('aria-label',typeName(chart.STEPSTYPE)+' '+chart.METER+(chart.DESCRIPTION?', '+chart.DESCRIPTION:''));
       button.title=[typeName(chart.STEPSTYPE),chart.METER,chart.DESCRIPTION,chart.CREDIT].filter(Boolean).join(' · ');
+      if(chart.COOP){button.title='CO-OP · '+chart.COOP.count+' jogadores · nível '+chart.METER;button.setAttribute('aria-label',button.title);}
       button.addEventListener('click',()=>chooseChart(index));byId('ps-levels').append(button);
     });
   }

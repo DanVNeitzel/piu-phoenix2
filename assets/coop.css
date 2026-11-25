@@ -1,0 +1,20 @@
+.coop-legend{display:flex;flex-wrap:wrap;align-items:center;gap:8px;font:700 13px/1.4 system-ui;color:white}
+.coop-legend>span{border:1px solid currentColor;padding:2px 6px;border-radius:4px;background:#020706}
+.coop-panel{position:absolute;right:12px;top:38px;max-width:45%;padding:8px;border:1px solid #7ad9b8;border-radius:6px;background:#02100eed;color:white}
+.coop-panel button,.coop-route{margin-top:5px;background:#08241c;color:white;border:1px solid #a1e765;border-radius:4px;padding:8px;cursor:pointer;font:700 11px system-ui}
+#confirmPlayModal .coop-panel button{font:700 11px/1.4 system-ui;min-height:36px}
+body.desktop-song-select #song-coop-link{position:fixed;left:50%;bottom:15vh;transform:translateX(-50%);z-index:15;pointer-events:auto;max-width:72vw;white-space:nowrap}
+body.arcade-mobile.desktop-song-select #song-coop-link{bottom:calc(max(4px,env(safe-area-inset-bottom)) + 94px);font-size:10px;padding:7px}
+.coop-panel[hidden],.coop-legend[hidden]{display:none}
+#game-coop{position:fixed;right:10px;top:86px;max-width:160px;z-index:10;pointer-events:none}
+#game-coop small{font:9px/1.4 system-ui;flex-basis:100%;text-shadow:0 1px 3px black;background:#000a;padding:3px}
+.coop-controls{box-sizing:border-box;width:min(760px,94vw);max-height:90svh;overflow:auto;background:#071811;color:white;border:1px solid #b6ef75;border-radius:10px;padding:18px;font:14px/1.5 system-ui}
+.coop-controls::backdrop{background:#000c}
+.coop-controls h2{font-size:20px;margin:0}
+.coop-controls fieldset{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:5px;margin:12px 0;padding:10px;border:1px solid #566e5d}
+.coop-controls button{min-height:44px;padding:7px;color:white;background:#12352b;border:1px solid #96ce8c;border-radius:4px;font:700 13px system-ui;cursor:pointer}
+.coop-controls button:focus-visible{outline:3px solid #ffe25a}
+.coop-controls [role=alert]{color:#ffe25a}
+.coop-controls legend{font-weight:800}
+.listStep.circle-coop,#confirmPlayModal .ps-large-level.ps-coop,#resultLevelBadge.coop{background-image:url('img/elements/random_orb_bg.png')!important;background-size:contain;background-position:center;background-repeat:no-repeat}
+@media(max-width:600px){.coop-panel{padding:5px;right:5px;top:30px}.coop-panel button{font-size:9px;padding:6px}.coop-legend{gap:3px;font-size:11px}#game-coop{max-width:110px;top:80px;right:5px}.coop-controls{padding:12px}.coop-controls fieldset{padding:5px;gap:3px}.coop-controls button{font-size:11px;padding:4px}}

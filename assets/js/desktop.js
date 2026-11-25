@@ -171,7 +171,7 @@
     const channelList = document.body.classList.contains('desktop-channel-select');
     const rightButton = byId('desktop-channels-right');
     const backLabel=window.PiuChannels?.isLevelPicker()?'Voltar aos canais':
-      channelChartFilter && !channelList?'Voltar aos níveis':channelList?'Voltar às músicas':'Selecionar canal';
+      channelChartFilter?.type && !channelList?'Voltar aos níveis':channelList?'Voltar às músicas':'Selecionar canal';
     rightButton.setAttribute('aria-label',backLabel);
     rightButton.title=backLabel;
     byId('desktop-return').setAttribute('aria-label',backLabel);

@@ -213,7 +213,7 @@ class Song {
 
     loadSSC(content) {
 
-        const parse = sscParser.parse(content) ;
+        const parse = typeof PiuCoop === 'undefined' ? sscParser.parse(content) : PiuCoop.parse(content,sscParser);
         this.meta = parse.header ;
         this.levels = parse.levels ;
 

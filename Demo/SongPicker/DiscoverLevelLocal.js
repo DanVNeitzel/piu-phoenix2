@@ -30,7 +30,10 @@ function discoverLevels(sscPath, content) {
     song.levels.map((level,index) => ({level,index})).filter(item => item.level.STEPSTYPE in order && PiuLibrary.matchesChart(item.level,channelChartFilter))
       .sort((a,b) => order[a.level.STEPSTYPE] - order[b.level.STEPSTYPE] || Number(a.level.METER) - Number(b.level.METER))
       .forEach(({level,index}) => {
-        gl.append(createListGroupLinkSubtitle(index, level.METER + ' - ' + level.DESCRIPTION,
-          level.STEPSTYPE, level.CREDIT, function() { change_level(index); }));
+        const item=createListGroupLinkSubtitle(index, level.METER + ' - ' + level.DESCRIPTION,
+          level.STEPSTYPE, level.CREDIT, function() { change_level(index); });
+        if(level.COOP){item.classList.add('circle-coop');item.querySelector('.fw-bold').textContent='×'+level.COOP.count;
+          item.title='CO-OP · '+level.COOP.count+' jogadores · nível '+level.METER;item.setAttribute('aria-label',item.title);}
+        gl.append(item);
       });
 }

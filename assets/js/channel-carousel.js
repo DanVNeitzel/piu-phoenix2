@@ -136,7 +136,7 @@
     selected=null;opened=false;ignoreClickUntil=0;pointer=null;
   }
   function openLevels(){
-    if(!channelChartFilter)return;
+    if(!channelChartFilter?.type)return;
     if(levelMode && levelStage!==stageIndex)restoreChannels();
     resetSongSelection();
     if(!levelMode){
@@ -177,7 +177,7 @@
   }
   function back(){
     if(levelMode && visible()){selectChannel(true);return true;}
-    if(channelChartFilter && currentChannel!=='favorites' && !blockSelectSong.classList.contains('hide')){
+    if(channelChartFilter?.type && currentChannel!=='favorites' && !blockSelectSong.classList.contains('hide')){
       openLevels();return true;
     }
     return false;
@@ -237,6 +237,7 @@
   });
   new MutationObserver(()=>{if(visible())render();}).observe(wheel,{childList:true});
   document.addEventListener('piu:favoritechange',()=>{if(visible())render();});
+  document.addEventListener('piu:coopchange',()=>{if(visible())render();});
   new MutationObserver(()=>{
     if(visible() && !opened)open();
     if(!visible()){opened=false;wheel.classList.remove('channel-wheel-opening');}

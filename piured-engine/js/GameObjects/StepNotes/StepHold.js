@@ -73,6 +73,7 @@ class StepHold extends GameObject {
         this._endBeat = endBeat ;
         this._originalEndBeat = endBeat ;
         this._holdExtensible = new Hold(this._resourceManager,this.kind, noteskin) ;
+        if (this._stepNote.player) PiuCoop.tint(this._holdExtensible.object,this._stepNote.player);
         this._holdExtensible.object.position.z = this.holdZDepth ;
         this._holdExtensible.object.position.x = this._stepNote.object.position.x ;
         this._object.add(this._holdExtensible.object) ;
@@ -99,6 +100,8 @@ class StepHold extends GameObject {
     get kind(){
         return this._stepNote.kind ;
     }
+
+    get player(){return this._stepNote.player;}
 
     get padId(){
         return this._stepNote.padId ;

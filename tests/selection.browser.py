@@ -219,6 +219,97 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertEqual(actual['otherSpecial'],['M'])
         self.assertFalse(self.errors)
 
+    def test_coop_colored_notes_holds_and_shared_keyboard(self):
+        ssc='''#TITLE:CO-OP;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:18;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;
+          #NOTES:\nXY00000000\nxy00000000\n3300000000\n;'''
+        self.open_frozen_stage('pump-double',False,{'sscContent':ssc})
+        actual=self.page.evaluate("""()=>{
+          const stage=engine.stage._playerStages[0],input=stage.keyListener,maps=PiuCoop.bindings();
+          input.onKeyDown({code:maps[0][0]});input.onKeyDown({code:maps[1][0]});
+          input.onKeyUp({code:maps[0][0]});const stillHeld=input.isHeld('dl','0');
+          input.onKeyUp({code:maps[1][0]});const released=!input.isHeld('dl','0');
+          return {coop:config.coop,stillHeld,released,
+            taps:stage._steps.stepList.filter(step=>step instanceof StepNote).map(step=>[step.player,step.object.material.color.getHexString()]),
+            holds:stage._steps.stepList.filter(step=>step instanceof StepHold).map(step=>[step.stepNote.player,step._holdExtensible.object.material.color.getHexString()])};
+        }""")
+        self.assertEqual(actual['coop']['players'],[1,2])
+        self.assertTrue(actual['stillHeld'])
+        self.assertTrue(actual['released'])
+        self.assertEqual(actual['taps'],[[1,'ff527d'],[2,'51cfff']])
+        self.assertEqual(actual['holds'],actual['taps'])
+        expect(self.page.locator('#game-coop>span')).to_have_text(['P1','P2'])
+        self.assertFalse(self.errors)
+
+    def test_coop_routes_selection_controls_result_and_return(self):
+        ssc='''#TITLE:Mixed;\n#ARTIST:PIUWeb;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:99;\n#DESCRIPTION:Solo;\n#DIFFICULTY:Edit;
+          #NOTES:\n1000000000\n0000000000\n;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:18;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;
+          #NOTES:\nXY00000000\n0000000000\n;'''
+        self.context.route('**/Test0.ssc',lambda route:route.fulfill(status=200,body=ssc,content_type='text/plain'))
+        self.load()
+        expect(self.page.locator('#level .listStep')).to_have_count(1)
+        self.assertEqual(self.page.evaluate('chart_level'),0)
+        self.page.locator('#song-coop-link').click()
+        self.page.wait_for_function('chart_level===1 && channelChartFilter.coop')
+        expect(self.page.locator('#level .circle-coop')).to_have_text(re.compile('×2'))
+        self.page.evaluate("new bootstrap.Modal(document.getElementById('confirmPlayModal')).show()")
+        expect(self.page.locator('#ps-type')).to_have_text('CO-OP')
+        expect(self.page.locator('#ps-coop-panel .coop-legend>span')).to_have_text(['P1','P2'])
+        for width,height in [(1280,800),(390,844),(844,390)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.page.locator('#ps-coop-panel button').click()
+            expect(self.page.locator('.coop-controls')).to_be_visible()
+            expect(self.page.locator('.coop-controls fieldset')).to_have_count(2)
+            self.page.locator('.coop-controls fieldset button').first.click()
+            self.page.keyboard.press('BracketLeft')
+            self.page.get_by_role('button',name='SALVAR E VOLTAR').click()
+        saved=self.page.evaluate("""()=>{
+          const config=createSingleConfig();
+          sessionStorage.setItem('piu_single_result',JSON.stringify({...config.record,config,score:900000,
+            performance:{p:10,gr:0,go:0,b:0,m:0,maxCombo:10}}));return config;
+        }""")
+        self.assertEqual(saved['selection']['channelId'],'co-op')
+        self.assertEqual(saved['coop']['count'],2)
+        self.assertEqual(saved['coopBindings'][0][0],'BracketLeft')
+        self.page.goto(self.origin+'/index.html')
+        expect(self.page.locator('#stepType')).to_have_text('CO-OP')
+        expect(self.page.locator('#songLevel')).to_have_text('×2')
+        self.page.locator('#resultNext').click()
+        self.page.wait_for_function('chart_level===1 && channelChartFilter.coop')
+        expect(self.page.locator('#level .listStep')).to_have_count(1)
+        self.page.evaluate('selectionBack()')
+        expect(self.page.locator('.blockSelectChannel')).not_to_have_class(re.compile(r'\bhide\b'))
+        self.assertFalse(self.page.evaluate('PiuChannels.isLevelPicker()'))
+        self.assertFalse(self.errors)
+
+    def test_native_routine_and_four_player_touch(self):
+        header='#TITLE:Team;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;\n#NOTEDATA:;\n'
+        for style,rows,players in [('pump-routine','1000000000\n&\n0000010000\n&\n0000000001',[1,2,3]),
+                                   ('pump-double','XYZ1000000',[1,2,3,4])]:
+            ssc=header+f'#STEPSTYPE:{style};\n#METER:20;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;\n#NOTES:\n{rows}\n;'
+            self.open_frozen_stage('pump-double',True,{'sscContent':ssc})
+            actual=self.page.evaluate("""()=>({players:config.coop.players,
+              owners:engine.stage._playerStages[0]._steps.stepList.map(step=>step.player),
+              pads:engine.stage._playerStages[0].keyListener.getPadIds().length})""")
+            self.assertEqual(actual['players'],players)
+            self.assertEqual(actual['owners'],players)
+            self.assertEqual(actual['pads'],2)
+        self.assertFalse(self.errors)
+
+    def test_double_difficulty_excludes_coop_by_notes(self):
+        self.server.difficulty_style='pump-double'
+        self.server.meter=99
+        ssc='''#TITLE:Team;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:99;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;
+          #NOTES:\nXY00000000\n0000000000\n;'''
+        self.context.route('**/Test0.ssc',lambda route:route.fulfill(status=200,body=ssc,content_type='text/plain'))
+        self.load()
+        paths=self.page.evaluate("async ()=>[...await difficultyPaths(songsJson.children[3],{type:'pump-double',mode:'double',level:'27+'})]")
+        self.assertEqual(paths,['Songs/Test1','Songs/Test2','Songs/Test3'])
+        self.assertFalse(self.errors)
+
     def test_half_double_touch_six_panels_and_separate_preferences(self):
         self.open_frozen_stage('pump-halfdouble',True)
         for width,height in [(390,844),(844,390),(1280,800)]:
@@ -422,7 +513,7 @@ class SelectionBrowserTests(unittest.TestCase):
         self.server.empty = True
         self.load()
         expect(self.page.locator('.blockSelectChannel')).not_to_have_class(re.compile(r'\bhide\b'))
-        self.assertEqual(self.page.locator('#stage [aria-disabled="true"]').count(), 5)
+        self.assertEqual(self.page.locator('#stage [aria-disabled="true"]').count(), 6)
         self.page.keyboard.press('Enter')
         self.page.keyboard.press('Escape')
         self.assertIsNone(self.page.evaluate('songIndex'))

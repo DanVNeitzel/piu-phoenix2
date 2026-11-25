@@ -163,6 +163,12 @@
     byId('resultLevelBadge').classList.toggle('double',type === 'pump-double');
     byId('resultLevelBadge').classList.toggle('half',type === 'pump-halfdouble');
     byId('resultLevelBadge').classList.toggle('single',type === 'pump-single');
+    const coop=result.coop || result.config?.coop;
+    byId('resultLevelBadge').classList.toggle('coop',!!coop);
+    byId('resultLevelBadge').setAttribute('aria-label',coop?'CO-OP · '+coop.count+' jogadores · pontuação da equipe':byId('stepType').textContent+' '+result.level);
+    document.querySelector('.result-player-heading span').textContent=coop?coop.count+' JOGADORES · EQUIPE':'SINGLE PLAYER';
+    document.querySelector('.result-actions>span').textContent=coop?'CO-OP · PONTUAÇÃO DA EQUIPE':'SINGLE PLAYER · RECORDES LOCAIS';
+    if(coop){byId('stepType').textContent='CO-OP';byId('songLevel').textContent='×'+coop.count;}
     byId('score').textContent = scoreText(score); byId('score').setAttribute('aria-live','off');
     rank(byId('gradeResult'),result.grade,broken); plate(byId('plateResult'),result.plate,broken);
     if (!passed && !broken) byId('gradeResult').alt = result.grade + ' — Sem resultado';

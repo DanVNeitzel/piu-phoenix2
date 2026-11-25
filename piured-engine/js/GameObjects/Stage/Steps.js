@@ -287,8 +287,9 @@ class Steps extends GameObject {
 
 
     processNote(note, kind, currentYPosition, XStepPosition , steps, currentTimeInSong, index,  padId, i,j, beat ) {
-        // StepF2 CO-OP uses upper-case taps and lower-case hold heads for P1/P2/P3.
-        // Play their lanes together in this local single-player engine.
+        const player = PiuCoop.owner(note,this._song.levels[this._level].COOP);
+        note = PiuCoop.type(note);
+        // Preserve ownership while mapping symbols to the shared platform actions.
         if (note === 'X' || note === 'Y' || note === 'Z') note = '1';
         else if (note === 'x' || note === 'y' || note === 'z') note = '2';
 
@@ -297,6 +298,8 @@ class Steps extends GameObject {
 
             // let step = this.stepFactory.getStep(kind);
             let step = new StepNote( this._resourceManager, kind, padId, currentTimeInSong, this._noteskin ) ;
+            step.player = player;
+            if (player) PiuCoop.tint(step.object,player);
 
             let stepMesh = step.object ;
 

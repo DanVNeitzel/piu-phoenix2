@@ -56,6 +56,7 @@ class KeyInput extends GameObject {
 
 
     onKeyDown(event) {
+        if (this.coopBindings) {this.coopKey(event,true);return;}
         const key = event.key.toLowerCase();
         for (const pad of this.pads) for (const kind of pad.activeKinds || ['dl','ul','c','ur','dr']) {
             if (key === pad[kind + 'Key'] && !pad[kind + 'KeyHold']) {
@@ -66,10 +67,30 @@ class KeyInput extends GameObject {
     }
 
     onKeyUp(event) {
+        if (this.coopBindings) {this.coopKey(event,false);return;}
         const key = event.key.toLowerCase();
         for (const pad of this.pads) for (const kind of pad.activeKinds || ['dl','ul','c','ur','dr']) {
             if (key === pad[kind + 'Key']) pad[kind + 'KeyHold'] = false;
         }
+    }
+
+    configureCoop(coop,bindings) {
+        this.coopBindings = new Map();this.coopHeld = new Set();
+        coop.players.forEach(player => bindings[player-1].forEach((code,lane) => this.coopBindings.set(code,lane)));
+    }
+
+    clearCoop() {this.coopHeld?.clear();}
+
+    coopKey(event,down) {
+        const lane = this.coopBindings.get(event.code);
+        if (lane === undefined) return;
+        event.preventDefault?.();
+        const pad = this.pads[Math.floor(lane/5)],kind = PiuCoop.kinds[lane%5];
+        if (down) {
+            if (!this.coopHeld.has(event.code)) pad[kind+'KeyPressed'] = true;
+            this.coopHeld.add(event.code);
+        } else this.coopHeld.delete(event.code);
+        pad[kind+'KeyHold'] = [...this.coopHeld].some(code => this.coopBindings.get(code) === lane);
     }
 
     isPressed( kind, padId ) {
