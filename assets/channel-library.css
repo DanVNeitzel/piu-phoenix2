@@ -1,0 +1,17 @@
+.channel-level-picker{position:relative;z-index:16;margin:0 auto 12px;padding:12px 16px;max-width:780px;border:1px solid #71d93399;border-radius:12px;background:#041c26ed;color:#e5ffbf;pointer-events:auto}
+.channel-level-picker[hidden]{display:none}
+.channel-level-picker legend{float:none;width:auto;margin:0 0 8px;font:700 1rem system-ui;letter-spacing:.08em}
+.channel-level-options{display:flex;gap:6px;overflow-x:auto;padding:4px 2px 8px;scrollbar-width:thin}
+.channel-level-options button{flex:0 0 44px;min-height:44px;border:1px solid #65ad71;border-radius:8px;background:#0b2933;color:#eaffdd;font:700 1rem system-ui}
+.channel-level-options button[aria-pressed=true]{background:#bdff55;color:#081f13;box-shadow:0 0 14px #8dff5955}
+.channel-level-options button:focus-visible{outline:3px solid white;outline-offset:2px}
+.channel-level-picker p{margin:4px 0 0;font:0.875rem/1.4 system-ui;color:#cae0d7}
+.channel-empty{width:min(90%,680px);margin:24px auto;padding:24px;border:1px solid #6cc74280;border-radius:14px;background:linear-gradient(135deg,#062c34ed,#081820f5);color:#e7ffdd;text-align:center;font:1rem/1.5 system-ui;align-self:center}
+.channel-empty strong{display:block;margin-bottom:8px;color:#c5ff65;font-size:1.25rem}
+.channel-empty button{margin-top:14px;padding:10px 18px;min-height:44px;border:1px solid #b9ff68;border-radius:8px;background:#173c2b;color:white;font:700 1rem system-ui}
+.favorite-unavailable{position:relative;z-index:16;text-align:center;color:#efffa0;font:0.875rem/1.4 system-ui}
+body.desktop-song-select .channel-level-picker{position:fixed;top:23svh;left:50%;width:min(76vw,780px);max-height:22svh;transform:translateX(-50%);padding:8px 14px}
+body.desktop-song-select .channel-level-picker:has(button[aria-pressed=true]){border-color:#baff74}
+body.desktop-song-select #online-song:has(.channel-empty){display:flex!important;align-items:center;justify-content:center;overflow:hidden!important}
+body.desktop-song-select .channel-empty{flex-shrink:0;transform:none!important}
+@media(orientation:portrait){body.desktop-song-select .channel-level-picker{top:24svh;width:90vw;padding:8px 10px} .channel-level-picker legend{font-size:.875rem} .channel-level-picker p{font-size:.875rem} .channel-level-options{padding-bottom:4px} .channel-empty{padding:18px}}

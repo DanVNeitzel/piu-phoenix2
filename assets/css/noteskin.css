@@ -1,0 +1,419 @@
+/* ------------------------------------------------------- */
+/* 
+
+CONFIG NOTESKIN 
+
+.select-noteskin>option[value=""] {
+  background-image: none;
+}
+
+*/
+/* ------------------------------------------------------- */
+
+.select-noteskin {
+  display: flex;
+  border: 0!important;
+  height: 85px;
+  width: 79vw;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  flex-wrap: wrap;
+  flex-direction: row;
+  align-content: center;
+  justify-content: center;
+}
+
+.noteskin-toggle {
+  align-items: center;
+  cursor: pointer;
+  display: inline-flex;
+  gap: 8px;
+  user-select: none;
+}
+
+.noteskin-toggle::after {
+  color: #fbff00;
+  content: '\25be';
+  font-size: 0.85rem;
+  transition: transform .25s ease;
+}
+
+.noteskin-toggle[aria-expanded="false"]::after {
+  transform: rotate(-90deg);
+}
+
+.select-noteskin > option {
+  height: 75px;
+  width: 75px;
+  background-size: cover;
+  display: inline-block;
+  margin: 0px;
+  padding: 0;
+}
+
+.select-noteskin>option[value="EXCEED2-FLOWERCARD"] {
+  background-image: url(../img/noteskin/EXCEED2-FLOWERCARD/thumbnail.gif);
+}
+
+.select-noteskin>option[value="EXCEED2-OLD"] {
+  background-image: url(../img/noteskin/EXCEED2-OLD/thumbnail.gif);
+}
+
+.select-noteskin>option[value="FIESTA"] {
+  background-image: url(../img/noteskin/FIESTA/thumbnail.gif);
+}
+
+.select-noteskin>option[value="FIESTA-DRUM"] {
+  background-image: url(../img/noteskin/FIESTA-DRUM/thumbnail.gif);
+}
+
+.select-noteskin>option[value="FIESTA-LIGHTING"] {
+  background-image: url(../img/noteskin/FIESTA-LIGHTING/thumbnail.gif);
+}
+
+.select-noteskin>option[value="FIESTA-MISSILE"] {
+  background-image: url(../img/noteskin/FIESTA-MISSILE/thumbnail.gif);
+}
+
+.select-noteskin>option[value="FIESTA-SOCCER"] {
+  background-image: url(../img/noteskin/FIESTA-SOCCER/thumbnail.gif);
+}
+
+.select-noteskin>option[value="FIESTA2"] {
+  background-image: url(../img/noteskin/FIESTA2/thumbnail.gif);
+}
+
+.select-noteskin>option[value="FIESTAEX-BASIC"] {
+  background-image: url(../img/noteskin/FIESTAEX-BASIC/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX"] {
+  background-image: url(../img/noteskin/NX/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2"] {
+  background-image: url(../img/noteskin/NX2/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2-DOG"] {
+  background-image: url(../img/noteskin/NX2-DOG/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2-E-FIRE"] {
+  background-image: url(../img/noteskin/NX2-E-FIRE/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2-E-ICE"] {
+  background-image: url(../img/noteskin/NX2-E-ICE/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2-E-WIND"] {
+  background-image: url(../img/noteskin/NX2-E-WIND/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2-GIRL"] {
+  background-image: url(../img/noteskin/NX2-GIRL/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2-SHEEP"] {
+  background-image: url(../img/noteskin/NX2-SHEEP/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NX2-YASANGMA"] {
+  background-image: url(../img/noteskin/NX2-YASANGMA/thumbnail.gif);
+}
+
+.select-noteskin>option[value="NXA"] {
+  background-image: url(../img/noteskin/NXA/thumbnail.gif);
+}
+
+.select-noteskin>option[value="PREMIERE"] {
+  background-image: url(../img/noteskin/PREMIERE/thumbnail.gif);
+}
+
+.select-noteskin>option[value="PRIME"] {
+  background-image: url(../img/noteskin/PRIME/thumbnail.gif);
+}
+
+.select-noteskin>option[value="PRIME2"] {
+  background-image: url(../img/noteskin/PRIME2/thumbnail.gif);
+}
+
+.select-noteskin>option[value="PHOENIX"] {
+  background-image: url(../img/CW_settings/noteskin_cover/OLD.png);
+}
+
+.select-noteskin>option[value="ZERO-CANOND"] {
+  background-image: url(../img/noteskin/ZERO-CANOND/thumbnail.gif);
+}
+
+.select-noteskin>option[value="ZERO-EASY"] {
+  background-image: url(../img/noteskin/ZERO-EASY/thumbnail.gif);
+}
+
+.select-noteskin>option[value="ZERO-MUSICAL"] {
+  background-image: url(../img/noteskin/ZERO-MUSICAL/thumbnail.gif);
+}
+
+.select-noteskin>option[value="ZERO-POKER"] {
+  background-image: url(../img/noteskin/ZERO-POKER/thumbnail.gif);
+}
+
+.select-noteskin>option[value="ZERO-SLIME"] {
+  background-image: url(../img/noteskin/ZERO-SLIME/thumbnail.gif);
+}
+
+
+/* --------------------------------------------------------------- */
+
+
+.select-noteskin > button {
+  height: 60px;
+  width: 103px;
+  background-size: 60%;
+  background-repeat: no-repeat;
+  background-position: center;
+  display: inline-block;
+  border: 4px solid #636363;
+  margin: 0 10px 0 0;
+  padding: 0 35px;
+  border-radius: 15px;
+  background-color: #000;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+}
+
+.select-noteskin > button.focus {
+  border: 4px solid #77af03;
+  background-color: #000000;
+  box-shadow: inset 0 0 20px #77af03;
+  transition: all .3s ease;
+}
+
+.select-noteskin>button[value="EXCEED2-FLOWERCARD"] {
+  background-image: url(../img/noteskin/EXCEED2-FLOWERCARD/thumbnail.webp);
+}
+
+.select-noteskin>button[value="EXCEED2-OLD"] {
+  background-image: url(../img/noteskin/EXCEED2-OLD/thumbnail.webp);
+}
+
+.select-noteskin>button[value="EXCEED2-OLD"].focus {
+  background-image: url(../img/noteskin/EXCEED2-OLD/thumbnail.gif);
+}
+
+.select-noteskin>button[value="FIESTA"] {
+  background-image: url(../img/noteskin/FIESTA/thumbnail.webp);
+}
+
+.select-noteskin>button[value="FIESTA"].focus {
+  background-image: url(../img/noteskin/FIESTA/thumbnail.gif);
+}
+
+.select-noteskin>button[value="FIESTA-DRUM"] {
+  background-image: url(../img/noteskin/FIESTA-DRUM/thumbnail.webp);
+}
+
+.select-noteskin>button[value="FIESTA-DRUM"].focus {
+  background-image: url(../img/noteskin/FIESTA-DRUM/thumbnail.gif);
+}
+
+.select-noteskin>button[value="FIESTA-LIGHTING"] {
+  background-image: url(../img/noteskin/FIESTA-LIGHTING/thumbnail.webp);
+}
+
+.select-noteskin>button[value="FIESTA-LIGHTING"].focus {
+  background-image: url(../img/noteskin/FIESTA-LIGHTING/thumbnail.gif);
+}
+
+.select-noteskin>button[value="FIESTA-MISSILE"] {
+  background-image: url(../img/noteskin/FIESTA-MISSILE/thumbnail.webp);
+}
+
+.select-noteskin>button[value="FIESTA-MISSILE"].focus {
+  background-image: url(../img/noteskin/FIESTA-MISSILE/thumbnail.gif);
+}
+
+.select-noteskin>button[value="FIESTA-SOCCER"] {
+  background-image: url(../img/noteskin/FIESTA-SOCCER/thumbnail.webp);
+}
+
+.select-noteskin>button[value="FIESTA-SOCCER"].focus {
+  background-image: url(../img/noteskin/FIESTA-SOCCER/thumbnail.gif);
+}
+
+.select-noteskin>button[value="FIESTA2"] {
+  background-image: url(../img/noteskin/FIESTA2/thumbnail.webp);
+}
+
+.select-noteskin>button[value="FIESTA2"].focus {
+  background-image: url(../img/noteskin/FIESTA2/thumbnail.gif);
+}
+
+.select-noteskin>button[value="FIESTAEX-BASIC"] {
+  background-image: url(../img/noteskin/FIESTAEX-BASIC/thumbnail.webp);
+}
+
+.select-noteskin>button[value="FIESTAEX-BASIC"].focus {
+  background-image: url(../img/noteskin/FIESTAEX-BASIC/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX"] {
+  background-image: url(../img/noteskin/NX/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX"].focus {
+  background-image: url(../img/noteskin/NX/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2"] {
+  background-image: url(../img/noteskin/NX2/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2"].focus {
+  background-image: url(../img/noteskin/NX2/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2-DOG"] {
+  background-image: url(../img/noteskin/NX2-DOG/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2-DOG"].focus {
+  background-image: url(../img/noteskin/NX2-DOG/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2-E-FIRE"] {
+  background-image: url(../img/noteskin/NX2-E-FIRE/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2-E-FIRE"].focus {
+  background-image: url(../img/noteskin/NX2-E-FIRE/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2-E-ICE"] {
+  background-image: url(../img/noteskin/NX2-E-ICE/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2-E-ICE"].focus {
+  background-image: url(../img/noteskin/NX2-E-ICE/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2-E-WIND"] {
+  background-image: url(../img/noteskin/NX2-E-WIND/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2-E-WIND"].focus {
+  background-image: url(../img/noteskin/NX2-E-WIND/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2-GIRL"] {
+  background-image: url(../img/noteskin/NX2-GIRL/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2-GIRL"].focus {
+  background-image: url(../img/noteskin/NX2-GIRL/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2-SHEEP"] {
+  background-image: url(../img/noteskin/NX2-SHEEP/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2-SHEEP"].focus {
+  background-image: url(../img/noteskin/NX2-SHEEP/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NX2-YASANGMA"] {
+  background-image: url(../img/noteskin/NX2-YASANGMA/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NX2-YASANGMA"].focus {
+  background-image: url(../img/noteskin/NX2-YASANGMA/thumbnail.gif);
+}
+
+.select-noteskin>button[value="NXA"] {
+  background-image: url(../img/noteskin/NXA/thumbnail.webp);
+}
+
+.select-noteskin>button[value="NXA"].focus {
+  background-image: url(../img/noteskin/NXA/thumbnail.gif);
+}
+
+.select-noteskin>button[value="PREMIERE"] {
+  background-image: url(../img/noteskin/PREMIERE/thumbnail.webp);
+}
+
+.select-noteskin>button[value="PREMIERE"].focus {
+  background-image: url(../img/noteskin/PREMIERE/thumbnail.gif);
+}
+
+.select-noteskin>button[value="PRIME"] {
+  background-image: url(../img/noteskin/PRIME/thumbnail.webp);
+}
+
+.select-noteskin>button[value="PRIME"].focus {
+  background-image: url(../img/noteskin/PRIME/thumbnail.gif);
+}
+
+.select-noteskin>button[value="PRIME2"] {
+  background-image: url(../img/noteskin/PRIME2/thumbnail.webp);
+}
+
+.select-noteskin>button[value="PRIME2"].focus {
+  background-image: url(../img/noteskin/PRIME2/thumbnail.gif);
+}
+
+.select-noteskin>button[value="PRIME2"].focus {
+  background-image: url(../img/noteskin/PRIME2/thumbnail.gif);
+}
+
+.select-noteskin>button[value="PRIME2"].focus.focus {
+  background-image: url(../img/noteskin/PRIME2/thumbnail.gif);
+}
+
+.select-noteskin>button[value="PHOENIX"],
+.select-noteskin>button[value="PHOENIX"].focus {
+  background-image: url(../img/CW_settings/noteskin_cover/OLD.png);
+}
+
+.select-noteskin>button[value="ZERO-CANOND"] {
+  background-image: url(../img/noteskin/ZERO-CANOND/thumbnail.webp);
+}
+
+.select-noteskin>button[value="ZERO-CANOND"].focus {
+  background-image: url(../img/noteskin/ZERO-CANOND/thumbnail.gif);
+}
+
+.select-noteskin>button[value="ZERO-EASY"] {
+  background-image: url(../img/noteskin/ZERO-EASY/thumbnail.webp);
+}
+
+.select-noteskin>button[value="ZERO-EASY"].focus {
+  background-image: url(../img/noteskin/ZERO-EASY/thumbnail.gif);
+}
+
+.select-noteskin>button[value="ZERO-MUSICAL"] {
+  background-image: url(../img/noteskin/ZERO-MUSICAL/thumbnail.webp);
+}
+
+.select-noteskin>button[value="ZERO-MUSICAL"].focus {
+  background-image: url(../img/noteskin/ZERO-MUSICAL/thumbnail.gif);
+}
+
+.select-noteskin>button[value="ZERO-POKER"] {
+  background-image: url(../img/noteskin/ZERO-POKER/thumbnail.webp);
+}
+
+.select-noteskin>button[value="ZERO-POKER"].focus {
+  background-image: url(../img/noteskin/ZERO-POKER/thumbnail.gif);
+}
+
+.select-noteskin>button[value="ZERO-SLIME"] {
+  background-image: url(../img/noteskin/ZERO-SLIME/thumbnail.webp);
+}
+
+.select-noteskin>button[value="ZERO-SLIME"].focus {
+  background-image: url(../img/noteskin/ZERO-SLIME/thumbnail.gif);
+}

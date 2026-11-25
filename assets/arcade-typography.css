@@ -1,0 +1,100 @@
+/* Shared, restrained type scale for song selection and its confirmation. */
+#selector .songDetails .song-credits{grid-column:1/-1;display:flex;flex:0 1 auto;width:100%;max-width:100%;min-width:0;align-items:center;justify-content:center;gap:.4em;font-size:var(--arcade-label);line-height:1.3}
+#selector .songDetails .song-credits>span{position:static;display:block;width:auto;min-width:0;max-width:none;margin:0;transform:none;white-space:nowrap;font-size:inherit;line-height:inherit}
+#selector .songDetails .song-credits #a{flex:0 1 auto;overflow:hidden;text-overflow:ellipsis;text-align:right;color:#e5fa28}
+#selector .songDetails .song-credits .song-separator,#selector .songDetails .song-credits .song-bpm{flex:0 0 auto;color:#4ae4ed;overflow:visible}
+#selector .songDetails .song-credits #b{display:inline;max-width:none;font-size:inherit;color:inherit}
+#selector .songDetails .song-credits:has(#a:empty) .song-separator{display:none}
+body{--arcade-label:clamp(12px,1.65svh,16px);--arcade-small:clamp(11px,1.4svh,14px);--arcade-title:clamp(20px,3.1svh,30px);--arcade-number:clamp(22px,3svh,28px)}
+#confirmPlayModal .ps-profile strong{font-size:var(--arcade-label);line-height:1.2}
+#confirmPlayModal .ps-profile span{font-size:var(--arcade-small);line-height:1.2}
+#confirmPlayModal .ps-sp{font-size:clamp(18px,2.6svh,24px)}
+#confirmPlayModal .ps-corner span{font-size:var(--arcade-small)}
+#confirmPlayModal .ps-commands>div{width:clamp(52px,6.8svh,66px);min-height:46px;font-size:var(--arcade-small);line-height:1.15}
+#confirmPlayModal .ps-commands strong{font-size:var(--arcade-label)}
+#confirmPlayModal .ps-phase{font-size:var(--arcade-small);letter-spacing:.3px}
+#confirmPlayModal .ps-titlebar h1{font-size:var(--arcade-title);line-height:1.15}
+#confirmPlayModal .ps-titlebar p{font-size:var(--arcade-label);line-height:1.2}
+#confirmPlayModal .ps-record h2{font-size:var(--arcade-label);line-height:1.2}
+#confirmPlayModal .ps-record .ps-score{font-size:var(--arcade-number);line-height:1.15}
+#confirmPlayModal .ps-record-status{font-size:var(--arcade-small);line-height:1.2;min-height:1.2em}
+#confirmPlayModal .ps-empty{font-size:var(--arcade-small);line-height:1.4}
+#confirmPlayModal .ps-large-level span,#confirmPlayModal .ps-large-level.ps-half>span{font-size:var(--arcade-label);line-height:1.1}
+#confirmPlayModal .ps-large-level strong{font-size:clamp(28px,5svh,42px)}
+#confirmPlayModal .ps-focus:after{content:'NÍVEL SELECIONADO';font-size:var(--arcade-small);letter-spacing:0;white-space:normal;text-align:center;line-height:1.2}
+#confirmPlayModal .ps-confirm{font-size:var(--arcade-label)}
+#confirmPlayModal .ps-confirm .ps-keyboard{font-size:var(--arcade-small)}
+#confirmPlayModal .ps-footer-center small{font-size:var(--arcade-small);line-height:1.2;letter-spacing:0;white-space:normal;text-align:center}
+@media(min-width:1024px) and (orientation:landscape){
+ body.desktop-song-select #selector .songDetails #t{font-size:var(--arcade-title)}
+ body.desktop-song-select #selector .songDetails>span{font-size:var(--arcade-label)}
+ body.desktop-song-select #online-song .song-card-caption{font-size:var(--arcade-small)}
+ body:is(.desktop-song-select,.desktop-channel-select) #playerLog .nameUser{font-size:var(--arcade-label)}
+ body:is(.desktop-song-select,.desktop-channel-select) #playerLog :is(.levelUser,.exp-text){font-size:var(--arcade-small)}
+ body:is(.desktop-song-select,.desktop-channel-select) :is(#desktop-channel,#desktop-footer){font-size:var(--arcade-label)}
+ #desktop-options button{font-size:var(--arcade-label);line-height:1.15}
+ #desktop-options small{font-size:var(--arcade-small)}
+ #confirmPlayModal .ps-screen{grid-template-rows:var(--head) minmax(60px,1fr) var(--title) var(--levels) var(--records) 76px}
+}
+@media(max-width:1023px),(orientation:portrait){
+ body{--arcade-label:12px;--arcade-small:11px;--arcade-title:17px;--arcade-number:20px}
+ body.arcade-mobile #playerLog :is(.nameUser,.levelUser){font-size:11px}
+ body.arcade-mobile :is(#desktop-channel,#desktop-footer){font-size:10px}
+ body.arcade-mobile #online-song .song-card-caption{font-size:10px}
+ body.arcade-mobile #selector .songDetails #t{font-size:var(--arcade-title);line-height:1.2}
+ body.arcade-mobile.desktop-song-select #selector .songDetails{font-size:var(--arcade-label);height:48px;flex-direction:column;flex-wrap:nowrap}
+ body.arcade-mobile :is(#desktop-channels-right span,#desktop-return span,#btnAllChannels:after){font-size:9px}
+ body.arcade-mobile #desktop-options button{font-size:12px}
+ #confirmPlayModal .ps-corner span{font-size:10px}
+ #confirmPlayModal .ps-phase{font-size:10px;max-width:200px}
+ #confirmPlayModal .ps-orb{font-size:20px}
+}
+@media(orientation:portrait){
+ #confirmPlayModal .ps-profile{gap:4px}
+ #confirmPlayModal .ps-profile strong{font-size:11px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+ #confirmPlayModal .ps-profile span{font-size:10px;white-space:nowrap}
+ #confirmPlayModal .ps-sp{font-size:18px}
+ #confirmPlayModal .ps-commands>div{width:48px;min-height:40px}
+ #confirmPlayModal .ps-record{height:148px}
+ #confirmPlayModal .ps-record h2{font-size:11px;margin-bottom:5px}
+ #confirmPlayModal .ps-record .ps-score{font-size:19px}
+ #confirmPlayModal .ps-record-status{font-size:10px}
+ #confirmPlayModal .ps-large-level span,#confirmPlayModal .ps-large-level.ps-half>span{font-size:10px}
+ #confirmPlayModal .ps-large-level strong{font-size:32px}
+ #confirmPlayModal .ps-footer{flex-basis:104px;min-height:104px}
+ #confirmPlayModal .ps-footer-center small{font-size:10px}
+ #confirmPlayModal .ps-titlebar h1{font-size:17px}
+ #confirmPlayModal .ps-titlebar p{font-size:12px}
+}
+@media(max-width:350px) and (orientation:portrait){
+ #confirmPlayModal .ps-record h2{font-size:10px}
+ #confirmPlayModal .ps-record .ps-score{font-size:18px}
+}
+@media(max-height:450px) and (orientation:landscape){
+ #confirmPlayModal .ps-record.ps-last{padding-right:10px}
+ #confirmPlayModal .ps-focus{left:40%;width:20%;justify-content:flex-end;padding-bottom:4px}
+ #confirmPlayModal .ps-center-prompt{left:50%;transform:translateX(-50%);top:-12px}
+ #confirmPlayModal .ps-focus:after{display:none}
+ #confirmPlayModal .ps-commands{grid-template-columns:48px 48px;width:99px}
+ #confirmPlayModal .ps-commands>div{width:48px;min-height:34px;height:34px;font-size:10px}
+ #confirmPlayModal .ps-commands>div strong{font-size:12px}
+ #confirmPlayModal .ps-record h2{font-size:10px;margin-bottom:2px}
+ #confirmPlayModal .ps-record .ps-score{font-size:16px;padding-block:1px}
+ #confirmPlayModal .ps-record-data{gap:2px}
+ #confirmPlayModal .ps-record-status{font-size:10px}
+ #confirmPlayModal .ps-achievements{height:22px}
+ #confirmPlayModal .ps-focus:after{font-size:10px}
+ #confirmPlayModal .ps-large-level span,#confirmPlayModal .ps-large-level.ps-half>span{font-size:10px}
+ #confirmPlayModal .ps-empty{font-size:10px;min-height:34px;margin:4px 0}
+ #confirmPlayModal .ps-phase{font-size:10px;max-width:none;white-space:nowrap}
+ #confirmPlayModal .ps-titlebar h1{font-size:16px}
+ #confirmPlayModal .ps-titlebar p{font-size:12px}
+ #confirmPlayModal .ps-footer-center small{font-size:10px}
+}
+@media(max-height:360px) and (orientation:landscape){
+ #confirmPlayModal{--levels:54px;--records:96px}
+ #confirmPlayModal .ps-screen{grid-template-rows:44px minmax(20px,1fr) 44px var(--levels) var(--records) 58px}
+ #confirmPlayModal .ps-record{padding-block:3px}
+ #confirmPlayModal .ps-confirm{font-size:11px}
+ #confirmPlayModal .ps-footer-center{gap:1px}
+}

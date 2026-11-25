@@ -1,0 +1,337 @@
+
+<!DOCTYPE html>
+<html lang="pt-BR" class="stage-loading" style="background:#000">
+
+<head>
+  <meta charset="UTF-8">
+  <title>[Pump It Up Web Edition] - GamePlay v</title>
+  <link rel="stylesheet" href="assets/game-pause.css">
+  <style>
+    html.stage-loading::after{content:'';position:fixed;inset:0;z-index:100000;background:#000;pointer-events:auto}
+    html {
+      overflow: hidden;
+      overscroll-behavior: none;
+    }
+
+    .sortable-handler {
+      height: 100%;
+      touch-action: none;
+    }
+
+    body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background: #000;
+      overscroll-behavior: none;
+    }
+  </style>
+
+
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" type="image/png" href="favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/piuweb180.png">
+
+  <script src="assets/js/jquery-3.6.0.min.js"></script>
+
+
+
+  <script src="piured-engine/lib/three.js"></script>
+
+
+  <script src="piured-engine/js/Utils/FileReader.js"></script>
+  <script src="piured-engine/js/Structs/HoldsState.js"></script>
+  <script src="piured-engine/js/Structs/Holds.js"></script>
+  <script src="piured-engine/lib/Coordinates.js"></script>
+  <script src="piured-engine/lib/stats.min.js"></script>
+  <script src="piured-engine/js/pegjs-ssc-parser/parser/SSCParserClient.js"></script>
+  <script src="piured-engine/js/Song/Song.js"></script>
+  <script src="piured-engine/js/Song/NoteData.js"></script>
+  <script src="piured-engine/js/Engine.js"></script>
+  <script src="piured-engine/lib/tween.min.js"></script>
+
+
+  <script src="piured-engine/js/Resources/Geometries/BackgroundGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/ComboGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/DigitGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/JudgmentGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/ReceptorGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/StepGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/HoldGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/LifeBarGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/DLifeBarGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/TipGeometry.js"></script>
+  <script src="piured-engine/js/Resources/Geometries/PulseGeometry.js"></script>
+
+
+  <script src="piured-engine/js/Resources/Materials/TransparentMaterial.js"></script>
+  <script src="piured-engine/js/Resources/Materials/AdditiveMaterial.js"></script>
+
+
+  <script src="piured-engine/js/Resources/Shaders/BackgroundMaterial.js"></script>
+  <script src="piured-engine/js/Resources/Shaders/ReceptorMaterial.js"></script>
+
+
+  <script src="piured-engine/js/Resources/Textures/PNGTexture.js"></script>
+
+
+  <script src="piured-engine/js/Resources/ResourceManager.js"></script>
+
+  <script src="piured-engine/js/GameObjects/GameObject.js"></script>
+
+  <script src="piured-engine/js/GameObjects/Sequence/StepQueue.js"></script>
+  <script src="piured-engine/js/GameObjects/Sequence/IStepQueue.js"></script>
+  <script src="piured-engine/js/GameObjects/Sequence/StepInfo.js"></script>
+
+  <script src="piured-engine/js/GameObjects/Input/Pad.js"></script>
+  <script src="piured-engine/js/GameObjects/Input/KeyInput.js"></script>
+  <script src="piured-engine/js/GameObjects/Input/TouchPad.js"></script>
+  <script src="piured-engine/js/GameObjects/Input/TouchTile.js"></script>
+  <script src="piured-engine/js/GameObjects/Input/TouchInput.js"></script>
+  <script src="piured-engine/js/GameObjects/Input/IInput.js"></script>
+  <script src="piured-engine/js/GameObjects/Input/IPad.js"></script>
+
+
+  <script src="piured-engine/js/GameObjects/AnimatedTextures/HoldExtensibleTexture.js"></script>
+  <script src="piured-engine/js/GameObjects/AnimatedTextures/StepNoteTexture.js"></script>
+
+
+  <script src="piured-engine/js/GameObjects/Judgment/Banner.js"></script>
+  <script src="piured-engine/js/GameObjects/Judgment/Combo.js"></script>
+  <script src="piured-engine/js/GameObjects/Judgment/Digit.js"></script>
+  <script src="piured-engine/js/GameObjects/Judgment/Digits.js"></script>
+  <script src="piured-engine/js/GameObjects/Judgment/Judgment.js"></script>
+  <script src="piured-engine/js/GameObjects/Judgment/JudgmentScale.js"></script>
+
+
+
+  <script src="piured-engine/js/GameObjects/StepNotes/Hold.js"></script>
+  <script src="piured-engine/js/GameObjects/StepNotes/StepHold.js"></script>
+  <script src="piured-engine/js/GameObjects/StepNotes/StepNote.js"></script>
+
+  <script src="piured-engine/js/GameObjects/FX/StepBounce.js"></script>
+  <script src="piured-engine/js/GameObjects/FX/Explosion.js"></script>
+  <script src="piured-engine/js/GameObjects/FX/Tap.js"></script>
+  <script src="piured-engine/js/GameObjects/FX/WhiteTap.js"></script>
+
+
+  <script src="piured-engine/js/GameObjects/BeatManager/BeatManager.js"></script>
+  <script src="piured-engine/js/GameObjects/Stage/Receptor.js"></script>
+
+  <script src="piured-engine/js/GameObjects/LifeBar/LFBack.js"></script>
+  <script src="piured-engine/js/GameObjects/LifeBar/LFBarFX.js"></script>
+  <script src="piured-engine/js/GameObjects/LifeBar/LFBarFXRed.js"></script>
+  <script src="piured-engine/js/GameObjects/LifeBar/LFBar.js"></script>
+  <script src="piured-engine/js/GameObjects/LifeBar/LFPulse.js"></script>
+  <script src="piured-engine/js/GameObjects/LifeBar/LFFront.js"></script>
+  <script src="piured-engine/js/GameObjects/LifeBar/LFTip.js"></script>
+  <script src="piured-engine/js/GameObjects/LifeBar/LifeBar.js"></script>
+
+  <script src="piured-engine/js/GameObjects/Stage/Background.js"></script>
+  <script src="piured-engine/js/GameObjects/Stage/PlayerStage.js"></script>
+  <script src="piured-engine/js/GameObjects/Stage/Stage.js"></script>
+  <script src="piured-engine/js/GameObjects/Stage/Steps.js"></script>
+
+  <script src="piured-engine/js/GameObjects/BeatManager/Curve.js"></script>
+  <script src="piured-engine/js/GameObjects/BeatManager/Interval.js"></script>
+  <script src="piured-engine/js/GameObjects/BeatManager/Point.js"></script>
+  <script src="piured-engine/js/GameObjects/BeatManager/Second2Beat.js"></script>
+  <script src="piured-engine/js/GameObjects/BeatManager/Second2Displacement.js"></script>
+  <script src="piured-engine/js/GameObjects/BeatManager/SongTime2Second.js"></script>
+  <script src="piured-engine/js/GameObjects/BeatManager/Beat2Speed.js"></script>
+
+  <script src="piured-engine/js/Config/TouchInputConfig.js"></script>
+  <script src="piured-engine/js/Config/KeyInputConfig.js"></script>
+  <script src="piured-engine/js/Config/PlayerConfig.js"></script>
+  <script src="piured-engine/js/Config/RemoteInput.js"></script>
+  <script src="piured-engine/js/Config/StageConfig.js"></script>
+
+
+  <script src="piured-engine/js/GameObjects/Sequence/SeqLog/Id.js"></script>
+  <script src="piured-engine/js/GameObjects/Sequence/SeqLog/FrameLog.js"></script>
+
+  <script src="Demo/BrowserInput.js"></script>
+
+  <link href="assets/css/localStageStyle.css" rel="stylesheet">
+  <link href="assets/gameplay-layout.css" rel="stylesheet">
+  <link href="assets/touch-editor.css" rel="stylesheet">
+  <script src="Demo/LocalStage/GameplayLayout.js"></script>
+  <script src="assets/js/control-mode.js"></script>
+  <script src="assets/js/active-modifiers.js"></script>
+
+
+
+
+</head>
+
+<body onclick="verifyFullscreen()">
+  <div class="options-block-r naoSelecionavel">
+    <p class="naoSelecionavel">
+      <img id="playNoteSkin" class="playNoteSkin" src="assets\img\noteskin\DEFAULT\thumbnail.png">
+    </p>
+    <p id="playSpeed" class="playSpeed naoSelecionavel">
+      ---
+    </p>
+    <p id="playDisplay" class="playDisplay naoSelecionavel">
+      ---
+    </p>
+    <p id="playControlMode"></p>
+    <p id="playRush" class="playRush naoSelecionavel">
+      ---
+    </p>
+  </div>
+
+  <div class="options-block-l naoSelecionavel">
+    <p id="playCount" class="playCount naoSelecionavel">
+      ---
+    </p>
+  </div>
+
+  <div class="bgadark hide"></div>
+  <div class="container">
+    <div id="container" class="sortable-handler">
+    </div>
+  </div>
+
+  <p class="assign_play">PIUWeb</p>
+
+  <script src="assets/js/local-records.js"></script>
+  <script src="assets/js/touch-layout-settings.js"></script>
+  <script src="assets/js/touch-editor.js"></script>
+  <p id="game-status" role="status" style="position:fixed;bottom:12px;left:12px;color:white;z-index:100"></p>
+  <button type="button" id="game-pause-button" aria-label="Pausar música" aria-haspopup="dialog">Ⅱ <span>PAUSAR</span></button>
+  <dialog id="game-pause" aria-labelledby="game-pause-title" aria-describedby="game-pause-description">
+    <h1 id="game-pause-title">PAUSA</h1>
+    <p id="game-pause-description">Continuar a partida ou abandonar a música?</p>
+    <p class="pause-note">Ao abandonar, esta partida não salva pontuação, recorde ou histórico.</p>
+    <div class="pause-actions"><button type="button" id="game-resume" autofocus>CONTINUAR</button><button type="button" id="game-touch-edit" hidden>AJUSTAR TOUCHPAD</button><button type="button" id="game-abandon">ABANDONAR MÚSICA</button></div>
+    <p id="game-pause-error" role="alert" hidden></p>
+  </dialog>
+  <dialog id="game-abandon-confirm" aria-labelledby="game-abandon-title" aria-describedby="game-abandon-description">
+    <h1 id="game-abandon-title">Abandonar música?</h1>
+    <p id="game-abandon-description">Esta partida não salvará pontuação, recorde ou histórico. Você voltará à seleção de músicas.</p>
+    <div class="pause-actions"><button type="button" id="game-abandon-cancel" autofocus>Cancelar</button><button type="button" id="game-abandon-confirm-button">Sim, abandonar</button></div>
+  </dialog>
+  <script src="Demo/LocalStage/RunLocalStage.js"></script>
+  <script>
+
+    var playNoteSkin = document.getElementById("playNoteSkin");
+    var playSpeed = document.getElementById("playSpeed");
+    var playDisplay = document.getElementById("playDisplay");
+    var playRush = document.getElementById("playRush");
+    var playCount = document.getElementById("playCount");
+
+    playCurrentStats();
+
+    function playCurrentStats() {
+      let imgPath = 'assets/img/noteskin/';
+      let noteskin = config?.noteskin || localStorage.getItem("last_noteskin");
+      let speed = config?.speed || localStorage.getItem("last_speed");
+      let bga = config?.bga || localStorage.getItem("last_bga");
+      let rush = String(config?.playback ?? localStorage.getItem("last_playback"));
+      playDisplay.hidden = !['off','dark'].includes(bga);
+      playRush.hidden = !Number.isFinite(Number(rush)) || Number(rush) === 1 || Number(rush) <= 0;
+      let count = localStorage.getItem("last_playCount");
+      playNoteSkin.src = imgPath + noteskin + "/thumbnail.gif";
+      playSpeed.textContent = config?.scrollMode === 'auto' ? 'AV ' + config.autoVelocity : speed + 'X';
+      count = Number(count) + 1;
+      console.log(count);
+      if (count === null) {
+        playCount.innerHTML = '---';
+      } else {
+        const n = parseInt(count, 10);
+        playCount.innerHTML = isNaN(n) ? count : (n < 10 ? '0' + n : n);
+      }
+
+      switch (bga) {
+        case 'on':
+          playDisplay.innerHTML = 'BGA ON';
+          break;
+
+        case 'off':
+          playDisplay.innerHTML = 'BGA OFF';
+          break;
+
+        case 'dark':
+          playDisplay.innerHTML = 'BGA DARK';
+          break;
+
+        default:
+          playDisplay.innerHTML = '---';
+          break;
+      }
+
+      switch (rush) {
+        case '0.8':
+          playRush.innerHTML = 'RUSH<br>80%';
+          break;
+
+        case '0.9':
+          playRush.innerHTML = 'RUSH<br>90%';
+          break;
+
+        case '1':
+          playRush.innerHTML = 'RUSH<br>100%';
+          break;
+
+        case '1.1':
+          playRush.innerHTML = 'RUSH<br>110%';
+          break;
+
+        case '1.2':
+          playRush.innerHTML = 'RUSH<br>120%';
+          break;
+
+        case '1.3':
+          playRush.innerHTML = 'RUSH<br>130%';
+          break;
+
+        case '1.4':
+          playRush.innerHTML = 'RUSH<br>140%';
+          break;
+
+        case '1.5':
+          playRush.innerHTML = 'RUSH<br>150%';
+          break;
+
+        default:
+          playDisplay.innerHTML = '---';
+          break;
+      }
+    }
+
+    function verifyFullscreen() {
+      if (touchPreview) return;
+      if (localStorage.getItem("fullscreen") === "false") {
+        if (document.cancelFullScreen) {
+          document.cancelFullScreen();
+        } else if (document.mozCancelFullScreen) {
+          document.mozCancelFullScreen();
+        } else if (document.webkitCancelFullScreen) {
+          document.webkitCancelFullScreen();
+        }
+      } else {
+        if (localStorage.getItem("fullscreen") === "true" || localStorage.getItem("fullscreen") === null) {
+          if ((document.fullScreenElement && document.fullScreenElement !== null) || (!document.mozFullScreen && !document.webkitIsFullScreen)) {
+            if (document.documentElement.requestFullScreen) {
+              document.documentElement.requestFullScreen();
+            } else if (document.documentElement.mozRequestFullScreen) {
+              document.documentElement.mozRequestFullScreen();
+            } else if (document.documentElement.webkitRequestFullScreen) {
+              document.documentElement.webkitRequestFullScreen(Element.ALLOW_KEYBOARD_INPUT);
+            }
+          }
+        }
+      }
+    }
+
+  </script>
+</body>
+
+</html>

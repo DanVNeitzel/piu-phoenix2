@@ -1,0 +1,6 @@
+/* Selected cover behind the existing Phoenix rails, on desktop and mobile. */
+.selection-song-background{display:none}
+body.interface-video .bg-video:not(.hide){position:fixed;inset:0;width:100vw;height:100svh;object-fit:cover;transform:none;pointer-events:none;filter:brightness(.58) saturate(.85)}
+body.desktop-song-select.has-song-background .bg-static{background:#02090a!important;animation:none!important;filter:none!important;pointer-events:none}
+body.desktop-song-select.has-song-background .selection-song-background:not([hidden]){display:block;position:absolute;inset:0;width:100%;height:100%;object-fit:cover;object-position:center;opacity:.72}
+body.desktop-song-select.has-song-background .bg-static:after{content:'';position:absolute;inset:0;background:linear-gradient(#02090a45,#02090a18 45%,#02090a80),url('selection-stage-overlay.svg') center/100% 100% no-repeat;pointer-events:none}

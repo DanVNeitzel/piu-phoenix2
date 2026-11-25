@@ -1,0 +1,55 @@
+/*
+ * # Copyright (C) Pedro G. Bascoy
+ # This file is part of piured-engine <https://github.com/piulin/piured-engine>.
+ #
+ # piured-engine is free software: you can redistribute it and/or modify
+ # it under the terms of the GNU General Public License as published by
+ # the Free Software Foundation, either version 3 of the License, or
+ # (at your option) any later version.
+ #
+ # piured-engine is distributed in the hope that it will be useful,
+ # but WITHOUT ANY WARRANTY; without even the implied warranty of
+ # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ # GNU General Public License for more details.
+ #
+ # You should have received a copy of the GNU General Public License
+ # along with piured-engine.If not, see <http://www.gnu.org/licenses/>.
+ *
+ */
+"use strict"; // good practice - see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Strict_mode
+
+
+class AdditiveMaterial  {
+
+
+    _material ;
+
+    constructor(map, blackBackground = false) {
+
+
+
+        this._material = new THREE.MeshBasicMaterial( { map: map, transparent: true } );
+
+        this._material.alphaTest = 0.1;
+
+        this._material.blending = THREE.AdditiveBlending ;
+        this._material.depthWrite = false ;
+
+        if (blackBackground) {
+            // Opaque black FX atlases must not add alpha to the transparent canvas.
+            this._material.alphaTest = 0.001;
+            this._material.onBeforeCompile = shader => {
+                shader.fragmentShader = shader.fragmentShader.replace('#include <map_fragment>',
+                    '#include <map_fragment>\n' +
+                    'diffuseColor.a *= clamp(max(diffuseColor.r, max(diffuseColor.g, diffuseColor.b)), 0.0, 1.0);');
+            };
+            this._material.customProgramCacheKey = () => 'additive-black-background-alpha';
+        }
+
+    }
+
+
+    get material() {
+        return this._material;
+    }
+}

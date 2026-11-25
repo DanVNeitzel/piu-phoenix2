@@ -1,0 +1,54 @@
+{
+  "version": "0.7.1",
+  "date": "2026-05-22",
+  "updates": [
+    {
+      "category": "🐛 Bug Fixes",
+      "items": [
+        "All Perfect score now displays exactly 1000000 points",
+        "Max Combo fixed on songs with holds",
+        "Perfect count now 100% accurate",
+        "Automatic cache busting system implemented"
+      ]
+    },
+    {
+      "category": "⚡ Progression Balancing",
+      "items": [
+        "More challenging level progression",
+        "XP required to level up significantly increased",
+        "XP gain per song reduced for balanced progression",
+        "Master level now requires much more dedication"
+      ]
+    },
+    {
+      "category": "🎨 Visual Improvements",
+      "items": [
+        "Song levels below 10 now display with leading zero (01, 02...)",
+        "Record scores displayed without dot separators",
+        "Optimized records interface",
+        "Guest mode limitations warning added"
+      ]
+    },
+    {
+      "category": "🎮 Multiplayer System",
+      "items": [
+        "Online battle rooms available",
+        "Challenge system implemented",
+        "Real-time synchronization between players",
+        "Global ranking and personal records"
+      ]
+    },
+    {
+      "category": "🔒 Security",
+      "items": [
+        "Improved authentication system",
+        "Enhanced sensitive data protection",
+        "Player information encryption"
+      ]
+    }
+  ],
+  "notes": [
+    "Version in continuous development",
+    "Report bugs or suggestions to the developer"
+  ]
+}

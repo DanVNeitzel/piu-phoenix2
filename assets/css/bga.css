@@ -1,0 +1,50 @@
+/* ------------------------------------------------------- */
+/* 
+
+CONFIG BGA 
+
+*/
+/* ------------------------------------------------------- */
+
+.select-bga {
+  width: 75vw;
+  display: inline-flex!important;
+  border: 0!important;
+  height: 85px;
+  overflow-x: scroll!important;
+  overflow-y: hidden;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  align-items: center;
+}
+
+.select-bga > button {
+  height: 60px;
+  width: 60px;
+  max-width: 100px;
+  display: inline-flex;
+  margin: 0 10px 0 0;
+  padding: 0px 35px;
+  border-radius: 15px;
+  border: 4px solid #636363;
+  background-color: #000;
+  font-size: 18px;
+  line-height: 16px;
+  color: #636363;
+  text-transform: uppercase;
+  font-weight: 900;
+  align-items: center;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+}
+
+.select-bga > button.focus {
+  border: 4px solid #77af03;
+  background-color: #000;
+  color: #fff;
+  box-shadow: inset 0 0 20px #77af03;
+  transition: all .3s ease;
+}

@@ -1,0 +1,17 @@
+/* The arrow artwork identifies navigation; buttons retain accessible labels. */
+body :is(#desktop-return,#desktop-channels-right)>span,
+body #confirmPlayModal .ps-corner>span{
+ display:none;
+}
+body #btnAllChannels::after{
+ content:none;
+ display:none;
+}
+@media(max-height:450px) and (orientation:landscape){
+ #confirmPlayModal .ps-commands{top:26px}
+ #confirmPlayModal .ps-phase{top:26px}
+}
+@media(max-height:360px) and (orientation:landscape){
+ body.arcade-mobile #desktop-options{top:66px}
+ #confirmPlayModal .ps-phase{display:none}
+}

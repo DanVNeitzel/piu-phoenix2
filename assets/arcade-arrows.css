@@ -1,0 +1,24 @@
+/* Phoenix 2 arrows occupy only 79px of their 120px transparent canvas. */
+img[src^="assets/img/phx2/arrow_"]{
+ scale:1.45;
+ transform-origin:center;
+ pointer-events:none;
+}
+/* The BACK/SHIFT artwork has less transparent padding than the original arrows. */
+img[src^="assets/img/phx2/arrow_"][src*="_shift_"]{
+ scale:1.35;
+}
+
+/* Match the song selector instead of capping level-selection arrows at 64/76px. */
+@media(min-width:1024px) and (orientation:landscape){
+ #confirmPlayModal{--ps-back-size:min(7.8vw,12svh);--ps-shift-size:min(8vw,12svh)}
+ #confirmPlayModal .ps-corner{width:var(--ps-back-size);height:var(--ps-back-size)}
+ #confirmPlayModal .ps-blue{width:var(--ps-shift-size);height:var(--ps-shift-size)}
+ #confirmPlayModal .ps-topbar{
+  padding-left:calc(var(--safe-l) + max(var(--head),var(--ps-back-size)) + 5px);
+  padding-right:calc(var(--safe-r) + max(var(--head),var(--ps-back-size)) + 5px);
+ }
+}
+@media(max-width:1023px),(orientation:portrait){
+ body.arcade-mobile #confirmPlayModal :is(.ps-corner,.ps-blue){width:var(--arrow);height:var(--arrow)}
+}

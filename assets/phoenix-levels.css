@@ -1,0 +1,41 @@
+/* Keep the raster rim inside the button and smooth only the artwork, not text. */
+.circle-single,
+#confirmPlayModal .ps-orb:not(.ps-coop),
+.player-panel .ph-orb,
+.preview-orb.single{
+ --phoenix-orb:url('img/phx2/Circle_Single_Diff_Eval.png');
+ --phoenix-orb-size:124%;
+}
+.circle-double,
+#confirmPlayModal .ps-orb.ps-double,
+.player-panel .ph-orb.ph-double,
+.preview-orb.double{
+ --phoenix-orb:url('img/phx2/Circle_Double_Diff_Eval.png');
+ --phoenix-orb-size:132%;
+}
+
+:is(.circle-single,.circle-double),
+#confirmPlayModal .ps-orb:not(.ps-coop),
+.player-panel .ph-orb,
+.preview-orb{
+ isolation:isolate;
+ background-image:none!important;
+}
+
+.player-panel .ph-orb,
+.preview-orb{position:relative}
+
+/* ::before is already used for the 1P marker on the selected difficulty. */
+:is(.circle-single,.circle-double)::after,
+#confirmPlayModal .ps-orb:not(.ps-coop)::after,
+.player-panel .ph-orb::after,
+.preview-orb::after{
+ content:'';
+ position:absolute;
+ inset:0;
+ z-index:-1;
+ pointer-events:none;
+ background:var(--phoenix-orb) center/var(--phoenix-orb-size) var(--phoenix-orb-size) no-repeat;
+ image-rendering:auto;
+ filter:blur(.3px);
+}

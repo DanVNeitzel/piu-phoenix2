@@ -1,0 +1,55 @@
+/* Size the note field in screen pixels; leave touchpad geometry to TouchInput. */
+(function(root){
+  'use strict';
+  function screenBox(object,engine){
+    const box=new THREE.Box3().setFromObject(object),points=[];
+    for(const x of [box.min.x,box.max.x])for(const y of [box.min.y,box.max.y])for(const z of [box.min.z,box.max.z]){
+      const p=new THREE.Vector3(x,y,z).project(engine.camera);points.push({x:(p.x+1)*innerWidth/2,y:(1-p.y)*innerHeight/2});
+    }
+    return{left:Math.min(...points.map(p=>p.x)),right:Math.max(...points.map(p=>p.x)),top:Math.min(...points.map(p=>p.y)),bottom:Math.max(...points.map(p=>p.y))};
+  }
+  function union(boxes){return{left:Math.min(...boxes.map(b=>b.left)),right:Math.max(...boxes.map(b=>b.right)),top:Math.min(...boxes.map(b=>b.top)),bottom:Math.max(...boxes.map(b=>b.bottom))};}
+  function apply(engine){
+    const stage=engine.stage?._playerStages[0];if(!stage?._lifeBar || !stage.padReceptors['0'])return;
+    const object=stage._object,life=stage._lifeBar.object,w=innerWidth,h=innerHeight,landscape=w>h;
+    const preferences=stage.keyListener.layoutPreferences?.[landscape?'landscape':'portrait'] || {};
+    engine.scene.updateMatrixWorld(true);engine.camera.updateMatrixWorld(true);
+    const receptors=()=>union(Object.values(stage.padReceptors).map(r=>screenBox(r._receptor,engine)));
+    let gap=w-32;
+    if(landscape){const pads=stage.keyListener.getVisiblePads();if(pads.length===2)gap=screenBox(pads[1].object,engine).left-screenBox(pads[0].object,engine).right-20;}
+    const baseTarget=landscape?Math.min(Math.max(120,gap),h*.95,480):Math.min(w*.86,420);
+    // Custom widths use the entire viewport, including the area behind the pads.
+    const target=preferences.fieldWidth==null?baseTarget:w*preferences.fieldWidth;
+    const current=receptors(),ratio=target/(current.right-current.left);
+    object.scale.x*=ratio;object.scale.y*=ratio;
+    if(!stage.lifeLayoutBase)stage.lifeLayoutBase={y:life.position.y,scaleX:life.scale.x,scaleY:life.scale.y};
+    life.position.y=stage.lifeLayoutBase.y;life.scale.x=stage.lifeLayoutBase.scaleX;life.scale.y=stage.lifeLayoutBase.scaleY*baseTarget/target;
+    engine.scene.updateMatrixWorld(true);
+    const initialBar=screenBox(life,engine),barWidth=initialBar.right-initialBar.left;
+    const requestedWidth=preferences.lifeWidth==null?barWidth*baseTarget/target:w*preferences.lifeWidth;
+    life.scale.x*=requestedWidth/barWidth;
+    engine.scene.updateMatrixWorld(true);
+    const minimumHeight=landscape?14:18,bar=screenBox(life,engine);
+    if(bar.bottom-bar.top<minimumHeight)life.scale.y*=minimumHeight/(bar.bottom-bar.top);
+    life.scale.y*=preferences.lifeHeight || 1;
+    engine.scene.updateMatrixWorld(true);
+    const worldPoint=(x,y,z)=>{const direction=new THREE.Vector3(x/w*2-1,1-y/h*2,.5).unproject(engine.camera).sub(engine.camera.position);return engine.camera.position.clone().addScaledVector(direction,(z-engine.camera.position.z)/direction.z);};
+    const move=(node,dx,dy)=>{
+      const position=node.getWorldPosition(new THREE.Vector3()),a=worldPoint(w/2,h/2,position.z),b=worldPoint(w/2+dx,h/2+dy,position.z);
+      const delta=node.parent.worldToLocal(b).sub(node.parent.worldToLocal(a));node.position.add(delta);engine.scene.updateMatrixWorld(true);
+    };
+    const separation=receptors().top-screenBox(life,engine).bottom;
+    if(separation<8)move(life,0,separation-8);
+    const hud=[...document.querySelectorAll('.options-block-l,.options-block-r,#game-pause-button')].map(e=>e.getBoundingClientRect());
+    const hudBottom=Math.max(...hud.map(r=>r.bottom));
+    const finalBar=screenBox(life,engine),field=receptors();
+    const shift=preferences.fieldY || 0;
+    const dx=w/2-(field.left+field.right)/2;
+    let top=Math.max(4,Math.min(h*.5,hudBottom+12+shift*h));
+    // Keep the full bar/receptor row clear of HUD items that share its columns.
+    const left=Math.min(finalBar.left,field.left)+dx,right=Math.max(finalBar.right,field.right)+dx;
+    for(const box of hud)if(left<box.right&&right>box.left&&top<box.bottom+8)top=box.bottom+8;
+    move(object,dx,top-finalBar.top);
+  }
+  root.PiuGameplayLayout={apply,bounds:screenBox};
+})(globalThis);

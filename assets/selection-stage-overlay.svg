@@ -1,0 +1,22 @@
+﻿<svg xmlns="http://www.w3.org/2000/svg" width="1600" height="900" viewBox="0 0 1600 900" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="wall" x2="0" y2="1"><stop stop-color="#051017"/><stop offset=".6" stop-color="#124457"/><stop offset="1" stop-color="#030a10"/></linearGradient>
+    <radialGradient id="light"><stop stop-color="#26b8cb" stop-opacity=".44"/><stop offset="1" stop-color="#02111c" stop-opacity="0"/></radialGradient>
+    <linearGradient id="rail" x2="0" y2="1"><stop stop-color="#caff7d"/><stop offset=".35" stop-color="#56ff08"/><stop offset="1" stop-color="#114911" stop-opacity="0"/></linearGradient>
+    <pattern id="grid" width="88" height="48" patternUnits="userSpaceOnUse"><path d="M0 0H88V48" fill="none" stroke="#4ba1aa" stroke-opacity=".16"/><path d="M10 7H22V17H10ZM10 24H22V30H10ZM54 37H63V43H54Z" fill="#32d8ef" opacity=".22"/></pattern>
+    <pattern id="data" width="233" height="142" patternUnits="userSpaceOnUse"><path d="M20 15h9v12h-9zm0 19h9v8h-9zm0 18h9v15h-9zm110 17h8v17h-8zm0 27h8v7h-8zm64-88h6v10h-6z" fill="#29e3e8" opacity=".38"/></pattern>
+    <filter id="glow" x="-50%" y="-100%" width="200%" height="300%"><feGaussianBlur stdDeviation="8"/></filter>
+  </defs>
+  
+  <ellipse cx="800" cy="355" rx="940" ry="410" fill="url(#light)"/>
+  <path d="M0 48Q800 190 1600 48V580Q800 440 0 580Z" fill="url(#grid)"/>
+  <path d="M0 48Q800 190 1600 48V580Q800 440 0 580Z" fill="url(#data)"/>
+  <g fill="none" stroke="#7beaff" opacity=".1"><path d="M150 85Q200 290 90 550M390 110Q430 290 355 510M650 132Q670 300 640 495M950 132Q930 300 960 495M1210 110Q1170 290 1245 510M1450 85Q1400 290 1510 550" stroke-width="17"/></g>
+  <g fill="#d5f7ce" opacity=".75"><circle cx="260" cy="204" r="1.5"/><circle cx="970" cy="220" r="1"/><circle cx="1240" cy="306" r="2"/><circle cx="560" cy="450" r="1.5"/><circle cx="791" cy="180" r="1"/><circle cx="1100" cy="410" r="1"/><circle cx="401" cy="303" r="2"/></g>
+  <g fill="none" stroke="#5aff0a" filter="url(#glow)"><path d="M-20 8Q800 190 1620 8" stroke-width="24"/><path d="M-20 510Q800 666 1620 510" stroke-width="24"/><path d="M-20 810Q800 752 1620 810" stroke-width="18"/></g>
+  <path d="M-20 8Q800 190 1620 8" fill="none" stroke="#c2ff8d" stroke-width="4"/>
+  <path d="M-20 510Q800 666 1620 510" fill="none" stroke="url(#rail)" stroke-width="15"/>
+  <path d="M-20 810Q800 752 1620 810" fill="none" stroke="#6cfa18" stroke-width="3"/>
+  <path d="M0 820Q800 770 1600 820V900H0Z" fill="#02090a" opacity=".8"/>
+</svg>
+

@@ -1,0 +1,42 @@
+/* Phoenix channel wheel, shared by landscape and portrait layouts. */
+body.desktop-channel-select #selector .blockSelectChannel{position:fixed;inset:0;width:100%;height:100svh;margin:0;padding:0;border:0;background:transparent;overflow:hidden}
+body.desktop-channel-select #selector .blockSelectChannel>.card-body{height:100%;padding:0}
+body.desktop-channel-select #selector .blockSelectChannel .card-title{display:block!important;position:fixed;top:19svh;left:12%;width:76%;margin:0;padding:0;transform:none;text-align:center;color:#d9ff8a;font:italic 700 clamp(16px,3svh,36px)/1.2 numberLevel,system-ui;text-shadow:0 0 12px #67ff22,0 2px 2px #000;z-index:12}
+body.desktop-channel-select #selector #stage{--channel-size:min(20vw,42svh);position:fixed;inset:27svh 0 auto;display:block!important;width:100vw!important;height:49svh;max-height:none;margin:0;padding:0!important;overflow:hidden!important;scroll-snap-type:none;scrollbar-width:none;touch-action:pan-y;perspective:1000px;background:radial-gradient(ellipse at center,#53dc2222,transparent 65%);z-index:9}
+body.desktop-channel-select #selector #stage .listSong{position:absolute;top:50%;left:50%;display:flex!important;width:var(--channel-size)!important;min-width:0;max-width:none;height:var(--channel-size);min-height:0;margin:0!important;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;overflow:visible;opacity:var(--channel-opacity);filter:none;transform:translate(-50%,-50%) translateX(calc(var(--channel-offset)*var(--channel-size)*1.08)) scale(var(--channel-scale));transition:transform .22s ease-out,opacity .18s ease-out;animation:none!important;outline:0;scroll-snap-align:none}
+body.desktop-channel-select #selector #stage .listSong.channel-offscreen{pointer-events:none;visibility:hidden}
+body.desktop-channel-select #selector #stage .listSong::before{content:none}
+body.desktop-channel-select #selector #stage .listSong::after{content:none}
+body.desktop-channel-select #selector #stage .listSong.channel-highlight::before{content:'';position:absolute;inset:10%;border-radius:50%;background:radial-gradient(ellipse,#e5ff5955,transparent 70%);box-shadow:0 0 35px #a7ff0033;z-index:-1;pointer-events:none}
+body.desktop-channel-select #selector #stage .listSong>div{display:flex;align-items:center;justify-content:center;width:100%;height:100%}
+body.desktop-channel-select #selector #stage .listSong>div>div{width:100%;height:100%;display:grid;place-items:center}
+body.desktop-channel-select #selector #stage img.bannerSong{display:block;width:100%;height:100%;max-height:none;min-height:0;object-fit:contain;border:0;border-radius:0;opacity:1;filter:drop-shadow(0 0 4px #59fa5d44)}
+body.desktop-channel-select #selector #stage .channel-highlight img.bannerSong{filter:drop-shadow(0 0 12px #bbff5caa)}
+body.desktop-channel-select #selector #stage .song-card-caption{display:none}
+body.desktop-channel-select #selector #stage .listSong:focus-visible{outline:none}
+body.desktop-channel-select .channel-wheel-description{position:fixed;top:78svh;left:0;width:100%;margin:0;padding:8px 12%;border-block:1px solid #73d837;background:linear-gradient(90deg,transparent,#1b5b1dbd,transparent);color:#e4f5ce;text-align:center;font:clamp(10px,1.8svh,19px)/1.4 numberLevel,system-ui;text-shadow:0 2px #000;z-index:10}
+body.desktop-channel-select #selector :is(#arrowChannelLeft,#arrowChannelRight){display:block!important;position:fixed;top:auto;bottom:var(--safe-b,8px);width:min(8vw,12svh);height:min(8vw,12svh);min-width:44px;min-height:44px;margin:0;padding:0;border:0;background:none;box-shadow:none;z-index:15;opacity:1}
+body.desktop-channel-select #selector #arrowChannelLeft{left:var(--safe-l,8px);right:auto}
+body.desktop-channel-select #selector #arrowChannelRight{right:var(--safe-r,8px);left:auto}
+body.desktop-channel-select #selector :is(#arrowChannelLeft,#arrowChannelRight) img{width:100%;height:100%;object-fit:contain}
+body.desktop-channel-select #selector #stage.channel-wheel-opening{animation:channel-wheel-open .28s ease-out both}
+@keyframes channel-wheel-open{from{opacity:0;translate:0 18px}to{opacity:1;translate:0 0}}
+/* Difficulty levels use the same wheel and controls as the parent channels. */
+body.desktop-channel-select.difficulty-level-select #desktop-options{display:grid}
+body.desktop-channel-select #selector #stage .channel-level-card .channel-level-art{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:url('img/phx2/bg_single.png') center/90% 90% no-repeat;text-shadow:0 3px 3px #000}
+body.desktop-channel-select #selector #stage .channel-level-card .channel-level-art.double{background-image:url('img/phx2/bg_double.png')}
+body.desktop-channel-select #selector #stage .channel-level-art span{color:#fff;font:italic 700 clamp(10px,2svh,25px)/1 numberLevel,system-ui}
+body.desktop-channel-select #selector #stage .channel-level-art strong{color:#fff;font:clamp(30px,8svh,90px)/1.2 numberLevelV2,system-ui}
+body.desktop-channel-select #selector #stage .channel-level-card .channel-level-art.has-level-artwork{background:none;gap:0}
+body.desktop-channel-select #selector #stage .channel-level-art.has-level-artwork :is(span,strong){display:none}
+body.desktop-channel-select #selector #stage .channel-level-art img.channel-level-image{display:block;width:100%;height:100%;object-fit:contain}
+@media(orientation:portrait){
+ body.desktop-channel-select #selector #stage{--channel-size:40vw;top:28svh;height:40svh}
+ body.desktop-channel-select #selector .blockSelectChannel .card-title{top:22svh;font-size:20px}
+ body.desktop-channel-select .channel-wheel-description{top:69svh;font-size:11px}
+}
+@media(max-width:1023px),(orientation:portrait){body.arcade-mobile.desktop-channel-select #selector :is(#arrowChannelLeft,#arrowChannelRight){width:var(--arrow);height:var(--arrow)}}
+@media(prefers-reduced-motion:reduce){
+ body.desktop-channel-select #selector #stage .listSong{transition:none}
+ body.desktop-channel-select #selector #stage.channel-wheel-opening{animation-duration:.001ms}
+}

@@ -1,0 +1,105 @@
+﻿/* Touch layout uses the desktop arcade composition and reserves control space. */
+.mobile-only{display:none!important}
+@media(max-width:1023px),(orientation:portrait){
+ body.arcade-mobile{--safe-l:max(4px,env(safe-area-inset-left));--safe-r:max(4px,env(safe-area-inset-right));--safe-b:max(4px,env(safe-area-inset-bottom));--arrow:clamp(44px,12svh,64px);--cover-h:clamp(84px,25svh,180px);--bottom-zone:94px;--mobile-card:17vw;overflow-x:hidden}
+ body.arcade-mobile .bg-static{animation:none!important;filter:none!important;background-image:url('desktop-stage.svg')!important;background-size:100% 100%}
+ body.arcade-mobile.desktop-song-select,body.arcade-mobile.desktop-channel-select{overflow:hidden}
+ body.arcade-mobile .desktop-arcade{display:none}
+ body.arcade-mobile.desktop-song-select .desktop-arcade,body.arcade-mobile.desktop-channel-select .desktop-arcade{display:block;pointer-events:none;font-family:numberLevel,system-ui}
+ body.arcade-mobile .desktop-arcade button{pointer-events:auto}
+ body.arcade-mobile #selector,body.arcade-mobile #screenshotShare{width:100%;max-width:100%;margin:0;padding:0}
+ body.arcade-mobile .mobile-only{display:block!important}
+ body.arcade-mobile:is(.desktop-song-select,.desktop-channel-select) .assign_play{display:none}
+ body.arcade-mobile #playerLog{position:fixed;top:max(4px,env(safe-area-inset-top));left:calc(var(--safe-l) + var(--arrow) + 7px);width:min(43%,420px);height:48px;min-height:0;margin:0!important;padding:0!important;border:1px solid #d0ff80!important;border-radius:2px!important;background:linear-gradient(#dff7a5 0 10%,#12211f 12% 48%,#07110d 50%)!important;box-shadow:0 0 4px #73d830;z-index:18}
+ body.arcade-mobile #playerLog .card-player{height:100%;min-height:0;padding:2px 4px}
+ body.arcade-mobile #playerLog .row,body.arcade-mobile #playerLog .d-grid{height:100%;width:100%;margin:0;gap:0!important}
+ body.arcade-mobile #playerLog .cardUserDetails{height:100%;display:flex;flex-wrap:nowrap;gap:6px;min-width:0}
+ body.arcade-mobile #playerLog .profileUser{height:38px;width:38px;flex:0 0 38px;border:1px solid #beec74;border-radius:0;object-fit:cover}
+ body.arcade-mobile #playerLog .userData{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px;padding:0;margin:0}
+ body.arcade-mobile #playerLog .nameUser{font:10px numberLevelV2,system-ui;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin:0}
+ body.arcade-mobile #playerLog .levelUser{font:8px numberLevel,system-ui;color:#d5eb9d;white-space:nowrap}
+ body.arcade-mobile #playerLog :is(.exp-line,.exp-text,#playerSettings,#playerHistory,#playerDetails){display:none!important}
+ body.arcade-mobile #mobile-player-menu-trigger{flex:0 0 44px;width:44px;height:44px;padding:0;margin-left:auto;border:1px solid #9dda57;background:#174512;color:#fff;font:23px system-ui;border-radius:1px}
+ body.arcade-mobile #desktop-channels-right,body.arcade-mobile #desktop-return,body.arcade-mobile #btnAllChannels{position:fixed!important;top:max(0px,env(safe-area-inset-top))!important;width:var(--arrow)!important;height:var(--arrow)!important;min-width:44px;min-height:44px;max-width:none;padding:0!important;border:0!important;border-radius:0!important;background:none!important;box-shadow:none!important;animation:none!important;transform:none!important;font-size:0!important;z-index:20}
+ body.arcade-mobile #desktop-channels-right{right:var(--safe-r)}
+ body.arcade-mobile #btnAllChannels,body.arcade-mobile #desktop-return{left:var(--safe-l)!important;right:auto!important}
+ body.arcade-mobile #desktop-return{display:none}
+ body.arcade-mobile.desktop-channel-select #desktop-return{display:block}
+ body.arcade-mobile.desktop-channel-select #desktop-channels-right{display:block}
+ body.arcade-mobile #desktop-channels-right img,body.arcade-mobile #desktop-return img,body.arcade-mobile #btnAllChannels .arrow-icon:first-child{display:block;width:100%!important;height:100%!important;object-fit:contain;filter:none}
+ body.arcade-mobile #desktop-channels-right img{transform:none}
+ body.arcade-mobile #btnAllChannels .arrow-icon:last-child{display:none}
+ body.arcade-mobile #desktop-channels-right span,body.arcade-mobile #desktop-return span,body.arcade-mobile #btnAllChannels:after{position:absolute;bottom:3px;font:italic 7px numberLevelV2,system-ui;color:#ffe277;text-shadow:1px 1px #813009}
+ body.arcade-mobile #desktop-channels-right span{right:2px}body.arcade-mobile #desktop-return span,body.arcade-mobile #btnAllChannels:after{left:4px}
+ body.arcade-mobile #btnAllChannels:after{content:'CANAIS'}
+ body.arcade-mobile #desktop-channel{position:fixed;top:58px;left:calc(var(--safe-l) + var(--arrow) + 10px);max-width:65%;padding:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;color:#c6e8b0;font:8px numberLevel,system-ui;z-index:14}
+ body.arcade-mobile.desktop-song-select .blockSelectSong{position:fixed;inset:0;pointer-events:none;z-index:7}
+ body.arcade-mobile .blockSelectSong :is(.card-mob,.card-body){border:0!important;border-radius:0!important;box-shadow:none!important;background:transparent!important;padding:0!important;margin:0!important}
+ body.arcade-mobile .blockSelectSong .row{margin:0;max-width:100%}
+ body.arcade-mobile .blockSelectSong .card-title,body.arcade-mobile .difficulty-select+.d-grid{display:none!important}
+ body.arcade-mobile.desktop-song-select #selector #online-song{position:fixed;top:auto;left:0;bottom:calc(var(--safe-b) + var(--bottom-zone));width:100vw!important;max-width:100vw;height:var(--cover-h)!important;max-height:none;min-height:0;margin:0!important;padding:0 calc(50vw - var(--mobile-card)/2)!important;display:flex;flex-direction:row;align-items:center;gap:1.2vw;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none;scroll-snap-type:x mandatory;touch-action:pan-x;z-index:8;pointer-events:auto;transform:none}
+ body.arcade-mobile.desktop-song-select #online-song .wheel-ghost{display:flex!important}
+ body.arcade-mobile.desktop-song-select #online-song .listSong{position:relative;flex:0 0 var(--mobile-card);width:var(--mobile-card)!important;min-width:0;height:88%;min-height:0;margin:0!important;padding:0!important;border:1px solid #82cd45!important;border-radius:0!important;background:#08160d!important;box-shadow:0 0 4px #77d02a;transform:perspective(700px) rotateY(var(--tilt,0deg));opacity:.92;animation:none!important;transition:none;scroll-snap-align:center;overflow:hidden}
+ body.arcade-mobile.desktop-song-select #online-song .listSong.active{height:100%;border:2px solid #dfff4e!important;border-radius:0!important;box-shadow:0 0 12px #99ff15;opacity:1;transform:none;z-index:2}
+ body.arcade-mobile #online-song .listSong:before,body.arcade-mobile #online-song .listSong:after{display:none!important}
+ body.arcade-mobile #online-song .listSong>div,body.arcade-mobile #online-song .listSong>div>div{height:100%;width:100%;overflow:hidden}
+ body.arcade-mobile #online-song img.bannerSong{display:block;width:100%;height:100%;min-height:0;max-height:none;border:0;border-radius:0;object-fit:cover}
+ body.arcade-mobile #online-song .song-card-caption{position:absolute;bottom:0;left:0;width:100%;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-align:center;padding:3px;font:7px numberLevel,system-ui;background:#020b06d9;color:#e7f0cb;pointer-events:none}
+ body.arcade-mobile.desktop-song-select #selector .songDetails{position:fixed;top:auto;left:15%;bottom:calc(var(--safe-b) + var(--bottom-zone) + var(--cover-h) + 3px);width:70%;height:43px;min-height:0;margin:0;padding:0;transform:none;display:flex;flex-wrap:wrap;align-content:center;justify-content:center;gap:1px 6px;box-shadow:none;background:linear-gradient(90deg,transparent,#082d38b8,transparent);z-index:9;font:clamp(9px,1.2vw,12px) numberLevel,system-ui;color:#48e3e1}
+ body.arcade-mobile #selector .songDetails #t{display:block;width:100%;max-width:100%;font:bold clamp(10px,1.9vw,16px) numberLevel,system-ui;line-height:1.4;white-space:nowrap;text-overflow:ellipsis;overflow:hidden;color:#fff}
+ body.arcade-mobile #selector .songDetails #a{color:#d7f343}body.arcade-mobile #musicPreview{display:none}
+ body.arcade-mobile.desktop-song-select #selector #level{position:fixed;top:auto;bottom:calc(var(--safe-b) + 22px);left:calc(var(--safe-l) + var(--arrow) + 8px);right:calc(var(--safe-r) + var(--arrow) + 8px);width:auto!important;max-width:none;min-height:0;height:64px;margin:0;padding:6px 2px!important;display:flex;flex-direction:row;align-items:center;justify-content:safe center;gap:6px;overflow-x:auto!important;overflow-y:hidden!important;scrollbar-width:none;transform:none;touch-action:pan-x;pointer-events:auto;z-index:12}
+ body.arcade-mobile #selector #level .listStep{flex:0 0 44px;width:44px!important;min-width:44px;height:44px;min-height:44px;margin:0!important;padding:0!important;border:0;border-radius:50%!important;box-shadow:none;animation:none!important;background-size:100% 100%;display:flex!important}
+ body.arcade-mobile #selector #level .listStep>div{font:16px numberLevelV2,system-ui;line-height:1;top:0;text-shadow:0 2px #000}
+ body.arcade-mobile #level .listStep.active{outline:2px solid #fff59f;outline-offset:0;filter:none;transform:none}
+ body.arcade-mobile.desktop-song-select #selector #arrowSongLeft,body.arcade-mobile.desktop-song-select #selector #arrowSongRight{position:fixed;top:auto;bottom:calc(var(--safe-b) + 22px);width:var(--arrow);height:var(--arrow);min-width:44px;min-height:44px;margin:0;padding:0;border:0;border-radius:0;background:none;box-shadow:none;animation:none!important;transform:none;display:block!important;opacity:1;z-index:15;pointer-events:auto}
+ body.arcade-mobile #selector #arrowSongLeft{left:var(--safe-l);right:auto}body.arcade-mobile #selector #arrowSongRight{right:var(--safe-r);left:auto}
+ body.arcade-mobile #selector #arrowSongLeft img,body.arcade-mobile #selector #arrowSongRight img{width:100%;height:100%;object-fit:contain;transform:none;filter:none}
+ body.arcade-mobile #desktop-options{position:fixed;left:var(--safe-l);right:auto;top:max(70px,calc(env(safe-area-inset-top) + 64px));bottom:calc(var(--safe-b) + var(--bottom-zone) + var(--cover-h) + 8px);width:96px;display:grid;grid-template-columns:44px 44px;align-content:start;gap:4px;overflow-y:auto;scrollbar-width:none;z-index:14;pointer-events:auto}
+ body.arcade-mobile #desktop-options button{width:44px;min-height:44px;height:44px;display:flex!important;align-items:center;justify-content:center;flex-direction:column;padding:2px;border:1px solid #95d55c;border-radius:3px;background:#041508;color:#e5f6d6;font:11px numberLevel,system-ui;line-height:1.2;box-shadow:none}
+ body.arcade-mobile #desktop-options small{font-size:9px}body.arcade-mobile #desktop-options img{height:34px;width:34px;object-fit:contain}
+ body.arcade-mobile.desktop-channel-select #desktop-options{display:none}
+ body.arcade-mobile #desktop-footer{position:fixed;bottom:calc(var(--safe-b) + 3px);left:10%;width:80%;text-align:center;color:#eff74f;font:7px numberLevel,system-ui;white-space:nowrap;z-index:14}
+ body.arcade-mobile.desktop-channel-select .blockSelectChannel{border:0!important;background:none!important;box-shadow:none}
+ body.arcade-mobile.desktop-channel-select #stage{position:fixed;top:82px;left:12px;right:12px;bottom:45px;width:auto!important;height:auto;max-height:none;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr));align-content:start;gap:10px;overflow:auto!important;margin:0;padding:6px}
+ body.arcade-mobile.desktop-channel-select #stage .listSong{width:100%;min-height:80px;min-width:0;height:120px;padding:4px!important;margin:0!important;border:1px solid #80c43c!important;border-radius:2px!important;box-shadow:none;animation:none!important;overflow:hidden}
+ body.arcade-mobile.desktop-channel-select #stage .listSong>div{width:100%;height:100%}
+ body.arcade-mobile.desktop-channel-select #stage img{width:100%;height:100%;min-height:0;object-fit:contain;border:0;border-radius:0}
+ body.arcade-mobile.desktop-channel-select .blockSelectChannel .card-title,body.arcade-mobile.desktop-channel-select :is(#arrowChannelLeft,#arrowChannelRight){display:none!important}
+ body.arcade-mobile .modal .modal-dialog{position:relative!important;top:auto!important;left:auto!important;transform:none!important;margin:12px auto!important;width:calc(100% - 24px);max-width:600px;max-height:calc(100svh - 24px)}
+ body.arcade-mobile .modal .modal-content{max-height:calc(100svh - 24px);overflow:auto}
+ body.arcade-mobile .modal .modal-body{overflow:auto;min-height:0}
+ body.arcade-mobile .modal .card-mob{border:1px solid #70af3c!important;border-radius:3px!important;animation:none!important;box-shadow:none}
+ #mobile-player-menu .modal-content{background:#05180c;border:1px solid #9de64b;color:#e9ffd6;border-radius:3px;font-family:numberLevel,system-ui}
+ #mobile-player-menu .modal-header{display:flex;justify-content:space-between;border-color:#3f672c}
+ #mobile-player-menu h2{font:16px numberLevelV2,system-ui;margin:0}
+ #mobile-player-menu button{min-height:44px;border:1px solid #668b40;background:#102a12;color:#e9ffd6;padding:8px}
+ #mobile-player-menu .modal-header button{width:44px;font:24px system-ui;padding:0}
+ #mobile-player-menu .modal-body{display:grid;gap:8px}
+ body.arcade-mobile button:focus-visible,body.arcade-mobile a:focus-visible{outline:2px solid #fff;outline-offset:2px}
+}
+@media(orientation:portrait){
+ body.arcade-mobile{--arrow:48px;--cover-h:clamp(110px,42vw,190px);--bottom-zone:100px;--mobile-card:42vw}
+ body.arcade-mobile #playerLog{left:calc(var(--safe-l) + var(--arrow) + 5px);right:calc(var(--safe-r) + var(--arrow) + 5px);width:auto}
+ body.arcade-mobile #playerLog .profileUser{width:32px;height:36px;flex-basis:32px}
+ body.arcade-mobile #playerLog .nameUser{font-size:9px}body.arcade-mobile #playerLog .levelUser{font-size:7px}
+ body.arcade-mobile #desktop-options{top:85px;width:48px;display:flex;flex-direction:column;gap:4px}
+ body.arcade-mobile #desktop-options button{flex-shrink:0}
+ body.arcade-mobile.desktop-song-select #selector .songDetails{left:10%;width:80%;height:46px}
+ body.arcade-mobile #selector .songDetails #t{font-size:12px}
+ body.arcade-mobile.desktop-song-select #selector #online-song{gap:10px}
+ body.arcade-mobile.desktop-song-select #selector #level{bottom:calc(var(--safe-b) + 26px)}
+ body.arcade-mobile.desktop-song-select #selector #arrowSongLeft,body.arcade-mobile.desktop-song-select #selector #arrowSongRight{bottom:calc(var(--safe-b) + 34px)}
+ body.arcade-mobile.desktop-channel-select #stage{grid-template-columns:repeat(2,minmax(0,1fr))}
+}
+@media(max-height:360px) and (orientation:landscape){
+ body.arcade-mobile{--cover-h:82px;--bottom-zone:82px;--arrow:44px}
+ body.arcade-mobile #desktop-options{top:52px;gap:2px}
+ body.arcade-mobile.desktop-song-select #selector .songDetails{height:34px}
+ body.arcade-mobile.desktop-song-select #selector #level{height:56px;bottom:calc(var(--safe-b) + 20px)}
+ body.arcade-mobile.desktop-song-select #selector #arrowSongLeft,body.arcade-mobile.desktop-song-select #selector #arrowSongRight{bottom:calc(var(--safe-b) + 26px)}
+ body.arcade-mobile #playerLog{height:36px}body.arcade-mobile #playerLog .profileUser{height:28px;width:28px;flex-basis:28px}body.arcade-mobile #mobile-player-menu-trigger{height:32px;min-height:32px}
+ body.arcade-mobile #desktop-channel{top:42px}
+}
+@media(max-width:1023px),(orientation:portrait){body.arcade-mobile #playerLog .card-player,body.arcade-mobile #playerLog .cardUserDetails{background:none!important;border-radius:0;animation:none!important;box-shadow:none}body.arcade-mobile #playerLog .card-player:before,body.arcade-mobile #playerLog .card-player:after{display:none!important}}
+@media(max-width:1023px),(orientation:portrait){body.arcade-mobile #btnAllChannels,body.arcade-mobile #desktop-return,body.arcade-mobile #desktop-channels-right{pointer-events:auto!important}}

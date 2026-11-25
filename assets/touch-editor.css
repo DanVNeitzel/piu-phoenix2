@@ -1,0 +1,34 @@
+#game-touch-edit[hidden]{display:none}
+body.touch-preview #game-pause-button{visibility:hidden}
+#touch-editor{position:fixed;inset:0;box-sizing:border-box;width:100vw;height:100svh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:transparent!important;color:#edffdc;pointer-events:none;overflow:hidden;font:14px/1.4 system-ui}
+#touch-editor::backdrop{background:transparent}
+#touch-editor .te-panel{position:absolute;top:max(66px,env(safe-area-inset-top));left:50%;transform:translateX(-50%);box-sizing:border-box;width:min(360px,calc(100% - 24px));max-height:min(450px,calc(100svh - 88px));display:flex;flex-direction:column;pointer-events:auto;background:#07170ff5;border:1px solid #b5e45e;border-radius:6px;box-shadow:0 0 15px #0009;overflow:hidden}
+#touch-editor header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-bottom:1px solid #41622f;background:#1c3218;flex-shrink:0}
+#touch-editor header span{font:10px/1.3 system-ui;color:#c0d6a1}
+#touch-editor h2{font:700 17px/1.3 system-ui;margin:3px 0 0}
+#touch-editor button{box-sizing:border-box;min-height:44px;border:1px solid #71904c;border-radius:3px;padding:7px 10px;background:#102b17;color:#ebffd0;font:600 13px/1.3 system-ui;cursor:pointer;touch-action:manipulation}
+#touch-editor #te-toggle{min-width:74px;padding:6px;font-size:12px}
+#touch-editor .te-content{overflow-y:auto;min-height:0;padding:10px 12px;overscroll-behavior:contain;scrollbar-width:thin;scrollbar-color:#8db34b #102315}
+#touch-editor p{font:12px/1.4 system-ui;color:#bcccad;margin:0 0 10px}
+#touch-editor #te-sides{display:flex;gap:6px;margin-bottom:10px}#touch-editor #te-sides[hidden]{display:none}
+#touch-editor #te-sides button{flex:1}#touch-editor #te-sides button[aria-pressed=true]{background:#395a1d;border-color:#d0ed72}
+#touch-editor .te-range{display:flex;flex-direction:column;gap:2px;margin:0 0 9px}
+#touch-editor .te-range>span{display:flex;align-items:center;justify-content:space-between;gap:5px;font:600 13px/1.4 system-ui}
+#touch-editor output{font:700 12px/1.4 system-ui;color:#e5f97b;white-space:nowrap}
+#touch-editor input[type=range]{display:block;width:100%;height:36px;margin:0;accent-color:#c6eb63;touch-action:pan-x}
+#touch-editor #te-reset{width:100%;margin:3px 0 9px;font-size:12px}
+#touch-editor .te-hint{font-size:11px;margin:0}
+#touch-editor footer{padding:8px 12px;border-top:1px solid #41622f;background:#06120b;flex-shrink:0}
+#touch-editor footer p{font-size:11px;margin:0 0 6px}
+#touch-editor footer>div{display:flex;gap:8px}#touch-editor footer button{flex:1}
+#touch-editor #te-save{background:#d5e95b;border-color:#eefb99;color:#17220c}
+#touch-editor .te-handle{position:absolute;display:flex;align-items:flex-start;justify-content:center;padding:5px;pointer-events:auto;border:2px dashed #d7ff73;border-radius:6px;background:transparent!important;color:#e7ffad;text-shadow:0 1px 3px #000;font:600 11px/1.3 system-ui;touch-action:none;min-height:0;cursor:move}
+#touch-editor .te-handle[hidden]{display:none}
+#touch-editor.te-collapsed .te-content{display:none}
+#touch-editor.te-collapsed .te-panel{top:auto;bottom:max(8px,env(safe-area-inset-bottom));width:auto;max-width:calc(100% - 24px)}
+#touch-editor.te-collapsed header{padding:4px;border:0}
+#touch-editor.te-collapsed header>div,#touch-editor.te-collapsed footer{display:none}
+#touch-editor :is(button,input):focus-visible{outline:2px solid #fff;outline-offset:2px}
+@media(orientation:portrait){#touch-editor .te-panel{max-height:min(450px,48svh)}}
+@media(orientation:landscape){#touch-editor .te-panel{width:min(330px,36vw);max-height:calc(100svh - 78px)}#touch-editor h2{font-size:15px}#touch-editor header{padding:7px 9px}#touch-editor .te-content,#touch-editor footer{padding:8px 9px}#touch-editor .te-range>span{font-size:12px}}
+@media(orientation:landscape) and (max-height:400px){#touch-editor .te-content>p:first-child{display:none}#touch-editor .te-panel{top:58px;max-height:calc(100svh - 70px)}#touch-editor.te-collapsed .te-panel{top:auto}}

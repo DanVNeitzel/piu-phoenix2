@@ -1,0 +1,7 @@
+#touch-preview-host{position:fixed;inset:0;width:100vw;height:100svh;max-width:none;max-height:none;margin:0;padding:0;border:0;background:#020b07;color:#ebffcf;overflow:hidden}
+#touch-preview-host::backdrop{background:#000}
+#touch-preview-host iframe{display:block;border:0;width:100%;height:100%}
+#touch-preview-loading{position:absolute;top:52%;left:10%;width:80%;text-align:center;font:16px/1.4 system-ui;background:#06170de8;padding:12px;pointer-events:none}
+#touch-preview-loading[hidden]{display:none}
+#touch-preview-close{position:absolute;top:max(8px,env(safe-area-inset-top));right:max(8px,env(safe-area-inset-right));width:44px;height:44px;border:1px solid #b3e467;border-radius:4px;background:#0a210f;color:#eafec7;font:28px/1 system-ui;cursor:pointer}
+#touch-preview-close:focus-visible{outline:2px solid #fff;outline-offset:2px}

@@ -1,0 +1,305 @@
+@font-face {
+  font-family: numberLevel;
+  src: url(../fonts/Xolonium-Regular.ttf)
+}
+
+@font-face {
+  font-family: numberLevelV2;
+  src: url(../fonts/Plateia_Bold.ttf)
+}
+
+body {
+  cursor: none;
+}
+
+hide {
+  display: none;
+}
+
+@media only screen and (max-width: 550px) {
+  .options-block-r p {
+    font-family: 'numberLevel';
+    width: 45px !important;
+    height: 35px !important;
+    line-height: 14px !important;
+  }
+
+  .options-block-l p {
+    width: 55px !important;
+    height: 45px !important;
+  }
+
+  .playNoteSkin {
+    width: 28px !important;
+  }
+
+  .playSpeed {
+    font-size: 1rem !important;
+  }
+
+  .playDisplay {
+    font-size: 12px !important;
+  }
+
+  .playRush {
+    font-size: 12px !important;
+  }
+
+  .playCount {
+    font-size: 23px !important;
+  }
+}
+
+.assign_play {
+  font-family: 'numberLevel';
+  color: #fff;
+  display: flex;
+  position: absolute;
+  flex-direction: row;
+  flex-wrap: nowrap;
+  justify-content: center;
+  align-items: center;
+  bottom: 0;
+  left: 50%;
+  transform: translate(-50%, 0);
+  margin: 0;
+  background: black;
+  box-shadow: 0 0 20px #02b380;
+  border: 2px solid #02b380;
+  width: 80px;
+  padding: 0 10px 0 10px;
+  border-radius: 20px 20px 0 0;
+}
+
+.options-block-r {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: flex-start;
+  height: auto;
+  color: #fff;
+  right: 0;
+  padding: 80px 0 0 0;
+}
+
+.options-block-l {
+  display: flex;
+  position: absolute;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: flex-start;
+  height: auto;
+  color: #fff;
+  left: 0;
+}
+
+.options-block-r p {
+  display: flex;
+  width: 75px;
+  height: 55px;
+  background-color: #000;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  align-content: center;
+  justify-content: center;
+  align-items: center;
+  margin-top: 0;
+  border-radius: 10px;
+  border: 2px solid #00ff05;
+  box-shadow: inset 0 0 20px #02b309;
+  font-weight: 700;
+  text-align: center;
+  line-height: 22px;
+}
+
+.options-block-l p {
+  position: absolute;
+  top: 0;
+  left: 50px;
+  display: flex;
+  width: 84px;
+  height: 56px;
+  background-image: url(../img/elements/stageback.png);
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
+  flex-direction: column;
+  flex-wrap: nowrap;
+  margin-top: 0;
+  border-radius: 10px;
+  font-family: numberLevelV2;
+  font-weight: 700;
+  text-align: center;
+  padding: 5px 0 0 0;
+  align-items: center;
+  justify-content: center;
+  align-content: center;
+}
+
+.playNoteSkin {
+  width: 55px;
+}
+
+.playSpeed {
+  font-size: 25px;
+}
+
+.playDisplay {
+  font-size: 23px;
+}
+
+.playRush {
+  font-size: 23px;
+}
+
+.playCount {
+  font-size: 26px !important;
+  color: #ebffea;
+  padding: 2px 7px 5px 7px!important;
+  text-shadow: 0px 0px 10px #4CAF50;
+}
+
+.naoSelecionavel {
+  -webkit-touch-callout: none;
+  /* iPhone OS, Safari */
+  -webkit-user-select: none;
+  /* Chrome, Safari 3 */
+  -khtml-user-select: none;
+  /* Safari 2 */
+  -moz-user-select: none;
+  /* Firefox */
+  -ms-user-select: none;
+  /* IE10+ */
+  user-select: none;
+}
+
+.bgadark {
+  position: fixed;
+  display: block;
+  width: 100%;
+  height: 100%;
+  background-color: rgb(0 0 0 / 40%);
+}
+
+@media only screen and (min-width: 1026px) and (orientation: landscape) {
+  .options-block-r {
+    top: 72px;
+    right: 12px;
+    padding: 0;
+    gap: 14px;
+    z-index: 20;
+  }
+
+  .options-block-r p {
+    width: 70px;
+    height: 55px;
+    margin: 0;
+    border-color: #00ff26;
+    background: linear-gradient(180deg, rgba(7, 38, 18, 0.95), rgba(0, 0, 0, 0.96));
+    box-shadow: inset 0 0 16px rgba(38, 255, 82, 0.38), 0 0 14px rgba(0, 255, 38, 0.42);
+    line-height: 18px;
+  }
+
+  .playNoteSkin {
+    width: 42px;
+  }
+
+  .playSpeed {
+    font-size: 22px;
+  }
+
+  .playDisplay,
+  .playRush {
+    font-size: 16px;
+  }
+
+  .options-block-l {
+    top: 0;
+    left: 48px;
+    z-index: 20;
+  }
+
+  .options-block-l p {
+    left: 0;
+    width: 84px;
+    height: 56px;
+    filter: none;
+  }
+
+  .playCount {
+    text-shadow: 0 0 8px rgba(76, 255, 80, 0.85), 0 0 14px rgba(0, 255, 38, 0.45);
+  }
+
+  .assign_play {
+    box-shadow: 0 0 16px rgba(2, 179, 128, 0.78), inset 0 0 12px rgba(63, 255, 0, 0.25);
+  }
+
+  .finishStageButton {
+    z-index: 30;
+  }
+
+  .autoplayStageBadge {
+    top: 54%;
+    padding: 8px 18px;
+    font-size: 16px;
+  }
+}
+
+@media only screen and (max-width: 1025px) {
+  .options-block-r {
+    display: flex;
+    position: absolute;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: center;
+    justify-content: center;
+    align-items: flex-start;
+    height: auto;
+    color: #fff;
+    right: 0;
+    padding: 0;
+  }
+
+  .options-block-r p {
+    font-family: 'numberLevel';
+    width: 45px !important;
+    height: 35px !important;
+    line-height: 13px !important;
+    margin: 0 0 0 5px;
+  }
+
+  .options-block-l p {
+    font-family: 'numberLevel';
+    width: 65px !important;
+    height: 45px !important;
+    padding: 5px 5px;
+  }
+
+  .playNoteSkin {
+    width: 33px !important;
+  }
+
+  .playSpeed {
+    font-size: 22px !important;
+  }
+
+  .playDisplay {
+    font-size: 13px !important;
+  }
+
+  .playRush {
+    font-size: 12px !important;
+  }
+
+  .playCount {
+    font-size: 27px !important;
+    color: #ebffea;
+    padding: 10px 7px 6px 7px!important;
+    text-shadow: 0px 0px 10px #4CAF50;
+  }
+}

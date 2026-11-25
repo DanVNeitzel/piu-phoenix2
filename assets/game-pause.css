@@ -1,0 +1,16 @@
+#game-pause-button{position:fixed;top:calc(60px + env(safe-area-inset-top));right:max(10px,env(safe-area-inset-right));z-index:200;min-width:44px;min-height:44px;padding:8px 12px;border:1px solid #bded70;border-radius:5px;background:#04150de6;color:#edffc2;font:700 14px/1.2 system-ui;cursor:pointer;touch-action:manipulation}
+:is(#game-pause,#game-abandon-confirm){box-sizing:border-box;width:min(480px,calc(100% - 24px));max-height:calc(100svh - 24px);padding:24px;border:2px solid #a6ee48;border-radius:5px;background:linear-gradient(135deg,#122c1a,#020b09);color:#ecffe0;box-shadow:0 0 20px #48df3640;font:16px/1.5 system-ui;text-align:center;overflow-y:auto;overscroll-behavior:contain}
+:is(#game-pause,#game-abandon-confirm)::backdrop{background:#000b}
+:is(#game-pause,#game-abandon-confirm) h1{font:700 24px/1.2 system-ui;margin:0 0 18px;color:#f2ff79;letter-spacing:2px}
+:is(#game-pause,#game-abandon-confirm) p{margin:10px 0}
+:is(#game-pause,#game-abandon-confirm) .pause-note{font-size:14px;color:#bfccb8}
+:is(#game-pause,#game-abandon-confirm) .pause-actions{display:grid;gap:10px;margin-top:22px}
+:is(#game-pause,#game-abandon-confirm) button{min-height:48px;border:1px solid #9ce34f;border-radius:3px;background:#123d18;color:#edffc0;font:700 14px/1.3 system-ui;padding:10px;cursor:pointer;touch-action:manipulation}
+:is(#game-pause,#game-abandon-confirm) #game-abandon{border-color:#f3b44d;background:#39220b;color:#ffe4a5}
+:is(#game-pause,#game-abandon-confirm) button:disabled{opacity:.6;cursor:wait}
+:is(#game-pause,#game-abandon-confirm) button:focus-visible,#game-pause-button:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#game-pause-error{color:#ffcfad;font-size:14px}
+@media(max-height:400px){:is(#game-pause,#game-abandon-confirm){padding:14px}:is(#game-pause,#game-abandon-confirm) h1{font-size:20px;margin-bottom:8px}:is(#game-pause,#game-abandon-confirm) .pause-actions{grid-template-columns:1fr 1fr;margin-top:12px}:is(#game-pause,#game-abandon-confirm) p{margin:6px 0}}
+@media(max-width:1023px),(orientation:portrait){#game-pause-button span{display:none}}
+
+#game-abandon-confirm #game-abandon-confirm-button{border-color:#f3b44d;background:#39220b;color:#ffe4a5}

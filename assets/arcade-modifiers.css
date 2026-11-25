@@ -1,0 +1,38 @@
+/* One visual treatment for settings and input mode throughout the arcade. */
+:is(#desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)[hidden]{display:none!important}
+#performance.phoenix-results :is(#songSpeed,#bgaStatus)::before{content:none;display:none}
+:is(#desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div){
+ box-sizing:border-box;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ width:clamp(52px,4.5vw,90px);height:clamp(44px,5.5svh,58px);min-width:0;min-height:44px;
+ padding:3px 5px;gap:1px;border:1px solid #b3e25e;border-radius:10px;
+ background:#08150ed9;color:#efffdc;box-shadow:0 0 7px #368e2e;
+ font:700 clamp(12px,1.65svh,16px)/1.15 numberLevel,system-ui;text-align:center;text-shadow:0 2px #000;
+}
+:is(#desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>:is(small,span:first-child){font:700 clamp(11px,1.4svh,14px)/1.15 numberLevel,system-ui;color:#b8d59c}
+:is(#desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>:is(strong,span:last-child){font:inherit;color:#efffdc}
+:is(#desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>img{display:block;width:clamp(30px,4.5svh,42px);height:clamp(30px,4.5svh,42px);object-fit:contain}
+@media(min-width:1024px) and (orientation:landscape){
+ #desktop-options,#performance.phoenix-results .result-modifiers{left:.7vw;top:23vh;gap:.7vh}
+}
+@media(max-width:1023px),(orientation:portrait){
+ :is(body.arcade-mobile #desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div){width:44px;height:44px;min-height:44px;padding:2px;gap:1px;border-radius:3px;font-size:12px;box-shadow:none}
+ :is(body.arcade-mobile #desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>:is(small,span:first-child){font-size:9px}
+ :is(body.arcade-mobile #desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>img{width:34px;height:34px}
+ #performance.phoenix-results .result-modifiers{gap:4px}
+ #performance.phoenix-results .result-controls{min-height:118px}
+}
+@media(max-width:1023px) and (orientation:landscape){
+ #performance.phoenix-results .result-stage{grid-template-rows:54px 48px minmax(0,1fr) 118px}
+}
+@media(max-height:450px) and (orientation:landscape){
+ #confirmPlayModal .ps-commands{grid-template-columns:44px 44px;width:91px}
+}
+@media(max-height:360px) and (orientation:landscape){
+ #performance.phoenix-results .result-stage{height:370px;min-height:370px;grid-template-rows:44px 34px minmax(160px,1fr) 118px}
+}
+:is(#desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div).control-mode>img{width:30px;max-width:100%;height:30px;flex-shrink:0;object-fit:contain}
+#performance.phoenix-results .result-modifiers{justify-content:flex-start;justify-self:start;width:100%}
+.active-command[hidden]{display:none!important}
+.active-command small{white-space:normal;overflow-wrap:anywhere;text-wrap:balance}
+#desktop-options{max-height:calc(100svh - 26vh);overflow-y:auto;overflow-x:hidden;padding:4px}
+#confirmPlayModal .ps-commands{max-height:65%;overflow-y:auto;overflow-x:hidden;padding:4px}

@@ -1,0 +1,15 @@
+/* Keep the selected channel in the free header space beside the player. */
+body:is(.desktop-song-select,.desktop-channel-select) #desktop-channel{
+ position:fixed;left:var(--channel-left,59vw);right:auto;
+ top:var(--channel-top,5vh);width:var(--channel-width,27vw);max-width:none;
+ box-sizing:border-box;padding:4px 0;margin:0;transform:translateY(-50%);
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;text-align:center;
+ color:#e8ff9f;font:24px/1.2 numberLevel,system-ui;
+ text-shadow:0 2px 3px #000,0 0 7px #234511;z-index:14;
+}
+@media(max-width:1023px),(orientation:portrait){
+ body.arcade-mobile #desktop-channel{font-size:20px}
+}
+@media(orientation:portrait){
+ body.arcade-mobile #desktop-channel{font-size:18px;transform:none}
+}

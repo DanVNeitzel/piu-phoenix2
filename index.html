@@ -1,0 +1,1283 @@
+
+<!doctype html>
+<html lang="pt-BR" xmlns="http://www.w3.org/1999/html">
+<meta charset="utf-8">
+
+<head>
+  <script src="assets/js/jquery-3.6.0.min.js"></script>
+  <script src="assets/js/bootstrap.min.js" crossorigin="anonymous"></script>
+
+  <title>[Pump It Up Web Edition]</title>
+
+  <link rel="manifest" href="manifest.json" />
+  <link rel="apple-touch-icon" sizes="180x180" href="icon/piuweb180.png">
+
+  <!-- Prevent aggressive caching -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1, viewport-fit=cover, interactive-widget=resizes-content">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+
+  <link rel="icon" type="image/png" href="favicon.png">
+
+  <script src="piured-engine/js/Utils/FileReader.js"></script>
+  <script src="piured-engine/lib/stats.min.js"></script>
+  <script src="piured-engine/js/pegjs-ssc-parser/parser/SSCParserClient.js"></script>
+  <script src="piured-engine/js/Song/Song.js"></script>
+  <script src="piured-engine/js/Song/NoteData.js"></script>
+
+  <script src="Demo/Filter.js"></script>
+  <script src="Demo/BrowserInput.js"></script>
+  <script src="assets/js/channel-library.js"></script>
+  <script src="Demo/SongPicker/Utils.js"></script>
+  <script src="Demo/SongPicker/DiscoverLevelLocal.js"></script>
+
+  <link href="assets/css/mobile.css" rel="stylesheet">
+  <link href="assets/css/noteskin.css" rel="stylesheet">
+  <link href="assets/css/speed.css" rel="stylesheet">
+  <link href="assets/css/bga.css" rel="stylesheet">
+  <link href="assets/css/rush.css" rel="stylesheet">
+  <link href="assets/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="assets/css/material_symbols_outlined.css" />
+<style>.circle-single{background-image:url('assets/img/phx2/Circle_Single_Diff_Eval.png')}.circle-double{background-image:url('assets/img/phx2/Circle_Double_Diff_Eval.png')}.circle-default{background-image:url('assets/img/elements/random_orb_bg.png')}.levelGrade{background-image:url('assets/img/elements/eval_null.png')}.bg-static,.black_screen{background-image:url('assets/img/bg-static.png')}#btnContinue,#CardLogin,#loginWindow,#guestWarningModal,#registerBlock,#playerLogout,.btnCreateBattle{display:none!important}</style>
+<link rel="stylesheet" href="assets/desktop.css">
+<link rel="stylesheet" href="assets/command-panel.css">
+<link rel="stylesheet" href="assets/results.css">
+<link rel="stylesheet" href="assets/mobile-arcade.css">
+<link rel="stylesheet" href="assets/mobile-command.css">
+<link rel="stylesheet" href="assets/results-mobile.css">
+<link rel="stylesheet" href="assets/score-share.css">
+<link rel="stylesheet" href="assets/prestart.css">
+<link rel="stylesheet" href="assets/selection-background.css">
+<link rel="stylesheet" href="assets/arcade-typography.css">
+<link rel="stylesheet" href="assets/arcade-modifiers.css">
+<link rel="stylesheet" href="assets/channel-label.css">
+<link rel="stylesheet" href="assets/arcade-arrows.css">
+<link rel="stylesheet" href="assets/phoenix-levels.css">
+<link rel="stylesheet" href="assets/arcade-navigation-labels.css">
+<link rel="stylesheet" href="assets/arcade-opening.css">
+<link rel="stylesheet" href="assets/app-settings.css">
+<link rel="stylesheet" href="assets/player-panels.css">
+<link rel="stylesheet" href="assets/touch-preview.css">
+<link rel="stylesheet" href="assets/channel-carousel.css">
+<link rel="stylesheet" href="assets/channel-library.css">
+</head>
+
+<body id="activeScreen">
+
+  <section class="black_screen arcade-opening" aria-label="Abertura arcade">
+    <p class="arcade-build">PIUWEB · PHOENIX<br>SINGLE PLAYER</p>
+    <img class="arcade-opening-logo" src="assets/img/mainLogo_phx2.png" alt="Pump It Up Phoenix 2">
+    <button type="button" id="arcade-insert" class="arcade-start-pad"><img class="arcade-prompt" src="assets/img/phx2/press_center_step.png" alt="Press Center Step"><img class="arcade-pad" src="assets/img/phx2/step.png" alt=""><strong>TOQUE PARA ATIVAR</strong><span>ou pressione ENTER</span></button>
+    <p class="arcade-opening-footer">FREE PLAY · RECORDES LOCAIS</p>
+  </section>
+
+  <div class="bg-static"></div>
+  <video class="bg-video hide" loop muted playsinline preload="none">
+    <source data-src="assets/videos/mainBg2.mp4" type="video/mp4">
+    Your browser does not support HTML5 video.
+  </video>
+  <audio id="openingPiuWeb" loop>
+    <source src="#" type="audio/mpeg">
+    Your browser does not support the audio element.
+  </audio>
+
+  <div id="modalMensagem" class="card-mob modalMensagem border-levelup hide">
+    <div class="card-player">
+      <div class="row">
+        <div class="cardLevelUp">
+          <p>LEVEL UP!</p>
+        </div>
+      </div>
+      <div class="row">
+        <div class="cardLevelUp">
+          <p id="piuTitle" class="piuTitle">...</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="registerBlock" class="registerBlock hide">
+    <div class="closeRegister">
+      <span onClick="registerNewUser()">CLOSE REGISTER</span>
+    </div>
+    
+  </div>
+
+  <div id="winDialogOptionBackDrop" class="winDialogOptionBackDrop hide"></div>
+
+  <div id="winAlertMsg" class="winAlertMsg hide">
+    <div class="w-100">
+      <p id="AlertMsgTitle" class="font-piu">N/A</p>
+    </div>
+  </div>
+
+  <div id="winAlertOption" class="winAlertOption hide">
+    <div>
+      <p id="AlertOptionTitle" class="font-piu text-center px-4 text-white">N/A</p>
+    </div>
+    <div>
+      <button class="AlertSelectedOpt1 font-piu" onclick="selectedOpt('Confirmar')">N/A</button>
+      <button class="AlertSelectedOpt2 font-piu sound-close-cw" onclick="selectedOpt('Cancelar')">N/A</button>
+    </div>
+  </div>
+
+  <!-- Modal de Changelog -->
+  <div id="changelogModal" class="modal text-white" style="display: none;">
+    <div class="modal-dialog modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="card-mob border-pulse-custom">
+            <div class="card-body modal-background">
+              <div class="text-center mb-3">
+                <h4 class="font-piu text-warning">🎮 CHANGELOG - UPDATES</h4>
+                <p class="text-white-50 small">PIUWEB Phoenix - Latest Updates</p>
+              </div>
+
+              <div id="changelogContent" class="changelog-content"
+                style="max-height: 400px; overflow-y: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 20px;">
+                <!-- Conteúdo será carregado via JavaScript -->
+                <div class="text-center">
+                  <img class="loader-icon" src="./assets/img/elements/loader.png" alt="Loading...">
+                  <p>Loading changelog...</p>
+                </div>
+              </div>
+
+              <div class="mb-3">
+                <label class="d-flex justify-content-center align-items-center" style="cursor: pointer;">
+                  <input type="checkbox" id="dontShowChangelogAgain" class="me-2"
+                    style="width: 20px; height: 20px; cursor: pointer;">
+                  <span class="font-piu text-white">Do not show again</span>
+                </label>
+              </div>
+
+              <button onclick="closeChangelog()"
+                class="btn-piu btn-confirm-piu btn-block element-full-size border-pulse-btn-yellow">
+                CLOSE
+                <img class="arrow-icon ml-2" src="assets/img/phx2/arrow_yellow_c.png" alt="">
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Guest Warning Modal -->
+  <div class="modal text-white text-center" id="guestWarningModal">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-body">
+          <div class="collapse show" id="guestWarningOptionCard">
+            <div class="card-mob">
+              <div class="card-body modal-background">
+                <div class="row">
+                  <div class="col-12">
+                    <h2>⚠️ GUEST MODE</h2>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12">
+                    <div class="my-3 px-5">
+                      <p class="text-warning" style="font-size: 1rem; line-height: 1.4;">
+                        Playing as a <strong>guest</strong>, you <strong>WILL NOT have access</strong> to the following features:
+                      </p>
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-3 px-4">
+                    <ul class="commandWindowInfo form-switch form-check">
+                      <li class="align-landscape userLineCustom">
+                        <label class="form-check-label text-danger fw-bold">❌ Level and XP Progression</label>
+                        <label class="form-check-label small text-white-50">Your progress will not be saved</label>
+                      </li>
+                      <li class="align-landscape userLineCustom">
+                        <label class="form-check-label text-danger fw-bold">❌ Personal Records</label>
+                        <label class="form-check-label small text-white-50">Scores will not be recorded</label>
+                      </li>
+                      <li class="align-landscape userLineCustom">
+                        <label class="form-check-label text-danger fw-bold">❌ Global Ranking</label>
+                        <label class="form-check-label small text-white-50">Will not appear in the leaderboards</label>
+                      </li>
+                      <li class="align-landscape userLineCustom">
+                        <label class="form-check-label text-danger fw-bold">❌ Multiplayer Mode</label>
+                        <label class="form-check-label small text-white-50">Battles unavailable</label>
+                      </li>
+                      <li class="align-landscape userLineCustom">
+                        <label class="form-check-label text-danger fw-bold">❌ Match History</label>
+                        <label class="form-check-label small text-white-50">Games not saved</label>
+                      </li>
+                      <li class="align-landscape userLineCustom">
+                        <label class="form-check-label text-danger fw-bold">❌ Customization</label>
+                        <label class="form-check-label small text-white-50">Avatar unavailable</label>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-3 px-4">
+                    <div class="alert alert-info" style="background-color: rgba(0, 123, 255, 0.15); border-color: #007bff;">
+                      💡 <strong>Tip:</strong> Create a free account to enjoy all the game features!
+                    </div>
+                  </div>
+                </div>
+                <div class="row">
+                  <div class="col-12 my-3 px-4">
+                    <button type="button" class="btn-piu btn-confirm-piu border-pulse-btn-yellow sound-confirm btn-block element-full-size" data-bs-dismiss="modal">
+                       GOT IT ✓
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container-mob-title hide" id="selector">
+
+    <div class="col-12 d-grid my-4 gap-3">
+      <div class="col-12 startGameTitle">
+        <span class="versionCode arcade-build">PIUWEB · PHOENIX<br>SINGLE PLAYER</span>
+        <img class="logoTitle arcade-opening-logo" src="assets/img/mainLogo_phx2.png" alt="Pump It Up Phoenix 2">
+        <button id="btnModalLogin"
+          class="arcade-start-pad" type="button" onclick="PiuOpening.start()">
+          <img class="arcade-prompt" src="assets/img/phx2/press_center_step.png" alt="Press Center Step"><img class="arcade-pad" src="assets/img/phx2/step.png" alt="">
+          <strong>TOUCH TO PLAY</strong><span>toque no centro ou pressione ENTER</span>
+        </button>
+        <p class="arcade-opening-footer">FREE PLAY · RECORDES LOCAIS</p>
+        <div class="arcade-entry-player" role="status" aria-live="polite"><img id="arcade-entry-avatar" src="assets/img/avatar/default.png" alt=""><div><strong id="arcade-entry-name">PIUWEB</strong><span>SINGLE PLAYER</span></div><b>JOGADOR PRONTO</b></div>
+        <button id="btnContinue"
+          class="hide sound-startChannel btnPressPlay border-pulse-btn-b btn-piu btn-command-piu btn-block"
+          onclick="loginContinue()">CONTINUE TO LOBBY</button>
+
+        <div id="CardLogin" class="cardLogin card-mob border-player customCardPos border-pulse-custom hide">
+          <div class="card-player">
+            <div class="row">
+              <div class="d-grid gap-3">
+                <div class="cardUserDetails">
+                  <img id="profileUserLogin" class="profileUser" src="assets/img/avatar/default.png" alt="">
+                  <div class="userData p-3">
+                    <p id="nameUserLogin" class="nameUser">----</p>
+                    <span id="levelUserLogin" class="levelUser">----</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="modal text-white text-center" id="loginWindow">
+          <div class="modal-dialog flex-all-center">
+            <div class="modal-content">
+              <!-- Modal body -->
+              <div class="modal-body">
+                <div class="collapse show" id="optionCard">
+                  <div class="card-mob border-pulse-custom">
+                    <div class="card-body modal-background">
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="col-12 my-3">
+                            <div class="my-3 fw-bold">
+                              <img class="piuweb-tiny" src="assets/img/mainLogo.png" alt="">
+                            </div>
+                            <div class="mb-3 mt-3">
+                              <!-- <label for="email" class="form-label">Email:</label> -->
+                              <input type="email" class="form-control input-custom-piu" id="email"
+                                placeholder="Enter email" name="email">
+                            </div>
+                            <div class="mb-3">
+                              <!-- <label for="pwd" class="form-label">Password:</label> -->
+                              <input type="password" class="form-control input-custom-piu" id="pwd"
+                                placeholder="Enter password" name="pswd">
+                            </div>
+                            <label class="lblPassView mb-3" for="passView">
+                              <button name="passView" onclick="showPass()">
+                                <span class="material-symbols-outlined">
+                                  visibility
+                                </span>
+                              </button>
+                            </label>
+                            <button onclick="login('user')" type="button"
+                              class="btn-piu btn-confirm-piu btn-block element-full-size border-pulse-btn-yellow">
+                              ENTER
+                              <img class="arrow-icon ml-2" src="assets/img/phx2/arrow_yellow_c.png" alt="">
+                            </button>
+                            <button type="button" onclick="login('guest')"
+                              class="btn-piu btn-command-piu btn-block mt-3 element-full-size border-pulse-btn-b">
+                              ACCESS GUEST
+                              <img class="arrow-icon" src="assets/img/phx2/arrow_blue_shift_r.png" alt="">
+                            </button>
+                            <hr>
+                            <span class="font-piu f-size-grade-count">Isn't it yet registered?<br>Register now!</span>
+                            <button onclick="registerNewUser()" type="button"
+                              class="btn-piu btn-confirm-piu btn-block element-full-size border-pulse-btn-yellow mt-3">
+                              REGISTER
+                              <img class="arrow-icon ml-2" src="assets/img/phx2/arrow_red_shift_l.png" alt="">
+                            </button>
+                            <hr>
+                            <button onclick="openChangelog()" type="button"
+                              class="btn-piu btn-command-piu btn-block element-full-size border-pulse-btn-blue mt-2">
+                              📋 CHANGELOG - UPDATES
+                              <img class="arrow-icon" src="assets/img/phx2/arrow_blue_shift_r.png" alt="">
+                            </button>
+                            <div class="row">
+                              <span class="status mt-3"></span>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <button class="btn_all_settings sound-open-cw" data-bs-toggle="modal" data-bs-target="#settingsMenu">
+      <span class="material-symbols-outlined">
+        settings
+      </span>
+    </button>
+    <p class="assign_play">PIUWeb</p>
+  </div>
+
+  <div class="container-mob hide" id="selector">
+
+    <div id="screenshotShare" class="screenshotShare">
+
+      <div id="playerLog" class="card-mob border-player mb-4">
+        <div class="card-player">
+          <div class="row">
+            <div class="d-grid gap-3">
+              <div class="cardUserDetails">
+                <img id="profileUserGame" class="profileUser" src="assets/img/avatar/default.png" alt="">
+                <div class="userData">
+                  <p id="nameUserGame" class="nameUser">PIUWeb</p>
+                  <span id="levelUserGame" class="levelUser">Undefined Lv.??</span>
+                  <div class="exp-line" style="--exp-percent:0%">
+                    <div class="exp-bar"></div>
+                  </div>
+                  <div class="exp-text" id="expText">XP ??? / ???</div>
+                </div>
+
+                <span id="playerSettings" class="sound-open-cw border-pulse-btn-b" data-bs-toggle="modal"
+                  data-bs-target="#settingsMenu">
+                  <span class="material-symbols-outlined">
+                    settings
+                  </span>
+                </span>
+
+                <span id="playerHistory" class="sound-open-cw border-pulse-btn-b" title="Histórico"
+                  data-bs-toggle="modal" data-bs-target="#historyModal" onclick="getHistory(); populateHistoryModal();">
+                  <span class="material-symbols-outlined">history</span>
+                </span>
+
+                <span onclick="getInfoPlayer();" id="playerDetails" class="sound-open-cw border-pulse-btn-b"
+                  data-bs-toggle="modal" data-bs-target="#playerDetailsWindow">
+                  <span class="material-symbols-outlined">
+                    bar_chart
+                  </span>
+                </span>
+
+                <span onclick="logout()" id="playerLogout"
+                  class="btn-piu btn-command-piu-red border-pulse-btn-red btn-block sound-open-cw">
+                  <span class="material-symbols-outlined">
+                    logout
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div>
+
+      </div>
+
+      <div class="col-12 d-grid mb-4 gap-3">
+        <section id="performance" class="col-12 performanceSong collapse phoenix-results" aria-label="Resultado da música">
+          <img id="resultBackground" class="result-background" alt="" crossorigin="anonymous">
+          <div class="result-vignette"></div>
+          <div class="result-stage">
+          <div class="result-mobile-heading">          <div class="result-player-heading"><img id="resultAvatar" src="assets/img/avatar/default.png" alt=""><div><strong id="resultPlayerName">PIUWEB</strong><span>SINGLE PLAYER</span></div></div>
+          <div class="result-best-heading"><strong>PERSONAL BEST</strong><span id="resultBestDate">Recorde pessoal anterior</span></div>
+</div>
+            <header class="result-titlebar"><h1 id="performanceSong">---</h1><p id="resultArtist"></p></header>
+<div class="result-evaluation">            <section class="result-player result-current" aria-label="Sua jogada">
+              <h2 class="result-panel-title">JOGADA ATUAL</h2><span class="result-score-label">SCORE</span>
+              <output id="score" class="result-score">0000000</output><p id="resultDelta" class="result-delta"></p>
+              <img id="gradeResult" class="result-rank" src="assets/img/phx2/grades/f.png" alt="F">
+              <div class="result-plate-slot"><img id="plateResult" class="result-plate" alt="" hidden></div><p id="resultOutcome" class="result-outcome"></p>
+              <p id="resultNewRecord" class="result-new-record" hidden>NOVO RECORDE</p>
+            </section>
+<div class="result-comparison">            <div id="resultLevelBadge" class="result-level single"><span id="stepType">SINGLE</span><strong id="songLevel">00</strong></div>
+            <table class="result-judgments"><caption class="visually-hidden">Julgamentos da jogada e do recorde pessoal anterior</caption>
+              <thead class="visually-hidden"><tr><th scope="col">Sua jogada</th><th scope="col">Julgamento</th><th scope="col">Recorde anterior</th></tr></thead>
+              <tbody>
+                <tr class="result-perfect"><td id="perfect">000</td><th scope="row">PERFECT</th><td id="resultBestPerfect">—</td></tr>
+                <tr class="result-great"><td id="great">000</td><th scope="row">GREAT</th><td id="resultBestGreat">—</td></tr>
+                <tr class="result-good"><td id="good">000</td><th scope="row">GOOD</th><td id="resultBestGood">—</td></tr>
+                <tr class="result-bad"><td id="bad">000</td><th scope="row">BAD</th><td id="resultBestBad">—</td></tr>
+                <tr class="result-miss"><td id="miss">000</td><th scope="row">MISS</th><td id="resultBestMiss">—</td></tr>
+                <tr><td id="maxCombo">000</td><th scope="row">MAX COMBO</th><td id="resultBestCombo">—</td></tr>
+                <tr><td id="resultKcal" title="Consumo calórico não medido">—</td><th scope="row">KCAL</th><td id="resultBestKcal">—</td></tr>
+              </tbody>
+            </table>
+</div>            <section class="result-player result-best" aria-label="Recorde pessoal anterior">
+              <h2 class="result-panel-title">RECORDE PESSOAL</h2><span class="result-score-label">SCORE</span>
+              <output id="resultBestScore" class="result-score">—</output><p class="result-delta result-best-caption">RECORDE ANTERIOR</p>
+              <img id="resultBestGrade" class="result-rank" alt="" hidden><span id="resultBestEmpty" class="result-no-best">—</span>
+              <div class="result-plate-slot"><img id="resultBestPlate" class="result-plate" alt="" hidden></div><p id="resultBestOutcome" class="result-outcome"></p>
+            </section>
+</div>
+<div class="result-controls">            <aside class="result-modifiers" aria-label="Configurações usadas"><div class="result-modifier"><small id="resultSpeedKind">SPEED</small><strong id="songSpeed">X1</strong></div><div class="result-modifier"><small>BGA</small><strong id="bgaStatus">ON</strong></div><div class="result-modifier"><img id="resultNoteskin" alt="Noteskin usada"></div><div class="result-modifier"><small>RUSH</small><strong id="songRush">100%</strong></div><div id="resultControlMode" class="result-modifier"></div></aside>
+            <footer class="result-actions"><button type="button" id="resultNext" class="result-action" onclick="nextStage()">PRÓXIMA MÚSICA <kbd>↵</kbd></button><span>SINGLE PLAYER · RECORDES LOCAIS</span><button type="button" id="resultExport" class="result-action" onclick="captureAndShare()">COMPARTILHAR PONTUAÇÃO</button><p id="resultSaveError" role="alert" hidden></p></footer></div>
+          </div>
+        </section>
+
+        <div class="card-mob blockSelectChannel hide">
+          <div class="card-body">
+            <div class="row">
+              <div class="col-12 col-md-12 pb-2 px-0">
+                <h5 class="card-title text-center text-up font-piu">CHANNELS</h5>
+                <div class="selector-height overflow-auto list-group" role="tablist" id="stage">
+                </div>
+              </div>
+            </div>
+            <button id="arrowChannelLeft" class="arrowSongLeft hide">
+              <span class="material-symbols-outlined">
+                keyboard_double_arrow_left
+              </span>
+            </button>
+            <button id="arrowChannelRight" class="arrowSongRight hide">
+              <span class="material-symbols-outlined">
+                keyboard_double_arrow_right
+              </span>
+            </button>
+          </div>
+        </div>
+
+        <div class="blockSelectSong">
+          <div class="row d-flex align-items-stretch">
+            <div class="col-12 col-lg-12 col-xl-12">
+              <div class="card-mob">
+                <div class="card-body">
+
+                  <div class="row ">
+                    <div class="d-grid gap-3 mb-3">
+                      <button id="btnAllChannels" type="button" onclick="selectionBack()"
+                        class="btn-piu btn-command-piu border-pulse-btn-b btn-block">
+                        <img class="arrow-icon" src="assets/img/phx2/arrow_red_shift_l.png" alt="">
+                        CANAIS
+                        <img class="arrow-icon" src="assets/img/phx2/arrow_red_shift_r.png" alt="">
+                      </button>
+                    </div>
+                  </div>
+                  <div class="row">
+                    <div class="col-12 col-md-12 pb-2 px-0">
+                      <h5 class="card-title text-center text-up font-piu">MUSIC</h5>
+                      <div class="selector-height overflow-auto list-group sound-move" id="online-song" role="tablist">
+                      </div>
+                      <button id="arrowSongLeft" class="arrowSongLeft hide">
+                        <span class="material-symbols-outlined">
+                          keyboard_double_arrow_left
+                        </span>
+                      </button>
+                      <button id="arrowSongRight" class="arrowSongRight hide">
+                        <span class="material-symbols-outlined">
+                          keyboard_double_arrow_right
+                        </span>
+                      </button>
+                      <div class="songDetails text-center">
+                        <span id="t">???</span>
+                        <div class="song-credits"><span id="a">???</span><span class="song-separator" aria-hidden="true">/</span><span class="song-bpm">BPM <span id="b">???</span></span></div>
+                        <audio id="musicPreview">
+                          <source src="#" type="audio/mpeg">
+                          Your browser does not support the audio element.
+                        </audio>
+                      </div>
+                    </div>
+                    <div class="col-12 col-lg-12 col-xl-12 hide">
+                      <div class="card-mob">
+                        <div class="card-body">
+                          <h5 class="card-title text-up text-center">DETAILS</h5>
+                          <ul class="selectSongInfo text-center ">
+                            <li>
+                              <span class="text-up">Tipo do Step:</span>
+                              <span id="st">-</span>
+                            </li>
+                            <li>
+                              <span class="text-up">Descrição:</span>
+                              <span id="d">-</span>
+                            </li>
+                            <li>
+                              <span class="text-up">Dificuldade:</span>
+                              <span id="m">-</span>
+                            </li>
+                            <li>
+                              <span class="text-up">Créditos:</span>
+                              <span id="c">-</span>
+                            </li>
+                            <li>
+                              <span>BPMs:</span>
+                              <span id="b">-</span>
+                            </li>
+                            <li>
+                              <span>SCROLLS:</span>
+                              <span id="scrolls">-</span>
+                            </li>
+                            <li>
+                              <span>SPEEDS:</span>
+                              <span id="speeds">-</span>
+                            </li>
+                            <li>
+                              <span>STOPS:</span>
+                              <span id="stops">-</span>
+                            </li>
+                            <li>
+                              <span>DELAYS:</span>
+                              <span id="delays">-</span>
+                            </li>
+                            <li>
+                              <span>WARPS:</span>
+                              <span id="warps">-</span>
+                            </li>
+                            <li>
+                              <span>TRICK NOTES:</span>
+                              <span id="trickNotes">-</span>
+                            </li>
+                            <li>
+                              <span class="text-up">Step Válido:</span>
+                              <span id="playable">
+                                <div id="playable-true" style="display: none;">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#097969"
+                                    class="bi bi-check" viewBox="0 0 16 16">
+                                    <path
+                                      d="M10.97 4.97a.75.75 0 0 1 1.07 1.05l-3.99 4.99a.75.75 0 0 1-1.08.02L4.324 8.384a.75.75 0 1 1 1.06-1.06l2.094 2.093 3.473-4.425a.267.267 0 0 1 .02-.022z" />
+                                  </svg>
+                                </div>
+                                <div id="playable-false" style="display: none;">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="#C70039"
+                                    class="bi bi-x" viewBox="0 0 16 16">
+                                    <path
+                                      d="M4.646 4.646a.5.5 0 0 1 .708 0L8 7.293l2.646-2.647a.5.5 0 0 1 .708.708L8.707 8l2.647 2.646a.5.5 0 0 1-.708.708L8 8.707l-2.646 2.647a.5.5 0 0 1-.708-.708L7.293 8 4.646 5.354a.5.5 0 0 1 0-.708z" />
+                                  </svg>
+                                </div>
+                                <div id="playable-unknown" style="display: none;">
+                                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor"
+                                    class="bi bi-question-circle" viewBox="0 0 16 16">
+                                    <path d="M8 15A7 7 0 1 1 8 1a7 7 0 0 1 0 14zm0 1A8 8 0 1 0 8 0a8 8 0 0 0 0 16z" />
+                                    <path
+                                      d="M5.255 5.786a.237.237 0 0 0 .241.247h.825c.138 0 .248-.113.266-.25.09-.656.54-1.134 1.342-1.134.686 0 1.314.343 1.314 1.168 0 .635-.374.927-.965 1.371-.673.489-1.206 1.06-1.168 1.987l.003.217a.25.25 0 0 0 .25.246h.811a.25.25 0 0 0 .25-.25v-.105c0-.718.273-.927 1.01-1.486.609-.463 1.244-.977 1.244-2.056 0-1.511-1.276-2.241-2.673-2.241-1.267 0-2.655.59-2.75 2.286zm1.557 5.763c0 .533.425.927 1.01.927.609 0 1.028-.394 1.028-.927 0-.552-.42-.94-1.029-.94-.584 0-1.009.388-1.009.94z" />
+                                  </svg>
+                                </div>
+                              </span>
+                            </li>
+                          </ul>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="col-12 col-md-12 pb-2 px-0 difficulty-select">
+                      <div class="mt-3 card-title text-center text-up font-piu">LEVEL</div>
+                      <div class="selector-height overflow-auto list-group" id="level" role="tablist">
+                      </div>
+                    </div>
+                    <div class="d-grid gap-3">
+                      <button type="button" class="btn-piu btn-command-piu border-pulse-btn-b btn-block sound-open-cw"
+                        data-bs-toggle="modal" data-bs-target="#commandWindow">
+                        <img class="arrow-icon" src="assets/img/phx2/arrow_blue_shift_l.png" alt="">
+                        COMMAND WINDOW
+                        <img class="arrow-icon" src="assets/img/phx2/arrow_blue_shift_r.png" alt="">
+                      </button>
+                      <button type="button"
+                        class="btn-piu sound-pumpitup border-pulse-btn-yellow btn-confirm-piu btnSelectMusic btn-block"
+                        onclick="confirmPlay()" data-bs-toggle="modal" data-bs-target="#confirmPlayModal">
+                        <img class="arrow-icon mr-2" src="assets/img/phx2/arrow_yellow_c.png" alt="">
+                        CONFIRM STEP
+                        <img class="arrow-icon ml-2" src="assets/img/phx2/arrow_yellow_c.png" alt="">
+                      </button>
+                      <button type="button" class="btn-piu border-pulse-btn-red btn-block sound-open-cw btnCreateBattle"
+                        onclick="createBattleFromCurrentSong()"
+                        style="background: #000;color: #b30202;font-weight: bold;border: 5px solid #b30202;">
+                        <img class="arrow-icon mr-2" src="assets/img/phx2/arrow_blue_shift_l.png" alt="">
+                        CREATE BATTLE
+                        <img class="arrow-icon ml-2" src="assets/img/phx2/arrow_blue_shift_r.png" alt="">
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal text-white" id="keyMapMenu">
+          <div class="modal-dialog">
+            <div class="modal-content">
+
+              <!-- Modal body -->
+              <div class="modal-body">
+                <div class="collapse show" id="optionCard">
+                  <div class="card-mob">
+                    <div class="card-body modal-background">
+                      <div class="col-12">
+                        <h2 class="modal-title text-center my-3">SETTINGS</h2>
+                      </div>
+                      <div class="col-12 text-center">
+                        <div class="fw-bold">FULLSCREEN</div>
+                        <div class="select-custom">
+                          <button onClick="activedFullScreen(true)"
+                            class="FullScreenOn custom-option button custom sound-confirm">ON</button>
+                          <button onClick="activedFullScreen(false)"
+                            class="FullScreenOff custom-option button custom sound-confirm">OFF</button>
+                        </div>
+                      </div>
+                      <div class="col-12 text-center mt-2">
+                        <div class="fw-bold">BACKGROUND</div>
+                        <div class="select-custom">
+                          <button onClick="selectBackground('static')"
+                            class="bgStatic custom-option button custom sound-confirm">STATIC</button>
+                          <button onClick="selectBackground('video')"
+                            class="bgVideo custom-option button custom sound-confirm">VIDEO</button>
+                        </div>
+                      </div>
+                      <div id="dancePadMap">
+                        <div class="col-12 pb-3 text-center">
+                          <div class="fw-bold text-up">LEFT KEYBOARD MAP:</div>
+                          <table class="element-full-size">
+                            <tr>
+                              <td class="text-yellow text-center">LEFT-DOWN:</td>
+                              <td>
+                                <input class="form-control-custom" type="text" id="ldlmap" value="Z" maxlength="1"
+                                  onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dl')"
+                                  onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dl')">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="text-yellow text-center">LEFT-UP:</td>
+                              <td>
+                                <input class="form-control-custom" type="text" id="lulmap" value="Q" maxlength="1"
+                                  onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ul')"
+                                  onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ul')">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="text-yellow text-center">CENTER:</td>
+                              <td>
+                                <input class="form-control-custom" type="text" id="lcmap" value="S" maxlength="1"
+                                  onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','c')"
+                                  onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','c')">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="text-yellow text-center">RIGHT-UP:</td>
+                              <td>
+                                <input class="form-control-custom" type="text" id="lurmap" value="E" maxlength="1"
+                                  onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','ur')"
+                                  onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','ur')">
+                              </td>
+                            </tr>
+                            <tr>
+                              <td class="text-yellow text-center">RIGHT-DOWN:</td>
+                              <td>
+                                <input class="form-control-custom" type="text" id="ldrmap" value="C" maxlength="1"
+                                  onfocus="this.value=''" onfocusout="this.value=getDancePadCurrentValue('l','dr')"
+                                  onkeydown="this.value=''" onkeyup="keyMapChanged(this,'l','dr')">
+                              </td>
+                            </tr>
+                          </table>
+                        </div>
+                      </div>
+                      <div class="col-12 my-3">
+                        <button type="button" class="btn-piu btn-default-piu-warn element-full-size sound-confirm"
+                          onClick="clearCacheAndData()">
+                          <i class="material-symbols-outlined" style="vertical-align: middle;">delete_sweep</i>
+                          ERASE CACHE AND DATA
+                        </button>
+                      </div>
+                      <div class="col-12 my-3">
+                        <button type="button" class="btn-piu btn-command-piu element-full-size sound-confirm"
+                          onClick="openChangelog()">
+                          <i class="material-symbols-outlined" style="vertical-align: middle;">description</i>
+                          VIEW CHANGELOG
+                        </button>
+                      </div>
+                      <div class="col-12 my-4">
+                        <button type="button" class="btn-piu btn-default-piu sound-close-cw btn-block element-full-size"
+                          data-bs-dismiss="modal">
+                          SAVE CONFIGURATION
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+        </div>
+
+        <!-- confirmPlay Modal -->
+        <div class="modal ps-modal" id="confirmPlayModal" tabindex="-1" aria-labelledby="ps-title" aria-hidden="true">
+          <div class="modal-dialog"><div class="modal-content">
+            <main class="ps-screen" id="ps-screen">
+              <img id="ps-background" class="ps-song-background" alt="" aria-hidden="true"><div class="ps-song-shade" aria-hidden="true"></div>
+              <header class="ps-topbar">
+                <button type="button" class="ps-corner" id="ps-back" aria-label="Cancelar e voltar às músicas"><img src="assets/img/phx2/arrow_red_shift_l.png" alt=""></button>
+                <div class="ps-profile"><img id="ps-avatar" src="assets/img/avatar/default.png" alt=""><div><strong id="ps-player">PIUWEB</strong><span>SINGLE PLAYER</span></div><b class="ps-sp">SP</b></div>
+                <button type="button" class="ps-corner ps-enter" id="ps-enter" aria-label="Cancelar e voltar às músicas"><img src="assets/img/phx2/arrow_red_shift_r.png" alt=""></button>
+              </header>
+              <section class="ps-scene" aria-label="Imagem da música selecionada">
+                <aside class="ps-commands" aria-label="Comandos da partida"><div><span id="ps-speed-kind">SPEED</span><strong id="ps-speed">X1</strong></div><div><span>BGA</span><strong id="ps-bga">ON</strong></div><div><img id="ps-noteskin" alt="Noteskin selecionada"></div><div><span>RUSH</span><strong id="ps-rush">100%</strong></div><div id="ps-control-mode"></div></aside>
+                <span class="ps-phase"></span>
+              </section>
+              <section class="ps-titlebar"><h1 id="ps-title">---</h1><p><span id="ps-artist"></span> <span class="ps-bpm" id="ps-bpm"></span></p></section>
+              <section class="ps-difficulty" aria-label="Dificuldades disponíveis"><div id="ps-levels" class="ps-levels" role="group" aria-label="Escolher dificuldade"></div></section>
+              <section class="ps-records" aria-label="Dificuldade e pontuações locais">
+                <article class="ps-record ps-last" aria-labelledby="ps-last-heading"><h2 id="ps-last-heading">ÚLTIMA PARTIDA</h2><div class="ps-record-data" id="ps-last-data" hidden><strong class="ps-score" id="ps-last-score"></strong><div class="ps-achievements"><img class="ps-grade" id="ps-last-grade" alt=""><img class="ps-plate" id="ps-last-plate" alt="" hidden></div><span class="ps-record-status" id="ps-last-status"></span></div><p class="ps-empty" id="ps-last-empty">SEM PARTIDA ANTERIOR</p></article>
+                <div class="ps-focus"><img class="ps-center-prompt" src="assets/img/elements/steps_Arrow_PHNX.png" alt="Press Center Step"><div class="ps-large-level" id="ps-large-level"><span id="ps-type">SINGLE</span><strong id="ps-level">00</strong></div></div>
+                <article class="ps-record ps-best" aria-labelledby="ps-best-heading"><h2 id="ps-best-heading">MEU RECORDE</h2><div class="ps-record-data" id="ps-best-data" hidden><strong class="ps-score" id="ps-best-score"></strong><div class="ps-achievements"><img class="ps-grade" id="ps-best-grade" alt=""><img class="ps-plate" id="ps-best-plate" alt="" hidden></div><span class="ps-record-status" id="ps-best-status"></span></div><p class="ps-empty" id="ps-best-empty">AINDA SEM RECORDE</p></article>
+              </section>
+              <footer class="ps-footer"><button type="button" class="ps-blue ps-back" id="ps-cancel" aria-label="Dificuldade anterior"><img src="assets/img/phx2/arrow_blue_shift_l.png" alt=""></button><div class="ps-footer-center"><button type="button" class="ps-confirm" id="ps-confirm"><img src="assets/img/phx2/arrow_yellow_c.png" alt="">CONFIRMAR</button><small>RECORDES DESTE NAVEGADOR</small><p id="ps-error" role="alert" hidden></p></div><button type="button" class="ps-blue ps-next" id="ps-next" aria-label="Próxima dificuldade"><img src="assets/img/phx2/arrow_blue_shift_r.png" alt=""></button></footer>
+            </main>
+          </div></div>
+        </div>
+
+        <!-- Histórico Modal -->
+        <div class="modal fade text-white" id="historyModal" tabindex="-1" aria-hidden="true">
+          <div class="modal-dialog" role="dialog">
+            <div class="modal-content">
+              <div class="col-12 mb-2">
+                <button type="button"
+                  class="btn-piu btn-command-piu border-pulse-btn-b sound-close-cw btn-block element-full-size"
+                  data-bs-dismiss="modal">
+                  CLOSE PLAYER HISTORY
+                </button>
+              </div>
+              <div class="modal-body">
+                <div class="collapse show" id="historyOptionCard">
+                  <div class="card-mob-history">
+                    <div class="card-body modal-background">
+                      <div class="col-12 text-center">
+                        <h5 class="modal-title mb-3">PLAYER HISTORY</h5>
+                      </div>
+
+                      <!-- Filtros -->
+                      <div class="col-12 mb-3">
+                        <div class="d-flex d-row justify-content-evenly text-center">
+                          <div class="col-md-4">
+                            <label class="text-white small mb-1">Game Mode:</label>
+                            <select id="filterGameMode" class="form-select form-select-sm">
+                              <option value="all">All</option>
+                              <option value="normal">Normal</option>
+                              <option value="battle">Battle</option>
+                              <option value="challenge">Challenge</option>
+                            </select>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="text-white small mb-1">Level:</label>
+                            <select id="filterLevel" class="form-select form-select-sm">
+                              <option value="all">All</option>
+                              <option value="1-5">1-5</option>
+                              <option value="6-10">6-10</option>
+                              <option value="11-15">11-15</option>
+                              <option value="16-20">16-20</option>
+                              <option value="21-28">21-28</option>
+                            </select>
+                          </div>
+                          <div class="col-md-4">
+                            <label class="text-white small mb-1">Step Type:</label>
+                            <select id="filterStepType" class="form-select form-select-sm">
+                              <option value="all">All</option>
+                              <option value="single">Single</option>
+                              <option value="double">Double</option>
+                            </select>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12">
+                        <!-- Conteúdo populado dinamicamente -->
+                        <div id="historyContentHolder"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div class="col-12 mb-2">
+                <button type="button"
+                  class="btn-piu btn-command-piu border-pulse-btn-b sound-close-cw btn-block element-full-size"
+                  data-bs-dismiss="modal">
+                  CLOSE PLAYER HISTORY
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal text-white text-center" id="playerDetailsWindow">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <!-- Modal body -->
+              <div class="modal-body">
+                <div class="collapse show" id="optionCard">
+                  <div class="card-mob">
+                    <div class="card-body modal-background">
+                      <div class="row">
+                        <div class="col-12">
+                          <ul class="userWindowInfo form-switch form-check">
+                            <li class="align-portrait">
+                              <label class="form-check-label f-size-1">PLAYER PROFILE</label>
+                            </li>
+                            <li class="align-portrait mt-2">
+                              <img class="mt-1" id="profileUser" src="assets/img/avatar/default.png" alt="">
+                            </li>
+                            <li class="align-portrait mt-2 mb-2">
+                              <label id="nameUser" class="txtUserName">----</label>
+                            </li>
+                            <div class="d-flex side-by-side">
+                              <li class="align-portrait px-2 py-2 border-dashed">
+                                <label class="form-check-label">CURRENT LEVEL</label>
+                                <label id="levelUser" class="txtUserLevel">----</label>
+                              </li>
+                              <li class="align-portrait px-2 py-2 border-dashed">
+                                <label class="form-check-label">EXP</label>
+                                <label id="expUser" class="form-check-label txtUserLevel">0</label>
+                              </li>
+                            </div>
+                            <li class="align-portrait mt-1">
+                              <label class="form-check-label f-size-grade-count">MY GRADES</label>
+                            </li>
+                            <ul class="personal_grade_result_count">
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-sss">SSS+</label>
+                                <label id="personal_SSS_plus" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-sss">SSS</label>
+                                <label id="personal_SSS" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-ss">SS+</label>
+                                <label id="personal_SS_plus" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-ss">SS</label>
+                                <label id="personal_SS" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-s">S+</label>
+                                <label id="personal_S_plus" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-s">S</label>
+                                <label id="personal_S" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-aaa">AAA+</label>
+                                <label id="personal_AAA_plus" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-aaa">AAA</label>
+                                <label id="personal_AAA" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-a">AA+</label>
+                                <label id="personal_AA_plus" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-a">AA</label>
+                                <label id="personal_AA" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-a">A+</label>
+                                <label id="personal_A_plus" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-a">A</label>
+                                <label id="personal_A" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-b">B</label>
+                                <label id="personal_B" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-c">C</label>
+                                <label id="personal_C" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-d">D</label>
+                                <label id="personal_D" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-f">F</label>
+                                <label id="personal_F" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                            </ul>
+                            <li class="align-portrait mt-1">
+                              <label class="form-check-label f-size-grade-count">MY PLATES</label>
+                            </li>
+                            <ul class="personal_grade_result_count">
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-sss">PG</label>
+                                <label id="plate_perfect_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-sss">UG</label>
+                                <label id="plate_ultimate_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-s">EG</label>
+                                <label id="plate_extreme_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-s">SG</label>
+                                <label id="plate_superb_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-aaa">MG</label>
+                                <label id="plate_marvelous_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-aaa">TG</label>
+                                <label id="plate_talented_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-a">RG</label>
+                                <label id="plate_rough_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                              <li class="align-landscape userLineCustom">
+                                <label class="form-check-label f-size-grade-count grade-lvl-a">FG</label>
+                                <label id="plate_fair_game" class="form-check-label f-size-grade-count">0</label>
+                              </li>
+                            </ul>
+                            <li class="align-portrait my-2">
+                              <label class="form-check-label f-size-grade-count">MY BATTLE STATS</label>
+                            </li>
+                            <div class="d-flex side-by-side">
+                              <li class="align-portrait px-2 py-2 mx-2 border-dashed w-100">
+                                <label class="form-check-label" style="color: #00ff00;">WINS</label>
+                                <label id="battleWins" class="form-check-label txtUserLevel">0</label>
+                              </li>
+                              <li class="align-portrait px-2 py-2 mx-2 border-dashed w-100">
+                                <label class="form-check-label" style="color: #ffff00;">DRAW</label>
+                                <label id="battleDraws" class="form-check-label txtUserLevel">0</label>
+                              </li>
+                              <li class="align-portrait px-2 py-2 mx-2 border-dashed w-100">
+                                <label class="form-check-label" style="color: #ff0000;">LOSSES</label>
+                                <label id="battleLosses" class="form-check-label txtUserLevel">0</label>
+                              </li>
+                            </div>
+                            <li class="align-portrait mt-2">
+                              <label class="form-check-label" style="color: #0dcaf0;">CHALLENGES COMPLETED</label>
+                              <label id="challengesCompleted" class="form-check-label">0</label>
+                            </li>
+                            <li class="align-portrait mt-1">
+                              <label class="form-check-label s-color">SCORE TOTAL SINGLE</label>
+                              <label id="singleTotalScore" class="form-check-label">0.000.000</label>
+                            </li>
+                            <li class="align-portrait">
+                              <label class="form-check-label d-color">SCORE TOTAL DOUBLE</label>
+                              <label id="doubleTotalScore" class="form-check-label">0.000.000</label>
+                            </li>
+                            <li class="align-portrait">
+                              <label class="form-check-label sc-color">SONG COUNT</label>
+                              <label id="songsCount" class="form-check-label">0</label>
+                            </li>
+                          </ul>
+                        </div>
+                        <div class="col-12 mt-2">
+                          <button onclick="logout()"
+                            class="btn-piu btn-command-piu-red border-pulse-btn-red btn-block sound-open-cw element-full-size mb-2">
+                            LOGOFF
+                          </button>
+                          <button type="button"
+                            class="btn-piu btn-command-piu border-pulse-btn-b sound-close-cw btn-block element-full-size"
+                            data-bs-dismiss="modal">
+                            CLOSE PROFILE WINDOW
+                          </button>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="modal text-white text-center" id="commandWindow">
+          <div class="modal-dialog">
+            <div class="modal-content">
+              <div class="modal-body">
+                <div class="collapse show" id="optionCard">
+                  <div class="card-mob">
+                    <div class="card-body modal-background">
+                      <div class="row">
+                        <div class="col-12">
+                          <h2>COMMAND WINDOW</h2>
+                        </div>
+                      </div>
+                      <div class="row">
+                        <div class="col-12">
+                          <div class="my-3 fw-bold">NOTESKIN</div>
+                          <div class="select-noteskin">
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm focus"
+                              value="EXCEED2-OLD"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="FIESTA"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="FIESTA-DRUM"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="FIESTA-LIGHTING"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="FIESTA-MISSILE"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="FIESTA-SOCCER"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="FIESTA2"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="FIESTAEX-BASIC"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2-DOG"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2-E-FIRE"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2-E-ICE"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2-E-WIND"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2-GIRL"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2-SHEEP"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NX2-YASANGMA"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="NXA"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="PREMIERE"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="PRIME"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="PRIME2"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="ZERO-CANOND"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="ZERO-EASY"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="ZERO-MUSICAL"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="ZERO-POKER"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="ZERO-SLIME"></button>
+                            <button onClick="selectNote(this);" class="noteskin-option button note sound-confirm"
+                              value="EXCEED2-FLOWERCARD"></button>
+                          </div>
+                        </div>
+
+                        <div class="col-12">
+                          <div class="fw-bold">SPEED</div>
+                          <div class="select-speed">
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm focus"
+                              value="1">1.0x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="2">2.0x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="2.5">2.5x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="3">3.0x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="3.5">3.5x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="4">4.0X</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="4.5">4.5x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="5">5.0x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="5.5">5.5x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="6">6.0x</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="7">7.0X</button>
+                            <button onClick="selectSpeed(this);" class="speed-option button speed sound-confirm"
+                              value="8">8.0x</button>
+                          </div>
+                        </div>
+
+                        <div class="col-12">
+                          <div class="fw-bold">SCREEN EFFECTS</div>
+                          <div class="select-bga">
+                            <button onClick="selectBGA(this);" class="bga-option button bga sound-confirm focus"
+                              value="on">BGA ON</button>
+                            <button onClick="selectBGA(this);" class="bga-option button bga sound-confirm"
+                              value="off">BGA
+                              OFF</button>
+                            <button onClick="selectBGA(this);" class="bga-option button bga sound-confirm"
+                              value="dark">BGA DARK</button>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="col-12">
+                        <div class="fw-bold">RUSH 80% ~ 150%</div>
+                        <div class="select-rush">
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm"
+                            value="0.8">80%</button>
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm"
+                            value="0.9">90%</button>
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm focus"
+                            value="1">100%</button>
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm"
+                            value="1.1">110%</button>
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm"
+                            value="1.2">120%</button>
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm"
+                            value="1.3">130%</button>
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm"
+                            value="1.4">140%</button>
+                          <button onClick="selectRush(this);" class="rush-option button rush sound-confirm"
+                            value="1.5">150%</button>
+                        </div>
+                      </div>
+
+                      <div class="col-12">
+                        <div class="fw-bold">DELAY OF MUSIC:</div>
+                        <input class="mw-25 form-control" type="range" id="offset" name="offset" value="0.0" step="0.1"
+                          min="-5" max="5">
+                      </div>
+
+                      <div class="col-12" id="touchControlsContainer">
+                        <ul class="commandWindowInfo form-switch form-check">
+                          <li>
+                            <label class="form-check-label fw-bold" for="touchInput">ACTIVATE TOUCHPAD</label>
+                            <input class="check-input-custom" type="checkbox" id="touchInput">
+                          </li>
+                          <li hidden>
+                            <input type="hidden" value="0" id="touchpadSize">
+                          </li>
+                        </ul>
+                      </div>
+                      <div class="col-12 my-3">
+                        <button type="button" class="btn-piu btn-default-piu sound-close-cw btn-block element-full-size"
+                          data-bs-dismiss="modal">
+                          SAVE CONFIGURATION
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal text-white" id="settingsMenu">
+    <div class="modal-dialog flex-all-center">
+      <div class="modal-content">
+
+        <!-- Modal body -->
+        <div class="modal-body">
+          <div class="collapse show" id="optionCard">
+            <div class="card-mob">
+              <div class="card-body modal-background">
+                <div class="col-12">
+                  <h2 class="modal-title text-center my-3">SETTINGS</h2>
+                </div>
+                <div class="col-12 text-center">
+                  <div class="fw-bold">FULLSCREEN</div>
+                  <div class="select-custom">
+                    <button onClick="activedFullScreen(true)"
+                      class="FullScreenOn custom-option button custom sound-confirm">ON</button>
+                    <button onClick="activedFullScreen(false)"
+                      class="FullScreenOff custom-option button custom sound-confirm">OFF</button>
+                  </div>
+                </div>
+                <div class="col-12 text-center">
+                  <div class="fw-bold">BACKGROUND</div>
+                  <div class="select-custom">
+                    <button onClick="selectBackground('static')"
+                      class="bgStatic custom-option button custom sound-confirm focus">STATIC</button>
+                    <button onClick="selectBackground('video')"
+                      class="bgVideo custom-option button custom sound-confirm">VIDEO</button>
+                  </div>
+                </div>
+                <div class="col-12 my-3">
+                  <button type="button" class="btn-piu btn-default-piu-warn element-full-size sound-confirm"
+                    onClick="clearCacheAndData()">
+                    <i class="material-symbols-outlined" style="vertical-align: middle;">delete_sweep</i>
+                    ERASE CACHE AND DATA
+                  </button>
+                </div>
+                <div class="col-12 my-3">
+                  <button type="button" class="btn-piu btn-command-piu element-full-size sound-confirm"
+                    onClick="openChangelog()">
+                    <i class="material-symbols-outlined" style="vertical-align: middle;">description</i>
+                    VIEW CHANGELOG
+                  </button>
+                </div>
+                <div class="col-12 my-4">
+                  <button type="button" class="btn-piu btn-default-piu sound-close-cw btn-block element-full-size"
+                    data-bs-dismiss="modal">
+                    SAVE CONFIGURATION
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/js/local-records.js"></script>
+  <script src="assets/js/touch-layout-settings.js"></script>
+  <script src="assets/js/exp-config.js"></script>
+  <script src="assets/js/scroll-settings.js"></script>
+  <script src="assets/js/results-view.js"></script>
+  <script src="Demo/DemoLogic.js"></script>
+  <script src="assets/js/offline-service.js"></script>
+  <script src="assets/js/mobile.js"></script>
+  <script src="assets/js/html2canvas.min.js"></script>
+<script src="assets/js/offline-ui.js"></script>
+<script src="assets/js/game-settings.js"></script>
+<script src="assets/js/control-mode.js"></script>
+<script src="assets/js/active-modifiers.js"></script>
+<script src="assets/js/arrow-feedback.js"></script>
+<script src="assets/js/desktop.js"></script>
+<script src="assets/js/command-audio.js"></script>
+<script src="assets/js/command-panel.js"></script>
+<script src="assets/js/mobile-command.js"></script>
+<script src="assets/js/prestart.js"></script>
+<script src="assets/js/arcade-opening.js"></script>
+<script src="assets/js/app-settings.js"></script>
+<script src="assets/js/player-panels.js"></script>
+<script src="assets/js/touch-preview.js"></script>
+<script src="assets/js/arcade-keyboard.js"></script>
+<script src="assets/js/channel-carousel.js"></script>
+<script src="assets/js/score-share.js"></script>
+</body>
+
+</html>
