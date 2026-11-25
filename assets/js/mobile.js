@@ -312,6 +312,7 @@ function selectChannel(main = false) {
 }
 
 function choiceChannel() {
+  if (!channelSongCount(currentChannel === 'favorites' ? 'favorites' : stageIndex)) return;
   resetAudio();
   blockSelectSong.classList.remove('hide');
   btnSelectMusic.classList.remove('hide');
@@ -395,7 +396,8 @@ $(".sound-move").click(function () {
 });
 
 document.getElementById('stage').addEventListener('click',function(event){
-  if(!event.target.closest('.listSong'))return;
+  const card=event.target.closest('.listSong');
+  if(!card || card.getAttribute('aria-disabled')==='true')return;
   obj2.pause();
   obj2.src='assets/sounds/PHOENIX_2_PRE_SELECT_MUSIC.mp3';
   obj2.volume=1;
@@ -1253,6 +1255,7 @@ var activeBattle = null;
 var activeChallenge = null;
 
 function openFavoritesChannel() {
+  if (!channelSongCount('favorites')) return;
   resetSongSelection();
   channelChartFilter = null;
   channelLevelPicker().hidden = true;

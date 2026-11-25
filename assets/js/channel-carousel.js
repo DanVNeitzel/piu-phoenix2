@@ -32,6 +32,20 @@
     }
     if(image)image.alt=title(card);
   }
+  function updateLock(card) {
+    if(card.dataset.level)return;
+    const locked=channelSongCount(card.dataset.idx)===0;
+    card.classList.toggle('channel-locked',locked);
+    card.setAttribute('aria-disabled',String(locked));
+    card.setAttribute('aria-label',title(card)+(locked?' · Bloqueado: sem músicas':''));
+    let lock=card.querySelector('.channel-lock');
+    if(locked && !lock){
+      lock=document.createElement('span');lock.className='channel-lock';lock.setAttribute('aria-hidden','true');
+      lock.innerHTML='<span class="material-symbols-outlined">lock</span>';
+      card.append(lock);
+    }
+    if(lock)lock.hidden=!locked;
+  }
   function render(){
     const list=cards();if(!list.length)return;
     if(!list.includes(selected))selected=list.find(card=>card.classList.contains('active')) || list[0];
@@ -53,15 +67,15 @@
       const levelImage=card.querySelector('img[data-level-src]');
       if(!hidden && levelImage && !levelImage.getAttribute('src'))levelImage.src=levelImage.dataset.levelSrc;
       artwork(card);
+      updateLock(card);
     });
     if(heading)heading.textContent=levelMode?'DIFFICULTY ZONE '+channelChartFilter.label:title(selected).replace(/^\d+[- ]*/, '');
     if(levelMode){
       description.textContent=channelChartFilter.label+' · NÍVEL '+selected.dataset.level+' · S / ENTER PARA CONFIRMAR';
       wheel.scrollLeft=0;return;
     }
-    const count=selected.dataset.idx==='favorites'?getFavorites().length:
-      songsJson?.children[Number(selected.dataset.idx)]?.children.filter(hasChart).length;
-    description.textContent=count===0?'SEM MÚSICAS NESTA BIBLIOTECA · S / ENTER PARA ABRIR':
+    const count=channelSongCount(selected.dataset.idx);
+    description.textContent=count===0?'CANAL BLOQUEADO · SEM MÚSICAS NESTA BIBLIOTECA':
       (count===undefined?'':count+' músicas · ')+ 'S / ENTER PARA CONFIRMAR';
     wheel.scrollLeft=0;
   }
@@ -144,6 +158,11 @@
   });
   wheel.addEventListener('click',event=>{
     const card=event.target.closest('.listSong');if(!card || !visible())return;
+    if(!card.dataset.level && !channelSongCount(card.dataset.idx)){
+      event.preventDefault();event.stopImmediatePropagation();
+      if(performance.now()>=ignoreClickUntil)choose(card);
+      return;
+    }
     if(performance.now()<ignoreClickUntil || card!==selected){
       event.preventDefault();event.stopImmediatePropagation();
       if(performance.now()>=ignoreClickUntil)choose(card);
@@ -179,6 +198,7 @@
     button.addEventListener('click',event=>{event.preventDefault();event.stopImmediatePropagation();move(i?1:-1);},true);
   });
   new MutationObserver(()=>{if(visible())render();}).observe(wheel,{childList:true});
+  document.addEventListener('piu:favoritechange',()=>{if(visible())render();});
   new MutationObserver(()=>{
     if(visible() && !opened)open();
     if(!visible()){opened=false;wheel.classList.remove('channel-wheel-opening');}

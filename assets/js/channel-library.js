@@ -115,13 +115,16 @@
     const format = extension === 'webp' ? 'webp' : 'png';
     return mode && suffix ? 'difficulty-zone/' + mode + '/img/' + prefix + '_lv_' + suffix + '.' + format : null;
   }
+  function songCount(stage) {
+    return (stage?.children || []).filter(song => !!songKey(song)).length;
+  }
   function initialStage(catalog, savedId) {
     const stages = catalog.children || [];
     const saved = stages.findIndex(stage => (stage.channelId || stage.path) === savedId && stage.children.some(song => songKey(song)));
     if (saved >= 0) return saved;
-    const arcade = stages.findIndex(stage => stage.channelId === 'arcade-mix');
+    const arcade = stages.findIndex(stage => stage.channelId === 'arcade-mix' && songCount(stage)>0);
     return arcade >= 0 ? arcade : Math.max(0,stages.findIndex(stage => stage.children.some(song => songKey(song))));
   }
-  root.PiuLibrary = {channelArtwork,songKey,entries,resolveFavorite,migrateFavorites,difficulty,matchesChart,levelArtwork,initialStage};
+  root.PiuLibrary = {channelArtwork,songKey,entries,resolveFavorite,migrateFavorites,difficulty,matchesChart,levelArtwork,initialStage,songCount};
   if (typeof module !== 'undefined') module.exports = root.PiuLibrary;
 })(globalThis);

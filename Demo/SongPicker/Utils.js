@@ -22,12 +22,14 @@ let resources = 'https://danvneitzel.github.io/piu-songs/';
 const publishedLibrary = resources;
 function libraryUrl(path) { return new URL(path.split('/').map(encodeURIComponent).join('/'), resources).href; }
 let songLoadVersion = 0;
+let songLoadController = null;
 const chartCache = new Map();
 let channelChartFilter = null;
 const difficultyIndexCache = new Map();
 
 function resetSongSelection() {
   ++songLoadVersion;
+  songLoadController?.abort();
   stopMusicPreview();
   chart_level = null; selsong = null; song = null; songIndex = null;
   sscpath = null; mp3path = null; imgpath = null; imageMusic = ''; imageChannel = '';
@@ -111,6 +113,10 @@ function songBanner(entry) {
   return (images.find(f => !/(?:_B\.|wide|background)/i.test(f.name)) || images[0])?.path || '';
 }
 function hasChart(entry) { return (entry.children || []).some(file => /\.ssc$/i.test(file.name)); }
+function channelSongCount(index) {
+  if (index === 'favorites') return getFavorites().filter(favorite => !favorite.unavailable).length;
+  return PiuLibrary.songCount(songsJson?.children[Number(index)]);
+}
 
 let imageMusic = '';
 let imageChannel = '';
@@ -186,6 +192,7 @@ function toggleFavorite(songData) {
       resetSongSelection();
       document.querySelector('.favorite-unavailable')?.remove();
       showEmptyChannel('SEUS FAVORITOS','Pressione e segure uma música para adicioná-la aos favoritos.');
+      selectChannel(true);
     }else if(removedSelected){
       remaining[Math.min(selectedIndex,remaining.length-1)].click();
     }
@@ -436,6 +443,8 @@ async function changeOnlineSong(i) {
   const entry = songsJson?.children[stageIndex]?.children[i];
   if (!entry || !hasChart(entry)) return;
   const version = ++songLoadVersion;
+  songLoadController?.abort();
+  const controller = songLoadController = new AbortController();
   localStorage.setItem('last_song', i);
   if (currentChannel !== 'favorites') localStorage.setItem('piu_last_song_key',PiuLibrary.songKey(entry));
   clear('level'); chart_level = null; selsong = null;
@@ -447,18 +456,22 @@ async function changeOnlineSong(i) {
   document.querySelectorAll('.btnSelectMusic').forEach(el => el.disabled = true);
   document.getElementById('t').textContent = entry.name;
   document.getElementById('a').textContent = 'Carregando…';
-  actualMusic.pause();
-  document.querySelectorAll('#online-song .listSong').forEach(el => el.classList.toggle('active', Number(el.dataset.songIndex ?? el.dataset.idx) === i && (!el.dataset.stageIndex || Number(el.dataset.stageIndex) === stageIndex)));
+  stopMusicPreview();
+  if (actualMusic.hasAttribute('src')) {actualMusic.removeAttribute('src');actualMusic.load();}
+  document.querySelectorAll('#online-song .listSong').forEach(el => el.classList.toggle('active', !el.classList.contains('wheel-ghost') && Number(el.dataset.songIndex ?? el.dataset.idx) === i && (el.dataset.stageIndex === undefined || Number(el.dataset.stageIndex) === stageIndex)));
   document.querySelectorAll('#online-song .active img').forEach(img => {
     img.loading = 'eager'; img.fetchPriority = 'high';
   });
   document.dispatchEvent(new CustomEvent('piu:songchange'));
   try {
+    // Browse immediately; fetch and parse only after the choice has settled briefly.
+    await new Promise(resolve => setTimeout(resolve, 100));
+    if (version !== songLoadVersion) return;
     if (!chart) throw new Error('Esta música não possui arquivo SSC.');
     const path = libraryUrl(chart.path);
     let content = chartCache.get(path);
     if (!content) {
-      const response = await fetch(path);
+      const response = await fetch(path, {signal:controller.signal});
       if (!response.ok) throw new Error('Não foi possível carregar a dificuldade (HTTP ' + response.status + ').');
       content = await response.text(); chartCache.set(path, content);
     }
@@ -510,7 +523,7 @@ if (typeof actualMusic !== 'undefined' && actualMusic) {
 
 function change_stage(i, selectedSong = 0) {
   const stage = songsJson?.children[i];
-  if (!stage) return;
+  if (!stage || !channelSongCount(i)) return;
   resetSongSelection();
   document.querySelector('.favorite-unavailable')?.remove();
   localStorage.setItem('last_stage', i);
@@ -761,7 +774,14 @@ async function readSongList() {
     const savedKey = sameCatalog ? localStorage.getItem('piu_last_song_key') : null;
     const savedSong = songsJson.children[savedStage]?.children.findIndex(entry => PiuLibrary.songKey(entry) === savedKey) ?? 0;
     localStorage.setItem('piu_catalog_source', resources);
-    change_stage(songsJson.children[savedStage] ? savedStage : 0, savedSong);
+    const initialStage=songsJson.children[savedStage] ? savedStage : 0;
+    if(channelSongCount(initialStage))change_stage(initialStage,savedSong);
+    else {
+      resetSongSelection();stageIndex=null;channelChartFilter=null;
+      blockSelectSong.classList.add('hide');btnSelectMusic.classList.add('hide');
+      blockSelectChannel.classList.remove('hide');
+      document.dispatchEvent(new CustomEvent('piu:stagechange'));
+    }
   } catch (error) {
     const address = new URL(resources + 'songs.json', location.href).href;
     console.error('Falha ao carregar a biblioteca:', {address,error});

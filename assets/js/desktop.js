@@ -68,10 +68,13 @@
     const wheel = byId('online-song');
     wheel.querySelectorAll('.wheel-ghost').forEach(el => el.remove());
     const links = songLinks();
+    // Our selection state owns the wheel; Bootstrap must not activate a cloned edge.
+    links.forEach(link => link.removeAttribute('data-bs-toggle'));
     if (links.length < 2) return;
     function duplicate(original) {
       const ghost = original.cloneNode(true);
       ghost.classList.add('wheel-ghost'); ghost.classList.remove('active');
+      ghost.removeAttribute('data-bs-toggle');
       ghost.tabIndex = -1; ghost.setAttribute('aria-hidden','true');
       ghost.onclick = event => { event.preventDefault(); original.click(); };
       ghost.querySelectorAll('img').forEach(img => img.onerror = () => img.hidden = true);
@@ -91,7 +94,15 @@
       moveSong(side === 'Left' ? -1 : 1);
     }, true);
   });
-  let centeredSong = null;
+  let centeredSong = null, centerFrame = 0, motionFrame = 0;
+  function stopWheelMotion() {
+    cancelAnimationFrame(motionFrame);motionFrame=0;
+    byId('online-song').classList.remove('song-wheel-moving');
+  }
+  function scheduleCenter(smooth) {
+    cancelAnimationFrame(centerFrame);
+    centerFrame=requestAnimationFrame(()=>{centerFrame=0;centerSong(smooth);});
+  }
   function centerSong(smooth) {
     if (!selecting()) return;
     const wheel = byId('online-song'), links = songLinks(), index = activeIndex(links);
@@ -103,7 +114,19 @@
     const wrapping = links.length > 2 && previousIndex >= 0 &&
       Math.abs(index - previousIndex) === links.length - 1;
     const animate = smooth && !wrapping && !matchMedia('(prefers-reduced-motion:reduce)').matches;
-    if (selected) wheel.scrollTo({left:selected.offsetLeft - (wheel.clientWidth - selected.offsetWidth) / 2, behavior:animate ? 'smooth' : 'instant'});
+    stopWheelMotion();
+    if (selected) {
+      const target=Math.max(0,Math.min(wheel.scrollWidth-wheel.clientWidth,selected.offsetLeft-(wheel.clientWidth-selected.offsetWidth)/2));
+      const from=wheel.scrollLeft,start=performance.now();
+      wheel.classList.add('song-wheel-moving');
+      const move=now=>{
+        const progress=animate?Math.min(1,(now-start)/180):1;
+        wheel.scrollTo({left:from+(target-from)*(1-Math.pow(1-progress,3)),behavior:'instant'});
+        if(progress<1)motionFrame=requestAnimationFrame(move);
+        else {motionFrame=0;wheel.classList.remove('song-wheel-moving');}
+      };
+      move(start);
+    }
     centeredSong = selected || null;
     byId('desktop-footer').textContent = 'SINGLE PLAYER  [ ' + (links.length ? index + 1 : 0) + ' / ' + links.length + ' ]  ·  ' + (desktop.matches ? 'ENTER CONFIRMAR' : 'RECORDES LOCAIS');
   }
@@ -152,7 +175,7 @@
     rightButton.setAttribute('aria-label',backLabel);
     rightButton.title=backLabel;
     byId('desktop-return').setAttribute('aria-label',backLabel);
-    updateOptions(); requestAnimationFrame(() => { centerSong(false); positionChannel(); });
+    updateOptions(); scheduleCenter(false); requestAnimationFrame(positionChannel);
     refreshInterfaceBackground();
     ['Left','Right'].forEach(side=>byId('arrowSong'+side).setAttribute('aria-label',side==='Left'?'Música anterior':'Próxima música'));
     if (desktop.matches && !window.PiuChannels && !blockSelectChannel.classList.contains('hide')) byId('stage').querySelector('.active')?.scrollIntoView({block:'nearest',inline:'center'});
@@ -162,14 +185,16 @@
   const observer = new MutationObserver(updateMode);
   [containerMobGame,blockSelectSong,blockSelectChannel,byId('performance')].forEach(el => observer.observe(el, {attributes:true,attributeFilter:['class']}));
   desktop.addEventListener('change', updateMode);
-  window.addEventListener('resize', () => { centerSong(false); positionChannel(); });
+  window.addEventListener('resize', () => { scheduleCenter(false); positionChannel(); });
   const headerObserver = new ResizeObserver(positionChannel);
   headerObserver.observe(byId('playerLog'));
   headerObserver.observe(byId('desktop-channels-right'));
   ['piu:songchange','piu:songready','piu:stagechange'].forEach(name => document.addEventListener(name, () => {
     if (name === 'piu:stagechange') arrangeEdges();
     if (name !== 'piu:stagechange') updateSongBackground();
-    updateOptions(); requestAnimationFrame(() => centerSong(name !== 'piu:stagechange'));
+    updateOptions();
+    // Chart downloads may finish during a swipe; they must not pull the wheel back.
+    if(name!=='piu:songready')scheduleCenter(name !== 'piu:stagechange');
   }));
   document.addEventListener('piu:levelchange', () => { updateOptions(); if (desktop.matches) byId('level').querySelector('.active')?.scrollIntoView({block:'nearest',inline:'center',behavior:'smooth'}); });
   document.addEventListener('click', () => requestAnimationFrame(updateOptions));
@@ -199,19 +224,24 @@
   });
   let lastWheel = 0;
   window.addEventListener('wheel', event => {
-    if (!desktop.matches || !selecting() || document.querySelector('.modal.show') || !event.target.closest('.blockSelectSong')) return;
+    if (!selecting() || document.querySelector('.modal.show,dialog[open]') || !event.target.closest('.blockSelectSong')) return;
     event.preventDefault(); event.stopImmediatePropagation();
     if (performance.now() - lastWheel < 180) return;
-    lastWheel = performance.now(); moveSong((event.deltaX || event.deltaY) > 0 ? 1 : -1);
+    const delta=event.deltaX || event.deltaY;if(!delta)return;
+    lastWheel = performance.now(); moveSong(delta > 0 ? 1 : -1);
   }, {capture:true,passive:false});
-  let scrollingByTouch=false,settleTimer=null;
-  document.addEventListener('piu:favoritechange',()=>{scrollingByTouch=false;clearTimeout(settleTimer);});
+  let scrollingByTouch=false,pointerActive=false,settleTimer=null;
+  ['piu:favoritechange','piu:songchange','piu:stagechange'].forEach(name=>document.addEventListener(name,()=>{scrollingByTouch=false;clearTimeout(settleTimer);}));
   const wheel=byId('online-song');
-  wheel.addEventListener('pointerdown',()=>{if(!desktop.matches) scrollingByTouch=true;});
-  wheel.addEventListener('scroll',()=>{
-    if(desktop.matches || !scrollingByTouch || !selecting()) return;
+  wheel.addEventListener('pointerdown',event=>{
+    if(desktop.matches && event.pointerType!=='touch')return;
+    pointerActive=true;scrollingByTouch=true;
+    clearTimeout(settleTimer);cancelAnimationFrame(centerFrame);stopWheelMotion();
+  });
+  function settleTouchScroll() {
+    if(!scrollingByTouch || pointerActive || !selecting())return;
     clearTimeout(settleTimer);settleTimer=setTimeout(()=>{
-      if(!selecting() || !scrollingByTouch) return;
+      if(!selecting() || !scrollingByTouch || pointerActive) return;
       scrollingByTouch=false;
       // A pending carousel scroll must not change songs behind the level preview.
       if(document.querySelector('.modal.show,dialog[open]')) return;
@@ -219,8 +249,11 @@
       const center=wheel.scrollLeft+wheel.clientWidth/2;
       const nearest=links.reduce((best,el)=>Math.abs(el.offsetLeft+el.offsetWidth/2-center)<Math.abs(best.offsetLeft+best.offsetWidth/2-center)?el:best);
       if(!nearest.classList.contains('active')) nearest.click();
+      else scheduleCenter(false);
     },150);
-  },{passive:true});
+  }
+  wheel.addEventListener('scroll',settleTouchScroll,{passive:true});
+  ['pointerup','pointercancel'].forEach(name=>window.addEventListener(name,()=>{pointerActive=false;settleTouchScroll();}));
   document.addEventListener('visibilitychange',()=>{if(document.hidden)actualMusic.pause();refreshInterfaceBackground();});
   updateSongBackground(); updateMode();
 })();
