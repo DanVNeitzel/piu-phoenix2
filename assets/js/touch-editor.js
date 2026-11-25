@@ -64,8 +64,11 @@
     if(!bridge||dialog.open||!bridge.canEdit())return;
     await bridge.pause();if(!bridge.canEdit())return;
     original=PiuTouchLayout.normalize(bridge.input.layoutPreferences);draft=PiuTouchLayout.normalize(original);side='left';
+    const profile=PiuTouchLayout.profileName(bridge.config.record.type);
+    byId('te-title').textContent='Ajustar touchpad · '+profile;
+    byId('te-reset').textContent='Restaurar '+profile+' nesta orientação';
     bridge.hidePause();dialog.classList.remove('te-collapsed');byId('te-toggle').textContent='Ver jogo';byId('te-toggle').setAttribute('aria-expanded','true');
-    byId('te-status').textContent=bridge.config.record.type==='pump-halfdouble'?'Half Double: seis sensores. Ajustes salvos separadamente para este modo.':'As mudanças aparecem na hora.';
+    byId('te-status').textContent='Perfil '+profile+': ajustes exclusivos deste modo, separados em retrato e paisagem.';
     dialog.querySelector('.te-content>p').textContent=bridge.preview?'Prévia antes de jogar. Arraste o contorno do pad ou use os ajustes abaixo.':'Partida pausada. Arraste o contorno do pad ou use os ajustes abaixo.';
     dialog.showModal();updateControls();preview();byId('te-size').focus({preventScroll:true});
   }

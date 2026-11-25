@@ -12,15 +12,19 @@
     const skins = [...document.querySelectorAll('.noteskin-option')];
     return skins.find(button => button.value === saved)?.value || value('.noteskin-option') || 'EXCEED2-OLD';
   }
+  function touchStyle() {
+    return (typeof selsong!=='undefined' && typeof chart_level!=='undefined' && selsong?.levels[chart_level]?.STEPSTYPE) ||
+      (typeof channelChartFilter!=='undefined' && channelChartFilter?.type) || 'pump-single';
+  }
   function defaults() {
     const touch = matchMedia('(pointer:coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    return {mode:'multiplier',speed:1,av:300,skin:'EXCEED2-OLD',bga:'on',vanish:false,fd:false,hj:false,randomNote:false,rush:1,offset:0,touch,size:touch ? 1 : 0,touchLayout:PiuTouchLayout.defaults()};
+    return {mode:'multiplier',speed:1,av:300,skin:'EXCEED2-OLD',bga:'on',vanish:false,fd:false,hj:false,randomNote:false,rush:1,offset:0,touch,size:touch ? 1 : 0,touchLayoutStyle:touchStyle(),touchLayout:PiuTouchLayout.defaults()};
   }
   function read() {
     const scroll = PiuScroll.state();
     return {mode:scroll.mode,speed:scroll.multiplier,av:scroll.target,skin:selectedNoteskin(),
       bga:value('.bga-option') || 'on',vanish:localStorage.getItem('piu_vanish') === 'true',fd:localStorage.getItem('piu_fd') === 'true',hj:localStorage.getItem('piu_hj') === 'true',randomNote:localStorage.getItem('piu_random_note') === 'true',rush:Number(value('.rush-option') || 1),offset:Number(document.getElementById('offset').value || 0),
-      touch:document.getElementById('touchInput').checked,size:Number(document.getElementById('touchpadSize').value),touchLayout:PiuTouchLayout.read()};
+      touch:document.getElementById('touchInput').checked,size:Number(document.getElementById('touchpadSize').value),touchLayoutStyle:touchStyle(),touchLayout:PiuTouchLayout.read(touchStyle())};
   }
   function options() {
     const values = selector => [...document.querySelectorAll(selector)].map(el => el.value);
@@ -47,7 +51,7 @@
     PiuScroll.setMultiplier(bounded(state.speed,0.5,20,1));
     if (state.mode === 'auto') PiuScroll.setAutoVelocity(state.av);
     PiuScroll.changed();
-    if(state.touchLayout) PiuTouchLayout.save(state.touchLayout);
+    if(state.touchLayout) PiuTouchLayout.save(state.touchLayout,state.touchLayoutStyle || touchStyle());
   }
   function setVanish(enabled) {
     localStorage.setItem('piu_vanish',String(enabled === true));

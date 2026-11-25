@@ -68,6 +68,8 @@ As teclas podem ser alteradas nas configurações.
 
 **Half Double** usa seis sensores: centro, ↗ e ↘ do painel esquerdo (**S, E, C**) e ↙, ↖ e centro do painel direito (**V, R, G**). No toque, aparecem três botões por lado. O editor de touchpad salva tamanho, posição, transparência e campo de jogo separadamente para Half Double, em retrato e paisagem.
 
+O ajuste do touchpad possui perfis **SINGLE**, **DOUBLE** e **HALFDOUBLE**, selecionados automaticamente pelo chart. Cada perfil mantém suas configurações de retrato e paisagem. Salvar ou restaurar uma orientação afeta somente o perfil em uso; ajustes antigos compartilhados são preservados como ponto inicial para Single e Double.
+
 Na seleção desktop, use **← / →** para navegar pelas músicas e **Enter** para confirmar. Durante a partida, **Esc** pausa ou retoma o jogo. Em dispositivos móveis, selecione o modo de controle por toque.
 
 ## Biblioteca de músicas

@@ -163,7 +163,7 @@ class SelectionBrowserTests(unittest.TestCase):
           const rows=Array.from({length:width},(_,i)=>'0'.repeat(i)+'1'+'0'.repeat(width-i-1)).join('\\n');
           config.sscContent='#TITLE:Test;\\n#ARTIST:PIUWeb;\\n#MUSIC:Test0.wav;\\n#BPMS:0=120;\\n#OFFSET:0;\\n'+
             '#NOTEDATA:;\\n#STEPSTYPE:'+style+';\\n#METER:8;\\n#DESCRIPTION:Test;\\n#DIFFICULTY:Easy;\\n#NOTES:\\n'+rows+'\\n;';
-          config.chartLevel=0;config.record.type=style;config.useTouchInput=touch;
+          config.chartLevel=0;config.record.type=style;config.useTouchInput=touch;config.touchLayout=PiuTouchLayout.read(style);
           sessionStorage.setItem('piu_touch_preview_config',JSON.stringify(config));
         }""", {'style':style,'touch':touch})
         self.page.goto(self.origin+'/localStage.html?preview=touchpad')
@@ -245,6 +245,43 @@ class SelectionBrowserTests(unittest.TestCase):
             self.assertEqual(actual['pads'],count)
             self.assertEqual(actual['tiles'],[5]*count)
             self.assertEqual(actual['widths'],[5]*count)
+        self.assertFalse(self.errors)
+
+    def test_touch_editor_saves_resets_and_cancels_per_mode(self):
+        profiles=[('pump-single','SINGLE',65,.35),('pump-double','DOUBLE',50,.5),('pump-halfdouble','HALFDOUBLE',25,.75)]
+        for style,label,transparency,opacity in profiles:
+            self.open_frozen_stage(style,True)
+            expect(self.page.locator('#te-title')).to_have_text('Ajustar touchpad · '+label)
+            self.page.locator('#te-opacity').evaluate("(e,value)=>{e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}));}",transparency)
+            self.page.locator('#te-save').click()
+            self.assertAlmostEqual(self.page.evaluate('style=>PiuTouchLayout.read(style).landscape.opacity',style),opacity)
+        self.load()
+        configurations=self.page.evaluate("""()=>{
+          const values=['pump-single','pump-double','pump-halfdouble'].map(style=>{
+            selsong.levels[chart_level].STEPSTYPE=style;
+            const settings=PiuGameSettings.read(),config=createSingleConfig(settings);
+            return {style:settings.touchLayoutStyle,opacity:settings.touchLayout.landscape.opacity,preview:config.touchLayout.landscape.opacity};
+          });
+          selsong.levels[chart_level].STEPSTYPE='pump-double';
+          const double=PiuGameSettings.read();
+          selsong.levels[chart_level].STEPSTYPE='pump-halfdouble';
+          PiuGameSettings.apply(double);
+          return values;
+        }""")
+        self.assertEqual(configurations,[{'style':style,'opacity':opacity,'preview':opacity} for style,_,_,opacity in profiles])
+        for style,label,_,_ in profiles:
+            self.open_frozen_stage(style,True)
+            expect(self.page.locator('#te-title')).to_have_text('Ajustar touchpad · '+label)
+            self.assertEqual(self.page.locator('#te-opacity').input_value(),str(next(p[2] for p in profiles if p[0]==style)))
+        self.page.locator('#te-cancel').click()
+        self.open_frozen_stage('pump-double',True)
+        self.page.locator('#te-reset').click()
+        self.page.locator('#te-save').click()
+        self.assertEqual(self.page.evaluate("['pump-single','pump-double','pump-halfdouble'].map(style=>PiuTouchLayout.read(style).landscape.opacity)"),[.35,.3,.75])
+        self.open_frozen_stage('pump-single',True)
+        self.page.locator('#te-opacity').evaluate("e=>{e.value=90;e.dispatchEvent(new Event('input',{bubbles:true}));}")
+        self.page.locator('#te-cancel').click()
+        self.assertAlmostEqual(self.page.evaluate("PiuTouchLayout.read('pump-single').landscape.opacity"),.35)
         self.assertFalse(self.errors)
 
     def test_fast_navigation_wrap_clones_and_resize(self):

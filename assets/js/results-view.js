@@ -10,7 +10,7 @@
   const resultTheme=new Audio('assets/sounds/PHOENIX_2_RESULT_GRADE.mp3');
   resultTheme.loop=true;resultTheme.preload='none';resultTheme.volume=.9;
   const countSound=new Audio('assets/sounds/_RESULT_GRADE.mp3');
-  countSound.loop=true;countSound.preload='auto';countSound.volume=.9;
+  countSound.loop=false;countSound.preload='auto';countSound.volume=.9;
   function stopCountSound(){countSound.pause();countSound.currentTime=0;}
   const grayExports = new Map();
   const portrait = matchMedia('(orientation:portrait)');
@@ -236,6 +236,5 @@
   root.addEventListener('pagehide',stopCountSound);
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden)stopCountSound();
-    else if(renderCount!==null && !leaving && document.body.classList.contains('results-active'))countSound.play().catch(()=>{});
   });
 })(globalThis);

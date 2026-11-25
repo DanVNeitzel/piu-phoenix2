@@ -1,7 +1,21 @@
 {
-  "version": "0.8.15",
+  "version": "0.8.17",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Áudio da pontuação",
+      "items": [
+        "_RESULT_GRADE.mp3 toca uma única vez por resultado, sem loop nem reinício ao voltar à aba."
+      ]
+    },
+    {
+      "category": "Perfis do touchpad",
+      "items": [
+        "Perfis independentes para SINGLE, DOUBLE e HALFDOUBLE, selecionados automaticamente pelo modo da música.",
+        "Cada perfil guarda seus ajustes em retrato e paisagem; salvar ou restaurar um perfil não altera os outros.",
+        "Configurações antigas compartilhadas são preservadas e usadas como ponto inicial de Single e Double. O perfil Half Double existente é mantido."
+      ]
+    },
     {
       "category": "Configuração Half Double",
       "items": [
