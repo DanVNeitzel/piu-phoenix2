@@ -1,125 +1,66 @@
 // Local edition: no account or authentication requests.
-function formatMilhar(value) { return Number(value || 0).toLocaleString('pt-BR'); }
-function showChangelogModal() {
-  // Verifica se o usuário marcou para não mostrar novamente
-  const dontShow = localStorage.getItem('dontShowChangelog');
-  
-  if (dontShow === 'true') {
-    return; // Não mostrar
-  }
-
-  // Carregar o changelog.json
-  fetch('changelog.json?v=' + new Date().getTime())
-    .then(response => response.json())
-    .then(data => {
-      renderChangelog(data);
-      document.getElementById('changelogModal').style.display = 'block';
-    })
-    .catch(error => {
-      console.error('Erro ao carregar changelog:', error);
-    });
+function formatMilhar(value) {return Number(value || 0).toLocaleString('pt-BR');}
+function formatDate(value) {
+  const [year,month,day] = String(value).split('-').map(Number);
+  const date = new Date(year,month - 1,day);
+  return Number.isNaN(date.getTime()) ? '' : date.toLocaleDateString('pt-BR',{year:'numeric',month:'long',day:'numeric'});
 }
-
-/**
- * Renderiza o conteúdo do changelog na modal
- */
 function renderChangelog(data) {
   const content = document.getElementById('changelogContent');
-  
-  let html = `
-    <div class="text-center mb-3">
-      <h5 class="text-warning">Version ${data.version}</h5>
-      <p class="text-white-50 small">${formatDate(data.date)}</p>
-    </div>
-  `;
-
-  // Renderizar cada categoria de updates
-  data.updates.forEach(category => {
-    html += `
-      <div class="mb-4">
-        <h6 class="font-piu text-info mb-2">${category.category}</h6>
-        <ul class="text-white" style="list-style: none; padding-left: 0;">
-    `;
-    
-    category.items.forEach(item => {
-      html += `<li style="margin-bottom: 8px;">• ${item}</li>`;
-    });
-    
-    html += `
-        </ul>
-      </div>
-    `;
-  });
-
-  // Adicionar notas se houver
-  if (data.notes && data.notes.length > 0) {
-    html += `
-      <div class="mt-4 p-3" style="background: rgba(255, 193, 7, 0.1); border-left: 3px solid #ffc107; border-radius: 5px;">
-        <h6 class="text-warning mb-2">📝 Important Notes</h6>
-        <ul class="text-white-50 small" style="list-style: none; padding-left: 0; margin-bottom: 0;">
-    `;
-    
-    data.notes.forEach(note => {
-      html += `<li style="margin-bottom: 5px;">• ${note}</li>`;
-    });
-    
-    html += `
-        </ul>
-      </div>
-    `;
+  content.replaceChildren();
+  const release = document.createElement('div');release.className='changelog-release';
+  const badge = document.createElement('strong');badge.className='changelog-version';badge.textContent='VERSÃO '+data.version;
+  const date = document.createElement('time');date.dateTime=data.date;date.textContent=formatDate(data.date);
+  release.append(badge,date);content.append(release);
+  const grid = document.createElement('div');grid.className='changelog-grid';
+  for (const category of data.updates || []) {
+    const section=document.createElement('section');section.className='changelog-card';
+    const title=document.createElement('h3');title.textContent=category.category;
+    const list=document.createElement('ul');
+    for (const item of category.items || []) {const li=document.createElement('li');li.textContent=item;list.append(li);}
+    section.append(title,list);grid.append(section);
   }
-
-  content.innerHTML = html;
-}
-
-/**
- * Fecha a modal de changelog e salva a preferência se marcada
- */
-function closeChangelog() {
-  const checkbox = document.getElementById('dontShowChangelogAgain');
-  
-  if (checkbox.checked) {
-    localStorage.setItem('dontShowChangelog', 'true');
+  content.append(grid);
+  if (data.notes?.length) {
+    const section=document.createElement('section');section.className='changelog-notes';
+    const title=document.createElement('h3');title.textContent='Informações';
+    const list=document.createElement('ul');
+    for (const note of data.notes) {const li=document.createElement('li');li.textContent=note;list.append(li);}
+    section.append(title,list);content.append(section);
   }
-  
-  document.getElementById('changelogModal').style.display = 'none';
 }
-
-/**
- * Formata data para exibição
- */
-function formatDate(dateStr) {
-  const date = new Date(dateStr);
-  return date.toLocaleDateString('pt-BR', { 
-    year: 'numeric', 
-    month: 'long', 
-    day: 'numeric' 
-  });
+let changelogRequest = 0;
+async function loadChangelog(manual = false) {
+  if (!manual && localStorage.getItem('dontShowChangelog') === 'true') return;
+  const modal=document.getElementById('changelogModal');
+  const content=document.getElementById('changelogContent');
+  document.getElementById('dontShowChangelogAgain').checked=localStorage.getItem('dontShowChangelog') === 'true';
+  await Promise.all([...document.querySelectorAll('.modal.show')].filter(node=>node!==modal).map(node=>new Promise(resolve=>{
+    node.addEventListener('hidden.bs.modal',resolve,{once:true});bootstrap.Modal.getOrCreateInstance(node).hide();
+  })));
+  const request=++changelogRequest;
+  content.replaceChildren();content.setAttribute('aria-busy','true');
+  const loading=document.createElement('p');loading.className='changelog-message';loading.textContent='Carregando novidades…';content.append(loading);
+  bootstrap.Modal.getOrCreateInstance(modal).show();
+  try {
+    const response=await fetch('changelog.json',{cache:'no-store'});
+    if (!response.ok) throw new Error('HTTP '+response.status);
+    const data=await response.json();
+    if (request===changelogRequest) {renderChangelog(data);content.scrollTop=0;}
+  } catch (error) {
+    if (request!==changelogRequest) return;
+    content.replaceChildren();
+    const message=document.createElement('p');message.className='changelog-message';message.setAttribute('role','alert');message.textContent='Não foi possível carregar as novidades. Tente novamente.';
+    const retry=document.createElement('button');retry.type='button';retry.className='changelog-button';retry.textContent='Tentar novamente';retry.addEventListener('click',openChangelog);
+    content.append(message,retry);
+    console.error('Erro ao carregar changelog:',error);
+  } finally {if(request===changelogRequest)content.removeAttribute('aria-busy');}
 }
-
-/**
- * Abre o changelog manualmente (ignora preferência de "não mostrar")
- * Usado quando o usuário clica no botão de changelog
- */
-function openChangelog() {
-  // Carregar o changelog.json
-  fetch('changelog.json?v=' + new Date().getTime())
-    .then(response => response.json())
-    .then(data => {
-      renderChangelog(data);
-      
-      // Fechar outros modais se estiverem abertos
-      $('#loginWindow').modal('hide');
-      $('#settingsMenu').modal('hide');
-      
-      // Abrir modal de changelog
-      document.getElementById('changelogModal').style.display = 'block';
-      
-      // Desmarcar checkbox para permitir que apareça novamente no próximo login
-      document.getElementById('dontShowChangelogAgain').checked = false;
-    })
-    .catch(error => {
-      console.error('Erro ao carregar changelog:', error);
-      alert('Erro ao carregar changelog. Tente novamente.');
-    });
-}
+function showChangelogModal() {return loadChangelog(false);}
+function openChangelog() {return loadChangelog(true);}
+function closeChangelog() {bootstrap.Modal.getOrCreateInstance(document.getElementById('changelogModal')).hide();}
+document.getElementById('changelogModal').addEventListener('hide.bs.modal',()=>{
+  ++changelogRequest;
+  document.getElementById('changelogContent').removeAttribute('aria-busy');
+  localStorage.setItem('dontShowChangelog',String(document.getElementById('dontShowChangelogAgain').checked));
+});

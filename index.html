@@ -63,6 +63,7 @@
 <link rel="stylesheet" href="assets/arcade-navigation-labels.css">
 <link rel="stylesheet" href="assets/arcade-opening.css">
 <link rel="stylesheet" href="assets/app-settings.css">
+<link rel="stylesheet" href="assets/changelog.css">
 <link rel="stylesheet" href="assets/player-panels.css">
 <link rel="stylesheet" href="assets/touch-preview.css">
 <link rel="stylesheet" href="assets/channel-carousel.css">
@@ -129,42 +130,18 @@
   </div>
 
   <!-- Modal de Changelog -->
-  <div id="changelogModal" class="modal text-white" style="display: none;">
-    <div class="modal-dialog modal-dialog-scrollable">
+  <div id="changelogModal" class="modal text-white" tabindex="-1" aria-labelledby="changelog-title" aria-hidden="true">
+    <div class="modal-dialog">
       <div class="modal-content">
-        <div class="modal-body">
-          <div class="card-mob border-pulse-custom">
-            <div class="card-body modal-background">
-              <div class="text-center mb-3">
-                <h4 class="font-piu text-warning">🎮 CHANGELOG - UPDATES</h4>
-                <p class="text-white-50 small">PIUWEB Phoenix - Latest Updates</p>
-              </div>
-
-              <div id="changelogContent" class="changelog-content"
-                style="max-height: 400px; overflow-y: auto; padding: 15px; background: rgba(0,0,0,0.3); border-radius: 10px; margin-bottom: 20px;">
-                <!-- Conteúdo será carregado via JavaScript -->
-                <div class="text-center">
-                  <img class="loader-icon" src="./assets/img/elements/loader.png" alt="Loading...">
-                  <p>Loading changelog...</p>
-                </div>
-              </div>
-
-              <div class="mb-3">
-                <label class="d-flex justify-content-center align-items-center" style="cursor: pointer;">
-                  <input type="checkbox" id="dontShowChangelogAgain" class="me-2"
-                    style="width: 20px; height: 20px; cursor: pointer;">
-                  <span class="font-piu text-white">Do not show again</span>
-                </label>
-              </div>
-
-              <button onclick="closeChangelog()"
-                class="btn-piu btn-confirm-piu btn-block element-full-size border-pulse-btn-yellow">
-                CLOSE
-                <img class="arrow-icon ml-2" src="assets/img/phx2/arrow_yellow_c.png" alt="">
-              </button>
-            </div>
-          </div>
-        </div>
+        <header class="changelog-header">
+          <div><span>PIUWEB &middot; PHOENIX</span><h2 id="changelog-title">Novidades</h2></div>
+          <button type="button" class="changelog-close" onclick="closeChangelog()" aria-label="Fechar novidades">&times;</button>
+        </header>
+        <div id="changelogContent" class="changelog-content" tabindex="0" aria-label="Notas da vers&#227;o"></div>
+        <footer class="changelog-footer">
+          <label class="changelog-preference" for="dontShowChangelogAgain"><input type="checkbox" id="dontShowChangelogAgain"><span>N&#227;o mostrar automaticamente</span></label>
+          <button type="button" class="changelog-button" onclick="closeChangelog()">Conclu&#237;do</button>
+        </footer>
       </div>
     </div>
   </div>
@@ -1259,7 +1236,7 @@
   <script src="assets/js/scroll-settings.js"></script>
   <script src="assets/js/results-view.js"></script>
   <script src="Demo/DemoLogic.js"></script>
-  <script src="assets/js/offline-service.js"></script>
+  <script src="assets/js/offline-service.js?v=changelog-080"></script>
   <script src="assets/js/mobile.js"></script>
   <script src="assets/js/html2canvas.min.js"></script>
 <script src="assets/js/offline-ui.js"></script>

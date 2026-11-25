@@ -1,54 +1,55 @@
 {
-  "version": "0.7.1",
-  "date": "2026-05-22",
+  "version": "0.8.0",
+  "date": "2026-11-25",
   "updates": [
     {
-      "category": "🐛 Bug Fixes",
+      "category": "Command Window",
       "items": [
-        "All Perfect score now displays exactly 1000000 points",
-        "Max Combo fixed on songs with holds",
-        "Perfect count now 100% accurate",
-        "Automatic cache busting system implemented"
+        "DISPLAY · VANISH: as notas desaparecem ao cruzar o meio da tela em direção aos sensores.",
+        "DISPLAY · FD: torna a zona de sensores invisível.",
+        "DISPLAY · RANDOM NOTE: sorteia uma noteskin a cada partida, preservando o tema escolhido manualmente.",
+        "JUDGE · HJ: ativa o julgamento difícil, com margem de acerto 25% menor.",
+        "Opções ON/OFF salvas no dispositivo e disponíveis no desktop e mobile. RESET restaura os padrões."
       ]
     },
     {
-      "category": "⚡ Progression Balancing",
+      "category": "Tela e orientação",
       "items": [
-        "More challenging level progression",
-        "XP required to level up significantly increased",
-        "XP gain per song reduced for balanced progression",
-        "Master level now requires much more dedication"
+        "Configurações com Sensor, Vertical e Horizontal; a preferência também se aplica à gameplay.",
+        "Removida a trava em retrato do webapp para permitir rotação automática.",
+        "Blocos de Vanish, FD, HJ e Random Note visíveis na seleção de música, seleção de nível e gameplay quando ativados.",
+        "Textos do Command Window com quebra de linha e blocos ajustados para várias opções ativas."
       ]
     },
     {
-      "category": "🎨 Visual Improvements",
+      "category": "Gameplay",
       "items": [
-        "Song levels below 10 now display with leading zero (01, 02...)",
-        "Record scores displayed without dot separators",
-        "Optimized records interface",
-        "Guest mode limitations warning added"
+        "BGA DARK exibe o banner da música com uma camada preta de 75%, mantendo o brilho das setas.",
+        "Restaurados os shaders dos sensores e do fundo, corrigindo erros de carregamento e renderização.",
+        "Corrigido o quadrado preto no efeito de acerto.",
+        "Atalhos de atualização bloqueados durante a partida; tentativas de sair ou recarregar pelo navegador solicitam confirmação."
       ]
     },
     {
-      "category": "🎮 Multiplayer System",
+      "category": "Pontuação e interface",
       "items": [
-        "Online battle rooms available",
-        "Challenge system implemented",
-        "Real-time synchronization between players",
-        "Global ranking and personal records"
+        "Grade e plate entram da esquerda para a direita no desktop e da direita para a esquerda no mobile.",
+        "Banners dos canais carregados dos arquivos locais do projeto.",
+        "Ícones mobile derivados do favicon, incluindo o ícone para iPhone e iPad.",
+        "Changelog em português com visual alinhado às configurações, categorias e leitura adaptada a telas menores."
       ]
     },
     {
-      "category": "🔒 Security",
+      "category": "Projeto e execução local",
       "items": [
-        "Improved authentication system",
-        "Enhanced sensitive data protection",
-        "Player information encryption"
+        "README com capturas de abertura, seleção de música, seleção de nível, gameplay e pontuação.",
+        "Documentadas a engine PIURED, a biblioteca de músicas e as instruções de execução.",
+        "Adicionado iniciar-local.cmd para executar o projeto com um servidor HTTP local."
       ]
     }
   ],
   "notes": [
-    "Version in continuous development",
-    "Report bugs or suggestions to the developer"
+    "Recordes, histórico e preferências são armazenados neste navegador e dispositivo.",
+    "O bloqueio de orientação depende do suporte do navegador e pode exigir tela cheia. Sensor respeita a rotação automática do aparelho."
   ]
 }
