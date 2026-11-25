@@ -1,5 +1,5 @@
 {
-  "version": "0.8.0",
+  "version": "0.8.2",
   "date": "2026-11-25",
   "updates": [
     {
@@ -34,6 +34,7 @@
     {
       "category": "Pontuação e interface",
       "items": [
+        "Crédito Developed by Daniel Neitzel exibido abaixo da versão na tela inicial.",
         "Tela inicial identificada como PIUWEB PHOENIX 2, com a versão atual no lugar de SINGLE PLAYER.",
         "Grade e plate entram da esquerda para a direita no desktop e da direita para a esquerda no mobile.",
         "Banners dos canais carregados dos arquivos locais do projeto.",
