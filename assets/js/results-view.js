@@ -9,6 +9,9 @@
   let scoreFrame = null,renderCount = null,resultVersion = 0,awardRevealVersion = -1,leaving=false;
   const resultTheme=new Audio('assets/sounds/PHOENIX_2_RESULT_GRADE.mp3');
   resultTheme.loop=true;resultTheme.preload='none';resultTheme.volume=.9;
+  const countSound=new Audio('assets/sounds/_RESULT_GRADE.mp3');
+  countSound.loop=true;countSound.preload='auto';countSound.volume=.9;
+  function stopCountSound(){countSound.pause();countSound.currentTime=0;}
   const grayExports = new Map();
   const portrait = matchMedia('(orientation:portrait)');
   function placeLevelBadge() {
@@ -83,6 +86,7 @@
     view.classList.remove('awards-pending');view.classList.add('awards-ready');
   }
   function finishCount() {
+    stopCountSound();
     if(scoreFrame!==null)cancelAnimationFrame(scoreFrame);
     scoreFrame=null;renderCount?.(1);renderCount=null;
     revealAwards();
@@ -93,6 +97,7 @@
     });
     if(matchMedia('(prefers-reduced-motion:reduce)').matches){finishCount();return;}
     renderCount(0);
+    countSound.play().catch(()=>{});
     let started=null,lastPaint=0;
     function animate(time){
       if(started===null)started=time;
@@ -108,6 +113,7 @@
   async function fadeOut(){
     if(leaving || !document.body.classList.contains('results-active') || root.PiuScoreShare?.isBusy())return false;
     leaving=true;
+    stopCountSound();
     const version=resultVersion;
     byId('resultNext').disabled=true;byId('resultExport').disabled=true;
     view.classList.remove('results-revealing');view.classList.add('results-leaving');
@@ -154,7 +160,8 @@
     const type = result.type || result.step_type || 'pump-single';
     byId('stepType').textContent = type === 'pump-single' ? 'SINGLE' : type === 'pump-halfdouble' ? 'HALF DOUBLE' : 'DOUBLE';
     byId('songLevel').textContent = String(result.level).padStart(2,'0');
-    byId('resultLevelBadge').classList.toggle('double',type !== 'pump-single');
+    byId('resultLevelBadge').classList.toggle('double',type === 'pump-double');
+    byId('resultLevelBadge').classList.toggle('half',type === 'pump-halfdouble');
     byId('resultLevelBadge').classList.toggle('single',type === 'pump-single');
     byId('score').textContent = scoreText(score); byId('score').setAttribute('aria-live','off');
     rank(byId('gradeResult'),result.grade,broken); plate(byId('plateResult'),result.plate,broken);
@@ -226,4 +233,9 @@
     }
   },true);
   root.PiuResults = {show,close,fadeOut,isLeaving:()=>leaving,rank,plate,gradeImage,gradeClass,exportGrade,finishCount,playTheme,stopTheme};
+  root.addEventListener('pagehide',stopCountSound);
+  document.addEventListener('visibilitychange',()=>{
+    if(document.hidden)stopCountSound();
+    else if(renderCount!==null && !leaving && document.body.classList.contains('results-active'))countSound.play().catch(()=>{});
+  });
 })(globalThis);

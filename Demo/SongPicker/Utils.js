@@ -26,6 +26,9 @@ let songLoadController = null;
 const chartCache = new Map();
 let channelChartFilter = null;
 const difficultyIndexCache = new Map();
+const halfDifficultyCache = new WeakMap();
+let difficultySelectionVersion = 0;
+let selectionReady = Promise.resolve();
 
 function resetSongSelection() {
   ++songLoadVersion;
@@ -67,43 +70,72 @@ function channelLevelPicker() {
   return picker;
 }
 
-async function selectChannelLevel(level) {
-  if (!channelChartFilter) return;
-  channelChartFilter = {...channelChartFilter,level};
-  resetSongSelection();
-  const version = songLoadVersion;
-  const stage = songsJson.children[stageIndex];
-  const filter = {...channelChartFilter};
-  showEmptyChannel('CARREGANDO ' + filter.label + ' ' + level, 'Consultando os charts deste nível…');
-  choiceChannel();
+async function difficultyFile(url, text = false) {
+  const controller=new AbortController(),timeout=setTimeout(()=>controller.abort(),15000);
   try {
-    let paths;
-    if (filter.type === 'pump-halfdouble') {
-      // The difficulty index covers full Double. Half Double has its own SSC charts.
-      const matching = await Promise.all(stage.children.filter(hasChart).map(async entry => {
-        const file = entry.children.find(f => /\.ssc$/i.test(f.name));
-        const url = libraryUrl(file.path);
-        let content = chartCache.get(url);
-        if (!content) { const response = await fetch(url); if (!response.ok) throw new Error('SSC indisponível'); content = await response.text(); chartCache.set(url,content); }
-        const sections = content.split(/#NOTEDATA\s*:\s*;/i).slice(1);
-        const matches = sections.some(section => PiuLibrary.matchesChart({
-          STEPSTYPE:section.match(/#STEPSTYPE\s*:\s*([^;]*);/i)?.[1].trim(),
-          METER:section.match(/#METER\s*:\s*([^;]*);/i)?.[1].trim()},filter));
-        return matches ? entry.path : null;
-      }));
-      paths = new Set(matching.filter(Boolean));
-    } else {
-      const file = 'difficulty-zone/' + filter.mode + '/' + (level === '27+' ? '27-plus' : level) + '.json';
-      const url = libraryUrl(file);
-      let entries = difficultyIndexCache.get(url);
-      if (!entries) { const response = await fetch(url,{cache:'no-cache'}); if (!response.ok) throw new Error('Índice indisponível'); entries = await response.json(); difficultyIndexCache.set(url,entries); }
-      paths = new Set(entries.map(entry => entry.songPath));
+    const response=await fetch(url,{cache:'no-cache',signal:controller.signal});
+    if(!response.ok)throw new Error('HTTP '+response.status);
+    return await (text?response.text():response.json());
+  } finally {clearTimeout(timeout);}
+}
+
+async function difficultyPaths(stage, filter) {
+  if(filter.type==='pump-halfdouble'){
+    // Scan SSC metadata once for every Half Double level, with bounded downloads.
+    if(!halfDifficultyCache.has(stage)){
+      const loading=(async()=>{
+        const queue=stage.children.filter(hasChart),entries=[];
+        await Promise.all(Array.from({length:Math.min(4,queue.length)},async()=>{
+          while(queue.length){
+            const entry=queue.shift(),file=entry.children.find(f=>/\.ssc$/i.test(f.name));
+            const url=libraryUrl(file.path);
+            let content=chartCache.get(url);
+            if(!content){content=await difficultyFile(url,true);chartCache.set(url,content);}
+            entries.push({path:entry.path,charts:content.split(/#NOTEDATA\s*:\s*;/i).slice(1).map(section=>({
+              STEPSTYPE:section.match(/#STEPSTYPE\s*:\s*([^;]*);/i)?.[1].trim(),
+              METER:section.match(/#METER\s*:\s*([^;]*);/i)?.[1].trim()}))});
+          }
+        }));
+        return entries;
+      })().catch(error=>{halfDifficultyCache.delete(stage);throw error;});
+      halfDifficultyCache.set(stage,loading);
     }
-    if (version !== songLoadVersion) return;
-    renderChannelSongs(stage,0,paths);
+    const entries=await halfDifficultyCache.get(stage);
+    return new Set(entries.filter(entry=>entry.charts.some(chart=>PiuLibrary.matchesChart(chart,filter))).map(entry=>entry.path));
+  }
+  const url=libraryUrl('difficulty-zone/'+filter.mode+'/'+(filter.level==='27+'?'27-plus':filter.level)+'.json');
+  if(!difficultyIndexCache.has(url)){
+    const loading=difficultyFile(url).then(entries=>{
+      if(!Array.isArray(entries))throw new Error('Índice de dificuldade inválido');
+      return entries;
+    }).catch(error=>{difficultyIndexCache.delete(url);throw error;});
+    difficultyIndexCache.set(url,loading);
+  }
+  const entries=await difficultyIndexCache.get(url);
+  const available=new Set(stage.children.filter(hasChart).map(entry=>entry.path));
+  return new Set(entries.map(entry=>entry.songPath).filter(path=>available.has(path)));
+}
+
+async function selectChannelLevel(level, selection = null) {
+  if (!channelChartFilter || !(level==='27+' || (Number.isInteger(Number(level)) && Number(level)>=1 && Number(level)<=26))) return;
+  const request=++difficultySelectionVersion,version=songLoadVersion;
+  const stage = songsJson.children[stageIndex];
+  const filter = {...channelChartFilter,level};
+  try {
+    const paths=await difficultyPaths(stage,filter);
+    if(request!==difficultySelectionVersion || version!==songLoadVersion || stage!==songsJson.children[stageIndex])return;
+    if(!paths.size){
+      if(!window.PiuChannels?.isLevelPicker())window.PiuChannels?.openLevels();
+      return;
+    }
+    channelChartFilter=filter;resetSongSelection();
+    if(document.body.classList.contains('results-active'))blockSelectChannel.classList.add('hide');
+    else choiceChannel();
+    const selectedSong=selection ? stage.children.findIndex(entry => PiuLibrary.songKey(entry)===selection.songKey || entry.children?.some(file=>file.path===selection.ssc)) : 0;
+    await renderChannelSongs(stage,selectedSong,paths,selection?.chart);
   } catch (error) {
-    if (version !== songLoadVersion) return;
-    showEmptyChannel('NÃO FOI POSSÍVEL CARREGAR', 'Escolha o nível novamente para tentar outra vez.');
+    if(request!==difficultySelectionVersion || version!==songLoadVersion)return;
+    showNotification('Não foi possível verificar as músicas deste nível. Tente novamente.','error');
     console.error('Erro no índice de dificuldade:',error);
   }
 }
@@ -439,7 +471,7 @@ function createFavoritesChannelLink() {
 }
 
 
-async function changeOnlineSong(i) {
+async function changeOnlineSong(i, preferredChart = null) {
   const entry = songsJson?.children[stageIndex]?.children[i];
   if (!entry || !hasChart(entry)) return;
   const version = ++songLoadVersion;
@@ -482,7 +514,7 @@ async function changeOnlineSong(i) {
     if (!imgpath && selsong.meta.BANNER) imgpath = folder + selsong.meta.BANNER;
     const compatible = Number(document.querySelector('#level .listStep')?.dataset.idx ?? -1);
     if (compatible < 0) throw new Error('Nenhuma dificuldade compatível para um jogador.');
-    change_level(compatible);
+    change_level(Number.isInteger(preferredChart) && selsong.levels[preferredChart] && PiuLibrary.matchesChart(selsong.levels[preferredChart],channelChartFilter) ? preferredChart : compatible);
     document.querySelectorAll('.btnSelectMusic').forEach(el => el.disabled = false);
     if (mp3path) previewMusic(mp3path);
     document.dispatchEvent(new CustomEvent('piu:songready'));
@@ -521,7 +553,7 @@ if (typeof actualMusic !== 'undefined' && actualMusic) {
 }
 
 
-function change_stage(i, selectedSong = 0) {
+function change_stage(i, selectedSong = 0, selection = null) {
   const stage = songsJson?.children[i];
   if (!stage || !channelSongCount(i)) return;
   resetSongSelection();
@@ -538,13 +570,14 @@ function change_stage(i, selectedSong = 0) {
   channelLevelPicker().hidden = true;
   if (channelChartFilter) {
     document.dispatchEvent(new CustomEvent('piu:stagechange'));
+    if(selection?.difficultyLevel != null)return selectChannelLevel(selection.difficultyLevel,selection);
     window.PiuChannels.openLevels();
     return;
   }
-  renderChannelSongs(stage,selectedSong);
+  return renderChannelSongs(stage,selectedSong,null,selection?.chart);
 }
 
-function renderChannelSongs(stage, selectedSong = 0, paths = null) {
+function renderChannelSongs(stage, selectedSong = 0, paths = null, selectedChart = null) {
   const gl = document.getElementById('online-song'); gl.replaceChildren();
   const indices = [];
 
@@ -580,7 +613,7 @@ function renderChannelSongs(stage, selectedSong = 0, paths = null) {
   }
   document.dispatchEvent(new CustomEvent('piu:stagechange'));
   const selectedIndex = indices.includes(selectedSong) ? selectedSong : (indices[0] ?? -1);
-  if (selectedIndex >= 0) changeOnlineSong(selectedIndex);
+  if (selectedIndex >= 0) return changeOnlineSong(selectedIndex,selectedChart);
 }
 
 
@@ -746,6 +779,17 @@ function stepType(type) {
 
 async function readSongList() {
   const holder = document.getElementById('stage');
+  // Capture before offline-ui consumes the result and removes it from sessionStorage.
+  let returnSelection=null;
+  try {
+    const result=JSON.parse(sessionStorage.getItem('piu_single_result') || 'null');
+    if(result?.performance && result.config){
+      const record=result.config.record || result;
+      const meter=Number(record.level);
+      returnSelection={channelName:record.channel,ssc:record.ssc,chart:result.config.chartLevel,
+        difficultyLevel:meter>=27?'27+':Number.isInteger(meter)&&meter>=1?meter:null,...result.config.selection};
+    }
+  } catch(_) {}
   if (location.protocol === 'file:') {
     holder.textContent = 'Para carregar as músicas, execute iniciar-local.cmd e use o endereço HTTP aberto por ele. Não abra index.html por duplo clique.';
     return;
@@ -753,7 +797,7 @@ async function readSongList() {
   try {
     let json;
     if (['localhost','127.0.0.1','[::1]'].includes(location.hostname) &&
-        new URLSearchParams(location.search).get('library') === 'local') {
+        (new URLSearchParams(location.search).get('library') === 'local' || returnSelection?.library===new URL('/piu-songs/',location.href).href)) {
       const local = new URL('/piu-songs/',location.href).href;
       try {
         const response = await fetch(local + 'songs.json',{cache:'no-store'});
@@ -776,12 +820,14 @@ async function readSongList() {
       card.dataset.channelId = stage.channelId || ''; holder.append(card);
     });
     const sameCatalog = localStorage.getItem('piu_catalog_source') === resources;
-    const savedStage = PiuLibrary.initialStage(songsJson,sameCatalog ? localStorage.getItem('piu_last_channel_id') : null);
-    const savedKey = sameCatalog ? localStorage.getItem('piu_last_song_key') : null;
+    if(returnSelection?.library && returnSelection.library!==resources)returnSelection=null;
+    const returnStage=returnSelection ? songsJson.children.findIndex(stage=>(returnSelection.channelId && (stage.channelId || stage.path)===returnSelection.channelId) || stage.name===returnSelection.channelName) : -1;
+    const savedStage = returnStage>=0 ? returnStage : PiuLibrary.initialStage(songsJson,sameCatalog ? localStorage.getItem('piu_last_channel_id') : null);
+    const savedKey = returnSelection?.songKey || (sameCatalog ? localStorage.getItem('piu_last_song_key') : null);
     const savedSong = songsJson.children[savedStage]?.children.findIndex(entry => PiuLibrary.songKey(entry) === savedKey) ?? 0;
     localStorage.setItem('piu_catalog_source', resources);
     const initialStage=songsJson.children[savedStage] ? savedStage : 0;
-    if(channelSongCount(initialStage))change_stage(initialStage,savedSong);
+    if(channelSongCount(initialStage))await change_stage(initialStage,savedSong,returnStage>=0?returnSelection:null);
     else {
       resetSongSelection();stageIndex=null;channelChartFilter=null;
       blockSelectSong.classList.add('hide');btnSelectMusic.classList.add('hide');

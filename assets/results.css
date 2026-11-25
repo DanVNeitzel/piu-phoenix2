@@ -214,6 +214,10 @@ body.results-active .assign_play {
   background-image: url('img/phx2/bg_double.png')
 }
 
+.phoenix-results .result-level.half {
+  background-image: url('img/phx2/bg_hdouble.png')
+}
+
 .phoenix-results .result-level span {
   font: 800 clamp(8px, 1.4vh, 15px)/1 numberLevel, system-ui
 }

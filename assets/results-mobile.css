@@ -40,6 +40,7 @@
 #performance.phoenix-results .result-level span{font-size:7px;line-height:1}
 #performance.phoenix-results .result-level strong{font:clamp(16px,5svh,25px)/1.2 numberLevelV2}
 #performance.phoenix-results .result-level.double{background-image:url('img/phx2/bg_double.png')}
+#performance.phoenix-results .result-level.half{background-image:url('img/phx2/bg_hdouble.png')}
 #performance.phoenix-results .result-judgments{border-collapse:collapse;width:100%;table-layout:fixed}
 #performance.phoenix-results thead th{font-size:6px;height:13px;color:#d8e4c7;font-weight:normal}
 #performance.phoenix-results thead th:first-child,#performance.phoenix-results thead th:last-child{width:24%}

@@ -83,6 +83,9 @@ function createSingleConfig(settings = null) {
         resources:'', sscpath:libraryUrl(sscpath), mp3path:libraryUrl(mp3path), resourcePath: 'piured-engine/',
         sscContent: chartCache.get(libraryUrl(sscpath)),
         leftKeyMap, rightKeyMap, chartLevel: chart_level,
+        selection: {library:resources, channelId:songsJson.children[stageIndex].channelId || songsJson.children[stageIndex].path,
+            channelName:songsJson.children[stageIndex].name, songKey:PiuLibrary.songKey(song),
+            difficultyLevel:channelChartFilter?.level ?? null, chart:chart_level},
         record: { ssc:sscpath, chart:chart_level, title:selsong.meta.TITLE,
             artist:selsong.meta.ARTIST || '', type:level.STEPSTYPE, level:String(level.METER),
             channel:songsJson.children[stageIndex].name, stage_index:stageIndex, song_index:songIndex,
@@ -298,7 +301,7 @@ $("#touchInput").on("change", function () {
 
 /* Load dynamic values and set thise defaults */
 
-document.addEventListener('DOMContentLoaded', function() { readSongList(); });
+document.addEventListener('DOMContentLoaded', function() { selectionReady = readSongList(); });
 
 /* Set default selection for static values: Noteskin, Speed and Offset */
 

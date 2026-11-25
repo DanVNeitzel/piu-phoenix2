@@ -9,6 +9,7 @@
   wheel.after(description);
   let selected=null,opened=false,pointer=null,ignoreClickUntil=0;
   let levelMode=false,channelNodes=[],levelStage=null;
+  let availabilityVersion=0;
   const cards=()=>[...wheel.querySelectorAll('.listSong')];
   const visible=()=>!blockSelectChannel.classList.contains('hide');
   function title(card){return card.title || card.querySelector('.song-card-caption')?.textContent || 'FAVORITES';}
@@ -33,11 +34,13 @@
     if(image)image.alt=title(card);
   }
   function updateLock(card) {
-    if(card.dataset.level)return;
-    const locked=channelSongCount(card.dataset.idx)===0;
+    const status=card.dataset.availability;
+    const locked=card.dataset.level ? status!=='ready' : channelSongCount(card.dataset.idx)===0;
+    const reason=card.dataset.level && status==='loading'?'Verificando músicas':card.dataset.level && status==='error'?'Falha ao verificar músicas':'Bloqueado: sem músicas';
     card.classList.toggle('channel-locked',locked);
     card.setAttribute('aria-disabled',String(locked));
-    card.setAttribute('aria-label',title(card)+(locked?' · Bloqueado: sem músicas':''));
+    card.setAttribute('aria-busy',String(status==='loading'));
+    card.setAttribute('aria-label',title(card)+(locked?' · '+reason:''));
     let lock=card.querySelector('.channel-lock');
     if(locked && !lock){
       lock=document.createElement('span');lock.className='channel-lock';lock.setAttribute('aria-hidden','true');
@@ -45,6 +48,27 @@
       card.append(lock);
     }
     if(lock)lock.hidden=!locked;
+  }
+  async function verifyLevel(card,generation,stage,filter){
+    card.dataset.availability='loading';
+    if(visible())render();
+    try{
+      const paths=await difficultyPaths(stage,{...filter,level:card.dataset.level});
+      if(generation!==availabilityVersion || !levelMode || !wheel.contains(card))return;
+      card.dataset.availability=paths.size?'ready':'empty';
+      card.dataset.songCount=String(paths.size);
+    }catch(_){
+      if(generation!==availabilityVersion || !levelMode || !wheel.contains(card))return;
+      card.dataset.availability='error';
+    }
+    if(visible())render();
+  }
+  function verifyLevels(){
+    const generation=++availabilityVersion,stage=songsJson.children[levelStage],filter={...channelChartFilter};
+    const queue=cards().filter(card=>!['ready','empty'].includes(card.dataset.availability));
+    return Promise.all(Array.from({length:Math.min(4,queue.length)},async()=>{
+      while(queue.length && generation===availabilityVersion)await verifyLevel(queue.shift(),generation,stage,filter);
+    }));
   }
   function render(){
     const list=cards();if(!list.length)return;
@@ -71,7 +95,9 @@
     });
     if(heading)heading.textContent=levelMode?'DIFFICULTY ZONE '+channelChartFilter.label:title(selected).replace(/^\d+[- ]*/, '');
     if(levelMode){
-      description.textContent=channelChartFilter.label+' · NÍVEL '+selected.dataset.level+' · S / ENTER PARA CONFIRMAR';
+      const status=selected.dataset.availability;
+      const detail=status==='empty'?'BLOQUEADO · SEM MÚSICAS':status==='loading'?'VERIFICANDO MÚSICAS…':status==='error'?'FALHA NA CONSULTA · CONFIRME PARA TENTAR NOVAMENTE':selected.dataset.songCount+' músicas · S / ENTER PARA CONFIRMAR';
+      description.textContent=channelChartFilter.label+' · NÍVEL '+selected.dataset.level+' · '+detail;
       wheel.scrollLeft=0;return;
     }
     const count=channelSongCount(selected.dataset.idx);
@@ -102,6 +128,7 @@
   }
   function restoreChannels(){
     if(!levelMode)return;
+    availabilityVersion++;difficultySelectionVersion++;
     wheel.replaceChildren(...channelNodes);channelNodes=[];levelMode=false;levelStage=null;
     document.body.classList.remove('difficulty-level-select');
     cards().forEach(card=>card.classList.toggle('active',currentChannel==='favorites'?
@@ -118,6 +145,7 @@
       const list=levels.map(level=>{
         const card=document.createElement('button');card.type='button';
         card.className='listSong channel-level-card';card.dataset.level=String(level);
+        card.dataset.availability='loading';
         card.title=channelChartFilter.label+' · NÍVEL '+level;
         card.setAttribute('aria-label',card.title);
         const half=channelChartFilter.type==='pump-halfdouble';
@@ -145,7 +173,7 @@
     blockSelectSong.classList.add('hide');btnSelectMusic.classList.add('hide');
     blockSelectChannel.classList.remove('hide');
     channelMusic.src='assets/sounds/PHOENIX_2_CHANNEL_THEME.mp3';channelMusic.play().catch(()=>{});
-    ignoreClickUntil=0;pointer=null;open();
+    ignoreClickUntil=0;pointer=null;open();verifyLevels();
   }
   function back(){
     if(levelMode && visible()){selectChannel(true);return true;}
@@ -159,6 +187,15 @@
   });
   wheel.addEventListener('click',event=>{
     const card=event.target.closest('.listSong');if(!card || !visible())return;
+    if(card.dataset.level && card.dataset.availability!=='ready'){
+      event.preventDefault();event.stopImmediatePropagation();
+      if(performance.now()>=ignoreClickUntil){
+        const retry=card===selected && card.dataset.availability==='error';
+        choose(card);
+        if(retry)verifyLevel(card,availabilityVersion,songsJson.children[levelStage],{...channelChartFilter});
+      }
+      return;
+    }
     if(!card.dataset.level && !channelSongCount(card.dataset.idx)){
       event.preventDefault();event.stopImmediatePropagation();
       if(performance.now()>=ignoreClickUntil)choose(card);

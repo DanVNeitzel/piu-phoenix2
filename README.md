@@ -29,7 +29,7 @@ Capturas reais da aplicação executada localmente em desktop. A música usada n
 ## Recursos
 
 - Abertura arcade e seleção de músicas por canais, com preview de áudio e favoritos.
-- Canais sem músicas aparecem com cadeado vermelho e não permitem entrada por clique, toque ou teclado.
+- Canais e níveis vazios do Difficulty Zone aparecem com cadeado vermelho e não permitem entrada por clique, toque ou teclado.
 - Escolha de charts Single, Double e Half Double, quando disponíveis na música.
 - Ajustes de velocidade, velocidade automática, playback, offset e noteskin.
 - Controles por teclado e touchpad com ajustes de layout para dispositivos móveis.

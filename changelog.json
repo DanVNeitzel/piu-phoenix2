@@ -1,10 +1,32 @@
 {
-  "version": "0.8.10",
+  "version": "0.8.14",
   "date": "2026-11-25",
   "updates": [
     {
+      "category": "Áudio da pontuação",
+      "items": [
+        "Efeito _RESULT_GRADE.mp3 acompanha a contagem dos números no resultado e para ao concluir, compartilhar ou sair da tela."
+      ]
+    },
+    {
+      "category": "Bloqueio dos níveis vazios",
+      "items": [
+        "Níveis sem músicas no Difficulty Zone exibem cadeado vermelho e não permitem entrada por clique, toque ou teclado.",
+        "Disponibilidade verificada para Single, Double, Half Double e 27+, com consultas compartilhadas para evitar downloads repetidos.",
+        "Falhas na consulta mantêm o nível bloqueado e permitem tentar novamente sem abrir uma lista vazia."
+      ]
+    },
+    {
+      "category": "Retorno do Difficulty Zone",
+      "items": [
+        "Após o resultado, Difficulty Zone volta à lista de músicas no mesmo modo, nível e música da partida, preservando o chart escolhido.",
+        "Restauração aguarda o carregamento da seleção antes de sair do resultado, incluindo Single, Double, Half Double e níveis 27+."
+      ]
+    },
+    {
       "category": "Half Double",
       "items": [
+        "Tela de resultado Half Double usa bg_hdouble.png em desktop e mobile, com identificação independente de Double.",
         "Canal H. Double usa bg_hdouble.png nos níveis, incluindo a confirmação da partida.",
         "Dificuldades Half Double usam Circle_H_Double_Diff_Eval.png na seleção de músicas e na seleção de nível."
       ]

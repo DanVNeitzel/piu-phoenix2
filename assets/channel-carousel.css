@@ -24,6 +24,7 @@ body.desktop-channel-select #selector #stage.channel-wheel-opening{animation:cha
 /* Difficulty levels use the same wheel and controls as the parent channels. */
 body.desktop-channel-select #selector #stage .channel-locked{cursor:not-allowed}
 body.desktop-channel-select #selector #stage .channel-locked img.bannerSong{filter:grayscale(.8) brightness(.55)}
+body.desktop-channel-select #selector #stage .channel-locked .channel-level-art:not(.has-level-artwork){filter:grayscale(.8) brightness(.55)}
 body.desktop-channel-select #selector #stage .channel-lock{position:absolute;top:3%;right:5%;display:grid;place-items:center;width:clamp(34px,6svh,68px);height:clamp(38px,7svh,76px);color:#ff283e;background:#180409e8;border:1px solid #ff5364;border-radius:9px;box-shadow:0 0 14px #ed102c88;pointer-events:none;z-index:20}
 body.desktop-channel-select #selector #stage .channel-lock .material-symbols-outlined{font-size:clamp(28px,5svh,58px);line-height:1;color:#ff283e}
 body.desktop-channel-select #selector #stage .channel-lock[hidden]{display:none}

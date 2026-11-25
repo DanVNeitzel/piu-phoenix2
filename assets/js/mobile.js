@@ -275,9 +275,13 @@ function loginContinue(startPreview = true) {
 
 async function nextStage() {
   if(!await PiuResults.fadeOut())return;
+  await selectionReady;
   PiuResults.close();
   performanceSong.classList.remove('show');
-  blockSelectSong.classList.remove('hide');
+  const levels=!!window.PiuChannels?.isLevelPicker();
+  blockSelectChannel.classList.toggle('hide',!levels);
+  blockSelectSong.classList.toggle('hide',levels);
+  btnSelectMusic.classList.toggle('hide',levels);
   plateResult.classList.add('plate-out');
   gradeResult.classList.add('grade-out');
   resetAudio();
