@@ -226,34 +226,67 @@ class Song {
     }
 
 
-    play () {
-
-        let audioLoader = new THREE.AudioLoader();
-        let context = null ;
-
-        if('webkitAudioContext' in window) {
-            context = new webkitAudioContext();
-        } else {
-            context = new AudioContext();
-        }
-        this.context = context ;
-        audioLoader.load(this.audioBuf, this.setUpPlayBack.bind(this), undefined, error => {
-            if (this.context.state !== 'closed') this.context.close();
+    async play () {
+        try {
+            const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+            this.context = new AudioContextClass();
+            const data = await this.loadAudioFile();
+            if (this.context.state === 'closed') return;
+            // Decode and play with the same context. Callback form also supports older Safari.
+            let buffer;
+            try {
+                buffer = await new Promise((resolve, reject) => {
+                    const decoding = this.context.decodeAudioData(data, resolve, reject);
+                    if (decoding?.then) decoding.then(resolve, reject);
+                });
+            } catch (cause) {
+                throw Object.assign(new Error('O navegador não conseguiu decodificar o áudio. O arquivo pode estar corrompido ou usar um formato incompatível.'), {cause});
+            }
+            if (this.context.state !== 'closed') this.setUpPlayBack(buffer);
+        } catch (error) {
+            if (this.context?.state === 'closed') return;
+            if (this.context) await this.context.close().catch(() => {});
+            console.error('Falha ao carregar áudio:', this.audioBuf, error);
             if (this.onLoadError) this.onLoadError(error);
-        });
+        }
+    }
 
-
-
-        // context.decodeAudioData(this.audioBuf, this.playBack.bind(this));
-
-
-        //analyser = new THREE.AudioAnalyser( audio, 32 );
-        // audioLoader.load( this.getMusicPath(), this.playBack.bind(this)
-        //
-        //
-        // );
-
-        // this.startTime =  ;
+    async loadAudioFile() {
+        // Retry transient failures once, bypassing cached error responses.
+        for (let attempt = 0; attempt < 2; attempt++) {
+            const controller = new AbortController();
+            const timeout = setTimeout(() => controller.abort(), 30000);
+            try {
+                const response = await fetch(this.audioBuf, {
+                    signal: controller.signal, cache: attempt ? 'reload' : 'default'
+                });
+                if (!response.ok) {
+                    const message = response.status === 404
+                        ? 'Arquivo de áudio não encontrado na biblioteca (HTTP 404).'
+                        : 'O servidor da biblioteca recusou o áudio (HTTP ' + response.status + ').';
+                    throw Object.assign(new Error(message), {status: response.status});
+                }
+                if (/text\/html/i.test(response.headers.get('content-type') || '')) {
+                    throw Object.assign(new Error('A biblioteca retornou uma página HTML no lugar do áudio. Verifique o endereço do arquivo.'), {invalidAudio: true});
+                }
+                const data = await response.arrayBuffer();
+                if (!data.byteLength) {
+                    throw Object.assign(new Error('O arquivo de áudio da biblioteca está vazio.'), {invalidAudio: true});
+                }
+                return data;
+            } catch (error) {
+                if (this.context.state === 'closed') throw error;
+                if (error.invalidAudio || (error.status && error.status < 500)) throw error;
+                if (attempt === 1) {
+                    if (error.status) throw error;
+                    throw new Error(error.name === 'AbortError'
+                        ? 'O download do áudio demorou demais. Verifique a conexão e tente novamente.'
+                        : 'Não foi possível baixar o áudio. Verifique a conexão e a permissão de acesso (CORS) da biblioteca.');
+                }
+            } finally {
+                clearTimeout(timeout);
+            }
+        }
     }
 
     setUpPlayBack( buf ) {

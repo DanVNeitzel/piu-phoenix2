@@ -1,7 +1,15 @@
 {
-  "version": "0.8.6",
+  "version": "0.8.7",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Carregamento de áudio",
+      "items": [
+        "Gameplay usa o mesmo contexto para decodificar e reproduzir a música, com tratamento de falhas de formato.",
+        "Download de áudio com nova tentativa automática para falhas temporárias de conexão ou do servidor.",
+        "Mensagens específicas para arquivo ausente, resposta inválida e problemas de conexão, com botões para tentar novamente ou escolher outra música."
+      ]
+    },
     {
       "category": "Command Window",
       "items": [

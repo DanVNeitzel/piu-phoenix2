@@ -181,8 +181,15 @@ try {
                 revealGameScreen();
             });
         engine.configureStage(stageConfig);
-        engine.song.onLoadError = () => {
-            showStageLoadError('Áudio indisponível. Verifique o arquivo da música na biblioteca e volte para escolher outra.');
+        engine.song.onLoadError = error => {
+            showStageLoadError('Áudio indisponível. ' + (error?.message || 'Não foi possível carregar o arquivo da biblioteca.'));
+            const retry = document.createElement('button');
+            retry.type = 'button'; retry.textContent = 'Tentar novamente';
+            retry.addEventListener('click', () => location.reload());
+            const back = document.createElement('button');
+            back.type = 'button'; back.textContent = 'Escolher outra música';
+            back.addEventListener('click', leaveGame);
+            gameStatus.append(document.createElement('br'), retry, ' ', back);
         };
         const style = engine.queryStageType(config.chartLevel);
         let input;
