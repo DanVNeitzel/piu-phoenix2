@@ -36,6 +36,7 @@ Capturas reais da aplicação executada localmente em desktop. A música usada n
 - Resultado com score, classificação, julgamentos, combo e comparação com o recorde pessoal.
 - Histórico e recordes salvos no navegador, com opção de compartilhar a pontuação como imagem.
 - Manifest e ícones para adicionar o aplicativo à tela inicial.
+- Aviso de nova versão nos menus de canais, músicas e níveis, com atualização que preserva os dados locais.
 
 ## Executar localmente
 
@@ -52,6 +53,8 @@ Abra **http://127.0.0.1:8765/** em um navegador com JavaScript, WebGL e áudio h
 3. Selecione a dificuldade, revise as configurações e confirme.
 4. Se o navegador solicitar uma interação para liberar o áudio, pressione **Iniciar partida**.
 5. Ao terminar, confira o resultado e siga para a próxima música.
+
+Nos menus de seleção, o jogo verifica novas versões a cada minuto e ao voltar ao aplicativo. **Atualizar agora** baixa os arquivos e reinicia o jogo, preservando recordes, histórico e preferências. **Agora não** recolhe o aviso para um botão discreto; uma nova versão publicada faz o aviso aparecer novamente. Durante a partida, o aviso fica oculto.
 
 ### Controles padrão
 

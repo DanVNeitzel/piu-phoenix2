@@ -1,7 +1,16 @@
 {
-  "version": "0.8.7",
+  "version": "0.8.8",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Atualizações do webapp",
+      "items": [
+        "Toast Phoenix avisa sobre novas versões nos menus de canais, músicas e níveis, com verificação a cada minuto e ao voltar ao aplicativo.",
+        "Atualizar agora baixa os arquivos e reinicia o jogo, preservando recordes, histórico e preferências. Agora não recolhe o aviso para um botão discreto.",
+        "Versão da tela inicial identifica a versão em uso, sem confundir com a atualização disponível.",
+        "Avisos ocultos na abertura, resultados e gameplay; falhas de atualização permitem tentar novamente."
+      ]
+    },
     {
       "category": "Carregamento de áudio",
       "items": [

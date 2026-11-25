@@ -1,14 +1,7 @@
 /* Arcade attract -> center step -> player entry, using the local title video. */
 (function(root){
   'use strict';
-  // The release notes are the source of the version shown on both title screens.
-  fetch('changelog.json',{cache:'no-cache'}).then(response=>{
-    if(!response.ok)throw new Error('Version unavailable');
-    return response.json();
-  }).then(data=>{
-    if(typeof data.version!=='string' || !/^\d+\.\d+\.\d+(?:[-+][\w.-]+)?$/.test(data.version))return;
-    document.querySelectorAll('[data-app-version]').forEach(label=>{label.textContent='v'+data.version;});
-  }).catch(()=>{});
+  // The HTML labels identify the loaded build; the update notice checks the published release.
   const byId=id=>document.getElementById(id);
   const attract=document.querySelector('.black_screen');
   const reduced=matchMedia('(prefers-reduced-motion:reduce)');
