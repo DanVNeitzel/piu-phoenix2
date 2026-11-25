@@ -105,6 +105,7 @@ class TouchTile extends GameObject {
     }
 
     isTouched(x,y) {
+        if (!this.object.visible) return false;
         let [topLeftX, topLeftY, downRightX, downRightY] = this.getScreenPositionInPixels() ;
         const padding  = this.padding ;
         if ( x >= topLeftX +padding && x < downRightX - padding && y >= topLeftY +padding && y < downRightY-padding ) {

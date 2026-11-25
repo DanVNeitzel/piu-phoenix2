@@ -1,7 +1,15 @@
 {
-  "version": "0.8.14",
+  "version": "0.8.15",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Configuração Half Double",
+      "items": [
+        "Half Double usa somente os seis sensores centrais: centro e setas internas de cada lado, com leitura das seis colunas do chart.",
+        "Teclado ignora os quatro sensores externos; touchpad mostra três botões por lado, com enquadramento e barra de vida ajustados ao modo.",
+        "Posição, tamanho, transparência e ajustes do campo de Half Double são salvos separadamente dos outros modos, em retrato e paisagem."
+      ]
+    },
     {
       "category": "Áudio da pontuação",
       "items": [

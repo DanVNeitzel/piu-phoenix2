@@ -128,12 +128,31 @@ class TouchInput extends GameObject {
             }
             y = Math.max(minimumTop + pixels / 2, Math.min(h - pixels / 2 - 12, y + (offset.y || 0) * h));
             const bounds = new THREE.Box3().setFromObject(pad.object);
-            const width = bounds.max.x - bounds.min.x;
+            const width = this.halfDouble ? Math.max(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y) : bounds.max.x - bounds.min.x;
             const target = worldPoint(x + pixels / 2, y).distanceTo(worldPoint(x - pixels / 2, y));
             const scale = width > 0 ? target / width : 1;
             pad.object.scale.x *= scale; pad.object.scale.y *= scale;
             pad.object.position.copy(this._mesh.worldToLocal(worldPoint(x, y)));
             engine.scene.updateMatrixWorld(true);
+            if (this.halfDouble) {
+                // Three-button pads are taller than they are wide. Fit their projected
+                // bounds rather than treating them as the square pads used by Double.
+                for (let pass = 0; pass < 3; pass++) {
+                    const box = new THREE.Box3().setFromObject(pad.object), points = [];
+                    for (const bx of [box.min.x,box.max.x]) for (const by of [box.min.y,box.max.y]) for (const bz of [box.min.z,box.max.z]) {
+                        const point = new THREE.Vector3(bx,by,bz).project(engine.camera);
+                        points.push({x:(point.x+1)*w/2,y:(1-point.y)*h/2});
+                    }
+                    const left = Math.min(...points.map(p=>p.x)), right = Math.max(...points.map(p=>p.x));
+                    const top = Math.min(...points.map(p=>p.y)), bottom = Math.max(...points.map(p=>p.y));
+                    const fit = Math.max((right-left)/pixels,(bottom-top)/pixels);
+                    if (fit > 1.001) {pad.object.scale.x/=fit;pad.object.scale.y/=fit;}
+                    const a = this._mesh.worldToLocal(worldPoint((left+right)/2,(top+bottom)/2));
+                    const b = this._mesh.worldToLocal(worldPoint(x,y));
+                    pad.object.position.add(b.sub(a));
+                    engine.scene.updateMatrixWorld(true);
+                }
+            }
         };
         const bottom = Math.max(28, h * 0.045);
         if (landscape) {
@@ -243,7 +262,7 @@ class TouchInput extends GameObject {
 
         }
 
-        return list ;
+        return list.filter(([kind,padId]) => !this.padsDic[padId].activeKinds || this.padsDic[padId].activeKinds.has(kind));
     }
 
     setScale(scale) {

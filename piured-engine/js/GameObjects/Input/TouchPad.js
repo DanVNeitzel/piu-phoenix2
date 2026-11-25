@@ -69,6 +69,19 @@ class TouchPad extends Pad {
     }
 
 
+    setActiveKinds(kinds) {
+        super.setActiveKinds(kinds);
+        for (const [kind,tile] of Object.entries(this._tiles)) {
+            tile.object.visible = this.activeKinds.has(kind);
+            if (!tile.object.visible) this._mesh.remove(tile.object);
+        }
+        const active = Object.values(this._tiles).filter(tile => tile.object.visible);
+        const center = new THREE.Vector3(
+            (Math.min(...active.map(tile => tile.object.position.x)) + Math.max(...active.map(tile => tile.object.position.x))) / 2,
+            (Math.min(...active.map(tile => tile.object.position.y)) + Math.max(...active.map(tile => tile.object.position.y))) / 2, 0);
+        for (const tile of active) tile.object.position.sub(center);
+    }
+
     touchDown(x, y) {
 
         let touchedTiles = [] ;

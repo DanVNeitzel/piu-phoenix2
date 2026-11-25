@@ -93,7 +93,7 @@ class IInput extends GameObject {
 
         }
 
-        return list ;
+        return list.filter(([kind,padId]) => !this.padsDic[padId].activeKinds || this.padsDic[padId].activeKinds.has(kind));
     }
 
     applyFrameLog(json) {

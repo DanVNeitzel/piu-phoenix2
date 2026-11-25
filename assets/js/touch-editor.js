@@ -65,14 +65,14 @@
     await bridge.pause();if(!bridge.canEdit())return;
     original=PiuTouchLayout.normalize(bridge.input.layoutPreferences);draft=PiuTouchLayout.normalize(original);side='left';
     bridge.hidePause();dialog.classList.remove('te-collapsed');byId('te-toggle').textContent='Ver jogo';byId('te-toggle').setAttribute('aria-expanded','true');
-    byId('te-status').textContent='As mudanças aparecem na hora.';
+    byId('te-status').textContent=bridge.config.record.type==='pump-halfdouble'?'Half Double: seis sensores. Ajustes salvos separadamente para este modo.':'As mudanças aparecem na hora.';
     dialog.querySelector('.te-content>p').textContent=bridge.preview?'Prévia antes de jogar. Arraste o contorno do pad ou use os ajustes abaixo.':'Partida pausada. Arraste o contorno do pad ou use os ajustes abaixo.';
     dialog.showModal();updateControls();preview();byId('te-size').focus({preventScroll:true});
   }
   function finish(save){
     if(!dialog.open)return;
     let value=original;
-    if(save){try{value=PiuTouchLayout.save(draft);}catch(_){byId('te-status').textContent='Não foi possível salvar. Tente novamente ou cancele.';return;}}
+    if(save){try{value=PiuTouchLayout.save(draft,bridge.config.record.type);}catch(_){byId('te-status').textContent='Não foi possível salvar. Tente novamente ou cancele.';return;}}
     if(frame!==null){cancelAnimationFrame(frame);frame=null;}drag=null;
     bridge.input.layoutPreferences=PiuTouchLayout.normalize(value);bridge.config.touchLayout=bridge.input.layoutPreferences;
     bridge.layout();bridge.engine.renderer.render(bridge.engine.scene,bridge.engine.camera);

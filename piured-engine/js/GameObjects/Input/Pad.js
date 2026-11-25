@@ -54,7 +54,16 @@ class Pad extends GameObject {
 
     }
 
+    setActiveKinds(kinds) {
+        this.activeKinds = new Set(kinds);
+        for (const kind of ['dl','ul','c','ur','dr']) if (!this.activeKinds.has(kind)) {
+            this[kind + 'KeyPressed'] = false;
+            this[kind + 'KeyHold'] = false;
+        }
+    }
+
     isPressed(kind) {
+        if (this.activeKinds && !this.activeKinds.has(kind)) return false;
         switch (kind) {
             case 'dl':
                 return  this.dlKeyPressed ;
@@ -75,6 +84,7 @@ class Pad extends GameObject {
     }
 
     isHeld(kind) {
+        if (this.activeKinds && !this.activeKinds.has(kind)) return false;
         switch (kind) {
             case 'dl':
                 return  this.dlKeyHold ;

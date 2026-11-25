@@ -66,6 +66,8 @@ As teclas podem ser alteradas nas configurações.
 | Esquerdo / Single | Z | Q | S | E | C |
 | Direito / Double | V | R | G | Y | N |
 
+**Half Double** usa seis sensores: centro, ↗ e ↘ do painel esquerdo (**S, E, C**) e ↙, ↖ e centro do painel direito (**V, R, G**). No toque, aparecem três botões por lado. O editor de touchpad salva tamanho, posição, transparência e campo de jogo separadamente para Half Double, em retrato e paisagem.
+
 Na seleção desktop, use **← / →** para navegar pelas músicas e **Enter** para confirmar. Durante a partida, **Esc** pausa ou retoma o jogo. Em dispositivos móveis, selecione o modo de controle por toque.
 
 ## Biblioteca de músicas

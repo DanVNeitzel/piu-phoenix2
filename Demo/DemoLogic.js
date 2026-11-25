@@ -98,6 +98,7 @@ function createSingleConfig(settings = null) {
             touchpadSize:1.2-Number(settings.size)/10,touchLayout:settings.touchLayout});
         config.speed = settings.mode === 'auto' ? settings.av / (config.referenceBpm || 120) : settings.speed;
     }
+    if(level.STEPSTYPE === 'pump-halfdouble') config.touchLayout = PiuTouchLayout.read(level.STEPSTYPE);
     config.record.playback = config.playback;
     config.noteskin = PiuGameSettings.resolveNoteskin({skin:config.noteskin,randomNote:config.randomNote});
     return config;

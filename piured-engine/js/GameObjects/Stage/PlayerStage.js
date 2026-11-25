@@ -172,6 +172,12 @@ class PlayerStage extends GameObject {
 
         }
 
+        if (this._song.getLevelStyle(this._level) === 'pump-halfdouble') {
+            this.keyListener.halfDouble = true;
+            this.keyListener.padsDic[this.idLeftPad].setActiveKinds(['c','ur','dr']);
+            this.keyListener.padsDic[this.idRightPad].setActiveKinds(['dl','ul','c']);
+        }
+
 
 
     }
@@ -286,6 +292,7 @@ class PlayerStage extends GameObject {
     // Construct generic receptor
     getReceptor(padId) {
         let receptor = new Receptor(this._resourceManager, this.beatManager, this.keyListener, padId, this.stepTextureAnimationRate, this._noteskin ) ;
+        if (this.keyListener.halfDouble) receptor.setActiveKinds(this.keyListener.padsDic[padId].activeKinds);
         receptor.object.position.z = this.receptorZDepth;
         return receptor ;
     }
@@ -336,6 +343,7 @@ class PlayerStage extends GameObject {
         }
 
         this._lifeBar.object.position.y = 0.7 ;
+        if (this._song.getLevelStyle(this._level) === 'pump-halfdouble') this._lifeBar.object.scale.x *= 0.6;
 
         this._object.add(this._lifeBar.object)
 

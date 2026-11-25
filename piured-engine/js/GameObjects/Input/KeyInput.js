@@ -55,74 +55,21 @@ class KeyInput extends GameObject {
     }
 
 
-    onKeyDown( event ) {
-
-
-        const key =  event.key.toLowerCase() ;
-
-        for ( let pad of this.pads ) {
-            if ( key === pad.dlKey && !pad.dlKeyHold ) {
-                pad.dlKeyHold = true ;
-                pad.dlKeyPressed = true ;
-                // console.log('dl down: ' +key) ;
-            }
-            else if ( key === pad.ulKey && !pad.ulKeyHold ) {
-                pad.ulKeyHold = true ;
-                pad.ulKeyPressed = true ;
-                // console.log('ul down : ' +key)
-            }
-            else if ( key === pad.cKey && !pad.cKeyHold ) {
-                pad.cKeyHold = true ;
-                pad.cKeyPressed = true ;
-                // console.log('c down: ' +key)
-            }
-            else if ( key === pad.urKey && !pad.urKeyHold ) {
-                pad.urKeyHold = true ;
-                pad.urKeyPressed = true ;
-                // console.log('ur down: ' +key)
-            }
-            else if ( key === pad.drKey && !pad.drKeyHold ) {
-                pad.drKeyHold = true ;
-                pad.drKeyPressed = true ;
-                // console.log('dr down: ' +key)
+    onKeyDown(event) {
+        const key = event.key.toLowerCase();
+        for (const pad of this.pads) for (const kind of pad.activeKinds || ['dl','ul','c','ur','dr']) {
+            if (key === pad[kind + 'Key'] && !pad[kind + 'KeyHold']) {
+                pad[kind + 'KeyHold'] = true;
+                pad[kind + 'KeyPressed'] = true;
             }
         }
-
-
     }
 
     onKeyUp(event) {
-
-        const key = event.key ;
-
-        for ( let pad of this.pads ) {
-            if ( key === pad.dlKey ) {
-                pad.dlKeyHold = false ;
-                // console.log('dl up: ' + key);
-
-            }
-            else if ( key === pad.ulKey ) {
-                pad.ulKeyHold = false ;
-                // console.log('ul up: ' + key);
-
-            }
-            else if ( key === pad.cKey ) {
-                pad.cKeyHold = false ;
-                // console.log('c up: ' + key);
-
-            }
-            else if ( key === pad.urKey ) {
-                pad.urKeyHold = false ;
-                // console.log('ur up: ' + key);
-
-            }
-            else if ( key === pad.drKey ) {
-                pad.drKeyHold = false ;
-                // console.log('dr up: ' + key);
-
-            }
+        const key = event.key.toLowerCase();
+        for (const pad of this.pads) for (const kind of pad.activeKinds || ['dl','ul','c','ur','dr']) {
+            if (key === pad[kind + 'Key']) pad[kind + 'KeyHold'] = false;
         }
-
     }
 
     isPressed( kind, padId ) {
@@ -171,7 +118,7 @@ class KeyInput extends GameObject {
 
         }
 
-        return list ;
+        return list.filter(([kind,padId]) => !this.padsDic[padId].activeKinds || this.padsDic[padId].activeKinds.has(kind));
     }
 
     get object () {

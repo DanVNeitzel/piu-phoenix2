@@ -155,6 +155,98 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertEqual(self.page.locator('#online-song .listSong.active').count(), 1)
         self.assertEqual(self.page.locator('#online-song .wheel-ghost.active').count(), 0)
 
+    def open_frozen_stage(self, style, touch):
+        self.load()
+        self.page.evaluate("""({style,touch})=>{
+          const config=createSingleConfig();
+          const width=style==='pump-halfdouble'?6:style==='pump-double'?10:5;
+          const rows=Array.from({length:width},(_,i)=>'0'.repeat(i)+'1'+'0'.repeat(width-i-1)).join('\\n');
+          config.sscContent='#TITLE:Test;\\n#ARTIST:PIUWeb;\\n#MUSIC:Test0.wav;\\n#BPMS:0=120;\\n#OFFSET:0;\\n'+
+            '#NOTEDATA:;\\n#STEPSTYPE:'+style+';\\n#METER:8;\\n#DESCRIPTION:Test;\\n#DIFFICULTY:Easy;\\n#NOTES:\\n'+rows+'\\n;';
+          config.chartLevel=0;config.record.type=style;config.useTouchInput=touch;
+          sessionStorage.setItem('piu_touch_preview_config',JSON.stringify(config));
+        }""", {'style':style,'touch':touch})
+        self.page.goto(self.origin+'/localStage.html?preview=touchpad')
+        self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
+
+    def test_half_double_receptors_notes_and_keyboard(self):
+        self.open_frozen_stage('pump-halfdouble',False)
+        actual=self.page.evaluate("""()=>{
+          const stage=engine.stage._playerStages[0],input=stage.keyListener;
+          const maps=config.leftKeyMap,right=config.rightKeyMap;
+          for(const key of [...Object.values(maps),...Object.values(right)])input.onKeyDown({key:key.toUpperCase()});
+          const pressed=input.getPressed().map(([kind,pad])=>pad+':'+kind).sort();
+          const notes=stage._steps.stepList.map(step=>({pad:step.padId,kind:step.kind,x:stage._steps.padSteps[step.padId].position.x+step.object.position.x}));
+          for(const key of [...Object.values(maps),...Object.values(right)])input.onKeyUp({key:key.toUpperCase()});
+          const held=input.pads.flatMap(pad=>['dl','ul','c','ur','dr'].filter(kind=>pad[kind+'KeyHold']));
+          return {pressed,notes,held,outerFX:stage.padReceptors['0'].dlTap.object.visible,
+            rightFX:stage.padReceptors['1'].drTap.object.visible,
+            cropped:stage.padReceptors['0']._receptor.geometry!==stage.padReceptors['1']._receptor.geometry};
+        }""")
+        expected=['0:c','0:dr','0:ur','1:c','1:dl','1:ul']
+        self.assertEqual(actual['pressed'],expected)
+        self.assertEqual([note['pad']+':'+note['kind'] for note in actual['notes']],['0:c','0:ur','0:dr','1:dl','1:ul','1:c'])
+        for actual_x,expected_x in zip([note['x'] for note in actual['notes']],[-1.96,-1.18,-.4,.4,1.18,1.96]):
+            self.assertAlmostEqual(actual_x,expected_x,places=6)
+        self.assertEqual(actual['held'],[])
+        self.assertFalse(actual['outerFX'])
+        self.assertFalse(actual['rightFX'])
+        self.assertTrue(actual['cropped'])
+        self.assertFalse(self.errors)
+
+    def test_half_double_touch_six_panels_and_separate_preferences(self):
+        self.open_frozen_stage('pump-halfdouble',True)
+        for width,height in [(390,844),(844,390),(1280,800)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            actual=self.page.evaluate("""()=>{
+              const input=engine.stage._playerStages[0].keyListener;
+              input.updateResponsiveLayout();PiuGameplayLayout.apply(engine);input.updateResponsiveLayout();
+              engine.scene.updateMatrixWorld(true);engine.camera.updateMatrixWorld(true);
+              const tiles=input.getVisiblePads().flatMap(pad=>Object.entries(pad._tiles).filter(([,tile])=>tile.object.visible).map(([kind,tile])=>({pad,kind,tile})));
+              tiles.forEach(({tile},id)=>{
+                const [left,top,right,bottom]=tile.getScreenPositionInPixels();
+                input.onTouchDown({changedTouches:[{identifier:id,clientX:(left+right)/2,clientY:(top+bottom)/2}]});
+              });
+              const pressed=input.getPressed().map(([kind,pad])=>pad+':'+kind).sort();
+              const hidden=input.pads[0]._tiles.dl.isTouched(0,0);
+              const bounds=tiles.map(({tile})=>tile.getScreenPositionInPixels());
+              input.clearTouches();
+              return {count:tiles.length,pressed,hidden,bounds};
+            }""")
+            self.assertEqual(actual['count'],6)
+            self.assertEqual(actual['pressed'],['0:c','0:dr','0:ur','1:c','1:dl','1:ul'])
+            self.assertFalse(actual['hidden'])
+            for left,top,right,bottom in actual['bounds']:
+                self.assertGreaterEqual(left,-1)
+                self.assertGreaterEqual(top,-1)
+                self.assertLessEqual(right,width+1)
+                self.assertLessEqual(bottom,height+1)
+        saved=self.page.evaluate("""()=>{
+          const normal=PiuTouchLayout.defaults(),half=PiuTouchLayout.defaults();
+          normal.portrait.opacity=.4;half.portrait.opacity=.7;
+          PiuTouchLayout.save(normal);PiuTouchLayout.save(half,'pump-halfdouble');
+          return [PiuTouchLayout.read().portrait.opacity,PiuTouchLayout.read('pump-halfdouble').portrait.opacity];
+        }""")
+        self.assertEqual(saved,[.4,.7])
+        self.assertFalse(self.errors)
+
+    def test_single_and_double_keep_full_receptor_geometry(self):
+        for style,count in [('pump-single',1),('pump-double',2)]:
+            self.open_frozen_stage(style,True)
+            actual=self.page.evaluate("""()=>{
+              const stage=engine.stage._playerStages[0];
+              return {pads:stage.keyListener.pads.length,
+                tiles:stage.keyListener.pads.map(pad=>Object.values(pad._tiles).filter(tile=>tile.object.visible).length),
+                widths:Object.values(stage.padReceptors).map(receptor=>{
+                  const geometry=receptor._receptor.geometry;geometry.computeBoundingBox();
+                  return geometry.boundingBox.max.x-geometry.boundingBox.min.x;
+                })};
+            }""")
+            self.assertEqual(actual['pads'],count)
+            self.assertEqual(actual['tiles'],[5]*count)
+            self.assertEqual(actual['widths'],[5]*count)
+        self.assertFalse(self.errors)
+
     def test_fast_navigation_wrap_clones_and_resize(self):
         self.load()
         self.server.delay = .25
@@ -221,6 +313,7 @@ class SelectionBrowserTests(unittest.TestCase):
         self.load()
         self.page.evaluate("toggleFavorite({key:PiuLibrary.songKey(songsJson.children[0].children[0]),name:'Test 0',stageIndex:0,songIndex:0})")
         self.page.evaluate('selectChannel(true)')
+        self.page.evaluate('()=>new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))')
         card = self.page.locator('#stage [data-idx="favorites"]')
         card.evaluate('element=>element.focus({preventScroll:true})')
         expect(card).to_have_attribute('aria-disabled', 'false')

@@ -196,8 +196,9 @@ try {
         PiuControlMode.render(document.getElementById('playControlMode'),!!config.useTouchInput);
         if (config.useTouchInput) {
             const single = style === 'pump-single';
-            input = new TouchInputConfig((single ? 0.8 : 0.55) * config.touchpadSize, 0, single ? -9 : -12);
-            engine.setCameraPosition(0, single ? -6 : -8, single ? 17 : 22);
+            const half = style === 'pump-halfdouble';
+            input = new TouchInputConfig((single ? 0.8 : half ? 0.65 : 0.55) * config.touchpadSize, 0, single ? -9 : half ? -10.5 : -12);
+            engine.setCameraPosition(0, single ? -6 : half ? -7 : -8, single ? 17 : half ? 19 : 22);
             document.addEventListener('touchstart', event => {
                 if (!engine.paused && !event.target.closest('button,dialog')) onTouchDown(event);
             }, {passive:false});
@@ -229,7 +230,7 @@ try {
         }
         engine.addToDOM('container');
         const touchControls = config.useTouchInput ? engine.stage._playerStages[0].keyListener : null;
-        touchControls?.configureResponsive(config.touchpadSize, touchPreview ? PiuTouchLayout.normalize(config.touchLayout) : PiuTouchLayout.read());
+        touchControls?.configureResponsive(config.touchpadSize, touchPreview ? PiuTouchLayout.normalize(config.touchLayout) : PiuTouchLayout.read(style));
         if (touchControls) config.touchLayout = touchControls.layoutPreferences;
         function updateTouchLayout() {
             if (finished || !touchControls) return;

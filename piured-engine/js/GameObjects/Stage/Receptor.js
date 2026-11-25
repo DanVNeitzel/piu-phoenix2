@@ -91,6 +91,25 @@ class Receptor extends GameObject {
         this._object.add(this._receptor) ;
     }
 
+    setActiveKinds(kinds) {
+        this.activeKinds = new Set(kinds);
+        // Crop a private copy of the receptor atlas, keeping the six note columns aligned.
+        const geometry = this._receptor.geometry.clone();
+        const positions = geometry.attributes.position, uv = geometry.attributes.uv;
+        const min = this.activeKinds.has('dl') ? -2.5 : -0.4;
+        const max = this.activeKinds.has('dr') ? 2.5 : 0.4;
+        for (let i = 0; i < positions.count; i++) {
+            const x = Math.max(min, Math.min(max, positions.getX(i)));
+            positions.setX(i, x); uv.setX(i, (x + 2.5) / 5);
+        }
+        positions.needsUpdate = true; uv.needsUpdate = true;
+        geometry.computeBoundingBox(); geometry.computeBoundingSphere();
+        this._receptor.geometry = geometry;
+        for (const kind of ['dl','ul','c','ur','dr']) if (!this.activeKinds.has(kind)) {
+            for (const effect of ['Bounce','FX','Tap','WhiteTap']) this[kind + effect].object.visible = false;
+        }
+    }
+
     setUpBounce(kind, XPosition) {
 
         let bounce = new StepBounce(this._resourceManager, kind, this._animationRate, this._noteskin) ;
@@ -140,6 +159,7 @@ class Receptor extends GameObject {
 
 
     animateExplosionStep(step) {
+        if (this.activeKinds && !this.activeKinds.has(step.kind)) return;
 
 
         let tapEffect = null ;
@@ -199,6 +219,7 @@ class Receptor extends GameObject {
     }
 
     animateTap(kind) {
+            if (this.activeKinds && !this.activeKinds.has(kind)) return;
             var tap = null ;
             switch (kind) {
                 case 'dl':
@@ -221,6 +242,7 @@ class Receptor extends GameObject {
     }
 
     animateWhiteTap(kind) {
+        if (this.activeKinds && !this.activeKinds.has(kind)) return;
 
 
         var tap = null ;
