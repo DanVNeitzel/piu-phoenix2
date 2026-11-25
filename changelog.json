@@ -1,7 +1,14 @@
 {
-  "version": "0.8.9",
+  "version": "0.8.10",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Half Double",
+      "items": [
+        "Canal H. Double usa bg_hdouble.png nos níveis, incluindo a confirmação da partida.",
+        "Dificuldades Half Double usam Circle_H_Double_Diff_Eval.png na seleção de músicas e na seleção de nível."
+      ]
+    },
     {
       "category": "Carrossel e canais",
       "items": [

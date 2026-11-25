@@ -30,6 +30,7 @@ body.desktop-channel-select #selector #stage .channel-lock[hidden]{display:none}
 body.desktop-channel-select.difficulty-level-select #desktop-options{display:grid}
 body.desktop-channel-select #selector #stage .channel-level-card .channel-level-art{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:url('img/phx2/bg_single.png') center/90% 90% no-repeat;text-shadow:0 3px 3px #000}
 body.desktop-channel-select #selector #stage .channel-level-card .channel-level-art.double{background-image:url('img/phx2/bg_double.png')}
+body.desktop-channel-select #selector #stage .channel-level-card .channel-level-art.half{background-image:url('img/phx2/bg_hdouble.png')}
 body.desktop-channel-select #selector #stage .channel-level-art span{color:#fff;font:italic 700 clamp(10px,2svh,25px)/1 numberLevel,system-ui}
 body.desktop-channel-select #selector #stage .channel-level-art strong{color:#fff;font:clamp(30px,8svh,90px)/1.2 numberLevelV2,system-ui}
 body.desktop-channel-select #selector #stage .channel-level-card .channel-level-art.has-level-artwork{background:none;gap:0}

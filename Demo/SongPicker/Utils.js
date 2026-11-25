@@ -716,6 +716,9 @@ function styleStepType(type) {
       return "list-group-item list-group-item-action listStep circle-double difficulty-select";
       break;
 
+    case 'pump-halfdouble':
+      return "list-group-item list-group-item-action listStep circle-double circle-half difficulty-select";
+
     default:
       return "list-group-item list-group-item-action listStep circle-default difficulty-select";
       break;
@@ -731,6 +734,9 @@ function stepType(type) {
     case 'pump-double':
       return 'Double';
       break;
+
+    case 'pump-halfdouble':
+      return 'Half Double';
 
     default:
       return '????';

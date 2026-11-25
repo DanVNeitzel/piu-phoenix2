@@ -120,11 +120,12 @@
         card.className='listSong channel-level-card';card.dataset.level=String(level);
         card.title=channelChartFilter.label+' · NÍVEL '+level;
         card.setAttribute('aria-label',card.title);
-        const art=document.createElement('div');art.className='channel-level-art '+channelChartFilter.mode;
+        const half=channelChartFilter.type==='pump-halfdouble';
+        const art=document.createElement('div');art.className='channel-level-art '+channelChartFilter.mode+(half?' half':'');
         const label=document.createElement('span');label.textContent=channelChartFilter.label;
         const number=document.createElement('strong');number.textContent=level==='27+'?level:String(level).padStart(2,'0');
         art.append(label,number);
-        const source=PiuLibrary.levelArtwork(channelChartFilter,level,songsJson?.levelArtworkExtension);
+        const source=half?null:PiuLibrary.levelArtwork(channelChartFilter,level,songsJson?.levelArtworkExtension);
         if(source){
           const image=document.createElement('img');image.className='bannerSong channel-level-image';
           image.alt=card.title;image.width=1280;image.height=1280;image.decoding='async';

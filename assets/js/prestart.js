@@ -83,7 +83,7 @@
     byId('ps-levels').replaceChildren();
     state.charts.forEach(index=>{
       const chart=selsong.levels[index],button=document.createElement('button');button.type='button';
-      button.className='ps-orb'+(chart.STEPSTYPE==='pump-single'?'':' ps-double');button.dataset.chart=String(index);
+      button.className='ps-orb'+(chart.STEPSTYPE==='pump-single'?'':chart.STEPSTYPE==='pump-halfdouble'?' ps-double ps-half':' ps-double');button.dataset.chart=String(index);
       button.textContent=String(chart.METER).padStart(2,'0');
       button.setAttribute('aria-label',typeName(chart.STEPSTYPE)+' '+chart.METER+(chart.DESCRIPTION?', '+chart.DESCRIPTION:''));
       button.title=[typeName(chart.STEPSTYPE),chart.METER,chart.DESCRIPTION,chart.CREDIT].filter(Boolean).join(' · ');

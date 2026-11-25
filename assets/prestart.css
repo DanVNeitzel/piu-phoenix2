@@ -55,6 +55,7 @@
 #confirmPlayModal .ps-center-prompt{width:95px;height:clamp(24px,5svh,45px);object-fit:contain}
 #confirmPlayModal .ps-large-level{width:clamp(60px,16svh,128px);height:clamp(60px,16svh,128px);background:url('img/phx2/bg_single.png') center/100% 100% no-repeat;display:flex;flex-direction:column;align-items:center;justify-content:center;text-shadow:0 2px 2px #000;border-radius:0;box-shadow:none}
 #confirmPlayModal .ps-large-level.ps-double{background-image:url('img/phx2/bg_double.png')}
+#confirmPlayModal .ps-large-level.ps-half{background-image:url('img/phx2/bg_hdouble.png')}
 #confirmPlayModal .ps-large-level span{font:italic 700 clamp(8px,1.6svh,15px) numberLevel;line-height:1}
 #confirmPlayModal .ps-large-level strong{font:clamp(24px,6svh,48px)/1.2 numberLevelV2}
 #confirmPlayModal .ps-focus:after{content:'DIFICULDADE SELECIONADA';font-size:6px;color:#b4ceb4;letter-spacing:.6px;white-space:nowrap;margin-top:4px}

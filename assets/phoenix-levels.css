@@ -14,6 +14,12 @@
  --phoenix-orb-size:132%;
 }
 
+.circle-half,
+#confirmPlayModal .ps-orb.ps-half{
+ --phoenix-orb:url('img/phx2/Circle_H_Double_Diff_Eval.png');
+ --phoenix-orb-size:132%;
+}
+
 :is(.circle-single,.circle-double),
 #confirmPlayModal .ps-orb:not(.ps-coop),
 .player-panel .ph-orb,
