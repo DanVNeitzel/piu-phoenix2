@@ -1320,7 +1320,7 @@ function loadFavorites() {
         var a = document.createElement('a');
         a.href = '#';
         a.setAttribute('data-idx', idx);
-        a.dataset.songIndex = fav.songIndex; a.dataset.stageIndex = fav.stageIndex;
+        a.dataset.songIndex = fav.songIndex; a.dataset.stageIndex = fav.stageIndex; a.dataset.songKey = fav.key;
         a.setAttribute('data-bs-toggle', 'list');
         a.className = 'list-group-item list-group-item-action listSong';
         a.onclick = function (e) {
@@ -1361,59 +1361,7 @@ function loadFavorites() {
         div1.appendChild(starIcon);
         a.appendChild(div1);
 
-        // Adicionar long press para remover dos favoritos
-        var longPressTimer;
-        var isLongPress = false;
-
-        a.addEventListener('touchstart', function (e) {
-          isLongPress = false;
-          longPressTimer = setTimeout(function () {
-            isLongPress = true;
-            if (typeof toggleFavorite === 'function') {
-              toggleFavorite(fav);
-            }
-            if (navigator.vibrate) {
-              navigator.vibrate(50);
-            }
-            e.preventDefault();
-          }, 500);
-        });
-
-        a.addEventListener('touchend', function (e) {
-          clearTimeout(longPressTimer);
-          if (isLongPress) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        });
-
-        a.addEventListener('touchmove', function () {
-          clearTimeout(longPressTimer);
-        });
-
-        // Para desktop (mouse)
-        a.addEventListener('mousedown', function (e) {
-          isLongPress = false;
-          longPressTimer = setTimeout(function () {
-            isLongPress = true;
-            if (typeof toggleFavorite === 'function') {
-              toggleFavorite(fav);
-            }
-            e.preventDefault();
-          }, 500);
-        });
-
-        a.addEventListener('mouseup', function (e) {
-          clearTimeout(longPressTimer);
-          if (isLongPress) {
-            e.preventDefault();
-            e.stopPropagation();
-          }
-        });
-
-        a.addEventListener('mouseleave', function () {
-          clearTimeout(longPressTimer);
-        });
+        bindFavoriteGesture(a,fav);
 
         holder.appendChild(a);
       } catch (err) {

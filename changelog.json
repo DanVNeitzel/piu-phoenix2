@@ -1,5 +1,5 @@
 {
-  "version": "0.8.4",
+  "version": "0.8.5",
   "date": "2026-11-25",
   "updates": [
     {
@@ -36,6 +36,7 @@
     {
       "category": "Pontuação e interface",
       "items": [
+        "Favoritar ou desfavoritar não reinicia o carrossel nem troca a música selecionada; removendo a faixa atual dos favoritos, a seleção segue para a vizinha.",
         "Crédito Developed by Daniel Neitzel exibido abaixo da versão na tela inicial.",
         "Tela inicial identificada como PIUWEB PHOENIX 2, com a versão atual no lugar de SINGLE PLAYER.",
         "Grade e plate entram da esquerda para a direita no desktop e da direita para a esquerda no mobile.",

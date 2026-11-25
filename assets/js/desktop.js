@@ -205,6 +205,7 @@
     lastWheel = performance.now(); moveSong((event.deltaX || event.deltaY) > 0 ? 1 : -1);
   }, {capture:true,passive:false});
   let scrollingByTouch=false,settleTimer=null;
+  document.addEventListener('piu:favoritechange',()=>{scrollingByTouch=false;clearTimeout(settleTimer);});
   const wheel=byId('online-song');
   wheel.addEventListener('pointerdown',()=>{if(!desktop.matches) scrollingByTouch=true;});
   wheel.addEventListener('scroll',()=>{

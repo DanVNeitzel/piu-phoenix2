@@ -171,18 +171,69 @@ function toggleFavorite(songData) {
   }
 
   saveFavorites(favorites);
-
-  // Se estiver no canal de favoritos, recarregar
-  if (typeof currentChannel !== 'undefined' && currentChannel === 'favorites') {
-    if (typeof openFavoritesChannel === 'function') {
-      openFavoritesChannel();
+  const holder=document.getElementById('online-song');
+  const cards=[...holder.querySelectorAll('.listSong:not(.wheel-ghost)')];
+  const selected=cards.find(card=>card.classList.contains('active'));
+  const selectedIndex=cards.indexOf(selected);
+  const removed=index>-1;
+  if(currentChannel==='favorites' && removed){
+    const removedSelected=selected?.dataset.songKey===songData.key;
+    holder.querySelectorAll('.listSong').forEach(card=>{
+      if(card.dataset.songKey===songData.key)card.remove();
+    });
+    const remaining=[...holder.querySelectorAll('.listSong:not(.wheel-ghost)')];
+    if(!remaining.length){
+      resetSongSelection();
+      document.querySelector('.favorite-unavailable')?.remove();
+      showEmptyChannel('SEUS FAVORITOS','Pressione e segure uma música para adicioná-la aos favoritos.');
+    }else if(removedSelected){
+      remaining[Math.min(selectedIndex,remaining.length-1)].click();
     }
-  } else {
-    // Recarregar o stage atual para atualizar o ícone de coração
-    if (typeof stageIndex !== 'undefined' && typeof change_stage === 'function') {
-      change_stage(stageIndex);
-    }
+    document.dispatchEvent(new CustomEvent('piu:stagechange'));
+  }else{
+    holder.querySelectorAll('.listSong').forEach(card=>{
+      if(card.dataset.songKey!==songData.key)return;
+      const star=card.querySelector('.favorite-star-icon');
+      if(removed){star?.remove();return;}
+      if(star)return;
+      const icon=document.createElement('span');icon.className='favorite-star-icon';icon.textContent='⭐';
+      Object.assign(icon.style,{position:'absolute',top:'10px',right:'10px',fontSize:'28px',zIndex:'10',textShadow:'#ffc107 0px 0px 4px',pointerEvents:'none'});
+      card.firstElementChild.append(icon);
+    });
   }
+  document.dispatchEvent(new CustomEvent('piu:favoritechange'));
+}
+
+let favoriteClickUntil=0;
+document.addEventListener('click',event=>{
+  if(event.isTrusted===false || performance.now()>=favoriteClickUntil || !event.target.closest('#online-song'))return;
+  favoriteClickUntil=0;event.preventDefault();event.stopImmediatePropagation();
+},true);
+function bindFavoriteGesture(card,songData){
+  let gesture=null;
+  card.addEventListener('pointerdown',event=>{
+    if(event.isPrimary===false || (event.pointerType==='mouse' && event.button!==0))return;
+    if(gesture)return;
+    const finish=()=>{
+      if(!gesture)return;
+      clearTimeout(gesture.timer);
+      if(gesture.triggered)favoriteClickUntil=performance.now()+500;
+      gesture=null;
+      document.removeEventListener('pointerup',finish,true);document.removeEventListener('pointercancel',finish,true);
+    };
+    gesture={x:event.clientX,y:event.clientY,triggered:false,finish};
+    document.addEventListener('pointerup',finish,true);document.addEventListener('pointercancel',finish,true);
+    gesture.timer=setTimeout(()=>{
+      if(!gesture)return;
+      gesture.triggered=true;favoriteClickUntil=performance.now()+1000;
+      toggleFavorite(songData);navigator.vibrate?.(50);
+    },500);
+  });
+  const cancel=()=>{if(gesture&&!gesture.triggered)gesture.finish();};
+  card.addEventListener('pointermove',event=>{
+    if(gesture && Math.hypot(event.clientX-gesture.x,event.clientY-gesture.y)>10)cancel();
+  });
+  card.addEventListener('pointerleave',cancel);
 }
 // === FIM SISTEMA DE FAVORITOS ===
 
@@ -529,7 +580,7 @@ function createListGroupLink(idx, title, number, onclick, songData, channelArtwo
   a.href = '#';
   a.setAttribute('data-idx', idx);
   a.title = title;
-  if (songData) { a.dataset.songIndex = songData.songIndex; a.dataset.stageIndex = songData.stageIndex; }
+  if (songData) { a.dataset.songIndex = songData.songIndex; a.dataset.stageIndex = songData.stageIndex; a.dataset.songKey = songData.key; }
   a.setAttribute('data-bs-toggle', "list");
   a.className = "list-group-item list-group-item-action listSong";
   a.onclick = function(e) {
@@ -571,59 +622,7 @@ function createListGroupLink(idx, title, number, onclick, songData, channelArtwo
       div1.append(starIcon);
     }
 
-    // Adicionar long press para adicionar/remover dos favoritos
-    if (songData) {
-      let longPressTimer;
-      let isLongPress = false;
-
-      a.addEventListener('touchstart', function (e) {
-        isLongPress = false;
-        longPressTimer = setTimeout(function () {
-          isLongPress = true;
-          toggleFavorite(songData);
-          // Vibrar se disponível
-          if (navigator.vibrate) {
-            navigator.vibrate(50);
-          }
-          // Prevenir o clique normal
-          e.preventDefault();
-        }, 500); // 500ms = meio segundo
-      });
-
-      a.addEventListener('touchend', function (e) {
-        clearTimeout(longPressTimer);
-        if (isLongPress) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      });
-
-      a.addEventListener('touchmove', function () {
-        clearTimeout(longPressTimer);
-      });
-
-      // Para desktop (mouse)
-      a.addEventListener('mousedown', function (e) {
-        isLongPress = false;
-        longPressTimer = setTimeout(function () {
-          isLongPress = true;
-          toggleFavorite(songData);
-          e.preventDefault();
-        }, 500);
-      });
-
-      a.addEventListener('mouseup', function (e) {
-        clearTimeout(longPressTimer);
-        if (isLongPress) {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      });
-
-      a.addEventListener('mouseleave', function () {
-        clearTimeout(longPressTimer);
-      });
-    }
+    if (songData) bindFavoriteGesture(a,songData);
   }
 
   // span.className = "badge bg-primary rounded-pill";
