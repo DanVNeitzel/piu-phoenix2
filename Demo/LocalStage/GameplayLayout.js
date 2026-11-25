@@ -17,7 +17,12 @@
     const receptors=()=>union(Object.values(stage.padReceptors).map(r=>screenBox(r._receptor,engine)));
     let gap=w-32;
     if(landscape){const pads=stage.keyListener.getVisiblePads();if(pads.length===2)gap=screenBox(pads[1].object,engine).left-screenBox(pads[0].object,engine).right-20;}
-    const baseTarget=landscape?Math.min(Math.max(120,gap),h*.95,480):Math.min(w*.86,420);
+    const sidebar=document.getElementById('game-modifiers')?.getBoundingClientRect();
+    const fieldLeft=sidebar?sidebar.right+8:16,fieldRight=w-12;
+    const customWidth=preferences.fieldWidth!=null || preferences.lifeWidth!=null;
+    const fieldCenter=landscape || customWidth?w/2:(fieldLeft+fieldRight)/2;
+    const available=landscape?Math.max(120,w-2*fieldLeft):Math.max(120,fieldRight-fieldLeft);
+    const baseTarget=Math.min(available,landscape?Math.min(Math.max(120,gap),h*.95,480):Math.min(w*.86,420));
     // Custom widths use the entire viewport, including the area behind the pads.
     const target=preferences.fieldWidth==null?baseTarget:w*preferences.fieldWidth;
     const current=receptors(),ratio=target/(current.right-current.left);
@@ -26,7 +31,7 @@
     life.position.y=stage.lifeLayoutBase.y;life.scale.x=stage.lifeLayoutBase.scaleX;life.scale.y=stage.lifeLayoutBase.scaleY*baseTarget/target;
     engine.scene.updateMatrixWorld(true);
     const initialBar=screenBox(life,engine),barWidth=initialBar.right-initialBar.left;
-    const requestedWidth=preferences.lifeWidth==null?barWidth*baseTarget/target:w*preferences.lifeWidth;
+    const requestedWidth=preferences.lifeWidth==null?Math.min(available,barWidth*baseTarget/target):w*preferences.lifeWidth;
     life.scale.x*=requestedWidth/barWidth;
     engine.scene.updateMatrixWorld(true);
     const minimumHeight=landscape?14:18,bar=screenBox(life,engine);
@@ -40,10 +45,10 @@
     };
     const separation=receptors().top-screenBox(life,engine).bottom;
     if(separation<8)move(life,0,separation-8);
-    const hud=[...document.querySelectorAll('.options-block-l,.options-block-r,#game-pause-button')].map(e=>e.getBoundingClientRect());
+    const hud=[...document.querySelectorAll('.options-block-l,.game-top-controls')].map(e=>e.getBoundingClientRect());
     const finalBar=screenBox(life,engine),field=receptors();
     const shift=preferences.fieldY || 0;
-    const dx=w/2-(field.left+field.right)/2;
+    const dx=fieldCenter-(field.left+field.right)/2;
     // Automatic placement avoids only HUD items in the field's actual columns.
     const left=Math.min(finalBar.left,field.left)+dx,right=Math.max(finalBar.right,field.right)+dx;
     let defaultTop=4;
@@ -52,6 +57,17 @@
     // Manual offsets may pass behind the HUD; keep only the screen-edge limits.
     const top=Math.max(0,Math.min(Math.max(0,h-(groupBottom-groupTop)),defaultTop+shift*h));
     move(object,dx,top-groupTop);
+    // Moving the field toward the top changes its projected size on the tilted
+    // camera. Refit automatic widths there so they stay outside the sidebar.
+    if(preferences.fieldWidth==null && preferences.lifeWidth==null){
+      for(let pass=0;pass<3;pass++){
+        const fieldBox=receptors(),barBox=screenBox(life,engine);
+        const fit=Math.min(1,baseTarget/(fieldBox.right-fieldBox.left),available/(barBox.right-barBox.left));
+        if(fit<.999){object.scale.x*=fit;object.scale.y*=fit;engine.scene.updateMatrixWorld(true);}
+        const adjusted=receptors(),adjustedBar=screenBox(life,engine);
+        move(object,fieldCenter-(adjusted.left+adjusted.right)/2,top-Math.min(adjusted.top,adjustedBar.top));
+      }
+    }
   }
   root.PiuGameplayLayout={apply,bounds:screenBox};
 })(globalThis);

@@ -122,7 +122,7 @@ class TouchInput extends GameObject {
             const maxX = side === 'left' ? w / 2 - pixels / 2 - 6 : w - pixels / 2 - 8;
             x = Math.max(minX, Math.min(maxX, x + (offset.x || 0) * w));
             let minimumTop = 4;
-            for (const element of document.querySelectorAll('.options-block-l,.options-block-r,#game-pause-button')) {
+            for (const element of document.querySelectorAll('.options-block-l,.game-top-controls')) {
                 const hud = element.getBoundingClientRect();
                 if (x - pixels / 2 < hud.right && x + pixels / 2 > hud.left) minimumTop = Math.max(minimumTop, hud.bottom + 8);
             }
@@ -156,9 +156,11 @@ class TouchInput extends GameObject {
         };
         const bottom = Math.max(28, h * 0.045);
         if (landscape) {
+            const sidebar=document.getElementById('game-modifiers')?.getBoundingClientRect();
+            const margin=Math.max(14,w*.025,sidebar?sidebar.right+10:0);
             const base = Math.min(h - 136, w * 0.30, Math.max(140, Math.min(360, h * 0.62, w * 0.28) * this.responsiveSize));
-            const size = Math.min(h - 88, (w - 48) / 2, Math.max(90, base * multiplier));
-            const margin = Math.max(14, w * 0.025), y = h - bottom - size / 2;
+            const size = Math.min(h - 88, (w - 48) / 2, Math.max(70,(w-2*margin-140)/2), Math.max(90, base * multiplier));
+            const y = h - bottom - size / 2;
             place(this.pads[0], margin + size / 2, y, size, appearance.left, 'left');
             place(this.mirrorPad || this.pads[1], w - margin - size / 2, y, size, appearance.right, 'right');
         } else if (this.pads.length === 1) {

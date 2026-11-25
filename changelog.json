@@ -1,7 +1,15 @@
 {
-  "version": "0.8.17",
+  "version": "0.8.18",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Ícones da gameplay",
+      "items": [
+        "Noteskin, velocidade, BGA e demais modificadores ficam em coluna abaixo do STAGE, à esquerda, no desktop e no mobile.",
+        "Ícone de teclado ou touchpad posicionado ao lado do botão de pausa, no canto superior direito.",
+        "Distribuição adaptada a telas pequenas e a vários modificadores, com espaço reservado para os sensores, a barra de vida e os controles de toque."
+      ]
+    },
     {
       "category": "Áudio da pontuação",
       "items": [

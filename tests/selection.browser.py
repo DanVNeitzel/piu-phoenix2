@@ -155,17 +155,18 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertEqual(self.page.locator('#online-song .listSong.active').count(), 1)
         self.assertEqual(self.page.locator('#online-song .wheel-ghost.active').count(), 0)
 
-    def open_frozen_stage(self, style, touch):
+    def open_frozen_stage(self, style, touch, modifiers=None):
         self.load()
-        self.page.evaluate("""({style,touch})=>{
+        self.page.evaluate("""({style,touch,modifiers})=>{
           const config=createSingleConfig();
           const width=style==='pump-halfdouble'?6:style==='pump-double'?10:5;
           const rows=Array.from({length:width},(_,i)=>'0'.repeat(i)+'1'+'0'.repeat(width-i-1)).join('\\n');
           config.sscContent='#TITLE:Test;\\n#ARTIST:PIUWeb;\\n#MUSIC:Test0.wav;\\n#BPMS:0=120;\\n#OFFSET:0;\\n'+
             '#NOTEDATA:;\\n#STEPSTYPE:'+style+';\\n#METER:8;\\n#DESCRIPTION:Test;\\n#DIFFICULTY:Easy;\\n#NOTES:\\n'+rows+'\\n;';
           config.chartLevel=0;config.record.type=style;config.useTouchInput=touch;config.touchLayout=PiuTouchLayout.read(style);
+          Object.assign(config,modifiers || {});
           sessionStorage.setItem('piu_touch_preview_config',JSON.stringify(config));
-        }""", {'style':style,'touch':touch})
+        }""", {'style':style,'touch':touch,'modifiers':modifiers})
         self.page.goto(self.origin+'/localStage.html?preview=touchpad')
         self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
 
@@ -245,6 +246,38 @@ class SelectionBrowserTests(unittest.TestCase):
             self.assertEqual(actual['pads'],count)
             self.assertEqual(actual['tiles'],[5]*count)
             self.assertEqual(actual['widths'],[5]*count)
+        self.assertFalse(self.errors)
+
+    def test_gameplay_hud_side_column_and_right_controls(self):
+        self.open_frozen_stage('pump-single',True,{'bga':'off','playback':1.2,'vanish':True,'fd':True,'hj':True,'randomNote':True})
+        for width,height in [(1440,900),(390,844),(320,568),(844,390),(568,320)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.page.evaluate("""()=>{
+              engine.onWindowResize();updateHudLayout();
+              const input=engine.stage._playerStages[0].keyListener;
+              input.updateResponsiveLayout();PiuGameplayLayout.apply(engine);input.updateResponsiveLayout();
+            }""")
+            actual=self.page.evaluate("""()=>{
+              const rect=e=>{const b=e.getBoundingClientRect();return {left:b.left,right:b.right,top:b.top,bottom:b.bottom}};
+              const stage=engine.stage._playerStages[0];
+              const receptors=Object.values(stage.padReceptors).map(r=>PiuGameplayLayout.bounds(r._receptor,engine));
+              return {stage:rect(document.querySelector('.options-block-l')),
+                modifiers:[...document.querySelectorAll('#game-modifiers>p:not([hidden])')].map(rect),
+                control:rect(document.querySelector('#playControlMode')),pause:rect(document.querySelector('#game-pause-button')),
+                field:{left:Math.min(...receptors.map(r=>r.left)),right:Math.max(...receptors.map(r=>r.right)),top:Math.min(...receptors.map(r=>r.top)),bottom:Math.max(...receptors.map(r=>r.bottom))},life:PiuGameplayLayout.bounds(stage._lifeBar.object,engine),
+                pads:stage.keyListener.getVisiblePads().map(pad=>PiuGameplayLayout.bounds(pad.object,engine))};
+            }""")
+            self.assertEqual(len(actual['modifiers']),8)
+            self.assertAlmostEqual(actual['control']['top'],actual['pause']['top'],delta=1)
+            self.assertLess(actual['control']['right'],actual['pause']['left'])
+            for icon in actual['modifiers']:
+                self.assertGreater(icon['top'],actual['stage']['bottom'])
+                self.assertGreaterEqual(icon['left'],0)
+                self.assertLessEqual(icon['right'],width)
+                self.assertLessEqual(icon['bottom'],height)
+                for other in [actual['field'],actual['life'],*actual['pads']]:
+                    overlap=min(icon['right'],other['right'])-max(icon['left'],other['left'])>1 and min(icon['bottom'],other['bottom'])-max(icon['top'],other['top'])>1
+                    self.assertFalse(overlap,(width,height,icon,other))
         self.assertFalse(self.errors)
 
     def test_touch_editor_saves_resets_and_cancels_per_mode(self):

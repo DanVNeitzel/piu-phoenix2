@@ -46,6 +46,17 @@ function showStageLoadError(message){
     document.documentElement.classList.remove('stage-loading');
     gameStatus.textContent=message;
 }
+function updateHudLayout(){
+    const modifiers=document.getElementById('game-modifiers');
+    const blocks=[...modifiers.children].filter(block=>!block.hidden);
+    const stage=document.querySelector('.options-block-l').getBoundingClientRect();
+    const size=blocks[0]?.getBoundingClientRect().height || 44;
+    const gap=parseFloat(getComputedStyle(modifiers).rowGap) || 4;
+    const available=Math.min(innerHeight-stage.bottom-16,innerWidth>innerHeight?innerHeight:innerHeight*.35);
+    const rows=Math.max(1,Math.min(blocks.length,Math.floor((available+gap)/(size+gap))));
+    modifiers.style.setProperty('--game-modifier-rows',String(rows));
+    modifiers.style.top=(stage.bottom+gap)+'px';modifiers.style.left=stage.left+'px';
+}
 if(touchPreview)document.documentElement.classList.remove('stage-loading');
 let previewDisposed = false;
 function disposePreview() {if (touchPreview && engine && !previewDisposed) {previewDisposed = true;engine.freeEngineResources();}}
@@ -238,8 +249,15 @@ try {
             PiuGameplayLayout.apply(engine);
             touchControls.updateResponsiveLayout();
         }
+        updateHudLayout();
+        let hudFrame=null;
+        new MutationObserver(()=>{
+            if(hudFrame!==null)return;
+            hudFrame=requestAnimationFrame(()=>{hudFrame=null;updateHudLayout();updateTouchLayout();});
+        }).observe(document.getElementById('game-modifiers'),{subtree:true,childList:true,attributes:true,attributeFilter:['hidden']});
         window.addEventListener('resize', () => {
             engine.onWindowResize();
+            updateHudLayout();
             updateTouchLayout();
         });
         engine.onStageCleared = completeStage = performances => {
