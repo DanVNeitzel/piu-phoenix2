@@ -721,6 +721,7 @@ class Engine {
 
         // this.cameraControls.update(delta);
         this.renderer.render(this.scene, this.camera);
+        this.onFrame?.(performance.now());
         // this.stats.update();
     }
 

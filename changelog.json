@@ -1,5 +1,5 @@
 {
-  "version": "0.8.2",
+  "version": "0.8.3",
   "date": "2026-11-25",
   "updates": [
     {
@@ -24,6 +24,7 @@
     {
       "category": "Gameplay",
       "items": [
+        "Opção de FPS nas configurações: contador discreto com duas casas decimais no canto inferior esquerdo durante a gameplay.",
         "Ajuste de altura da barra de vida e dos sensores por toda a tela, sem a trava abaixo dos indicadores.",
         "BGA DARK exibe o banner da música com uma camada preta de 75%, mantendo o brilho das setas.",
         "Restaurados os shaders dos sensores e do fundo, corrigindo erros de carregamento e renderização.",

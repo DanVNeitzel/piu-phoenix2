@@ -19,6 +19,7 @@
 
 'use strict';
 let engine = null;
+let fpsCounter = null;
 let config = null;
 let finished = false;
 let gameplayProtected = false;
@@ -40,6 +41,7 @@ function revealGameScreen(){
     requestAnimationFrame(()=>requestAnimationFrame(()=>document.documentElement.classList.remove('stage-loading')));
 }
 function showStageLoadError(message){
+    fpsCounter?.stop();
     gameplayProtected = false;
     document.documentElement.classList.remove('stage-loading');
     gameStatus.textContent=message;
@@ -66,6 +68,7 @@ function clearGameInput() {
 function pauseGame() {
     if (finished || pauseDialog.open) return;
     if (engine) engine.paused = true;
+    fpsCounter?.reset();
     clearGameInput();
     document.getElementById('game-pause-error').hidden = true;
     resumeButton.disabled = true; pauseDialog.showModal();
@@ -84,7 +87,7 @@ async function resumeGame() {
         const context = engine?.song?.context;
         if (context && context.state !== 'closed') await context.resume();
         if (finished) return;
-        clearGameInput(); if (engine) engine.paused = false;
+        clearGameInput(); fpsCounter?.reset(); if (engine) engine.paused = false;
         pauseDialog.close(); document.getElementById('game-pause-button').focus();
         if (pendingClear) {const result = pendingClear; pendingClear = null; completeStage(result);}
         else if (startWhenReady) await startWhenReady();
@@ -97,6 +100,7 @@ async function resumeGame() {
 function leaveGame() {
     if (finished) return;
     finished = true; clearGameInput();
+    fpsCounter?.stop();
     if (touchPreview) {disposePreview();previewMessage({closed:true,saved:false});return;}
     if (engine) engine.paused = true;
     const context = engine?.song?.context;
@@ -129,6 +133,7 @@ window.addEventListener('keydown', event => {
     } else if (pauseDialog.open) event.stopImmediatePropagation();
 }, true);
 window.addEventListener('pagehide', () => {
+    fpsCounter?.stop();
     disposePreview();
     if (engine?.song?.context && engine.song.context.state !== 'closed') engine.song.context.close();
 });
@@ -145,6 +150,7 @@ try {
         PiuActiveModifiers.render(document.querySelector('.options-block-r'),config,{tag:'p'});
         window.PIU_SSC = {path:config.resources + config.sscpath, text:config.sscContent};
         engine = new Engine({transparentBackground:config.bga === 'dark'});
+        fpsCounter = PiuGameplayFPS.mount(engine,touchPreview);
         const stageConfig = new StageConfig(config.resources + config.sscpath, config.resources + config.mp3path, config.playback,
             config.offset, config.resourcePath, [config.noteskin], () => {
                 const start = async () => {
@@ -232,6 +238,7 @@ try {
             if (finished) return;
             if (engine.paused) {pendingClear = performances; return;}
             finished = true;
+            fpsCounter?.stop();
             const perf = performances[0], outcome = LocalRecords.evaluate(perf), points = outcome.score;
             const result = {...config.record, ...outcome, date:new Date().toISOString(), performance:{...perf}, config,
                 previousBest:null, newRecord:false};
