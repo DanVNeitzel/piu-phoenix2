@@ -24,6 +24,7 @@
     {
       "category": "Gameplay",
       "items": [
+        "Ajuste de altura da barra de vida e dos sensores por toda a tela, sem a trava abaixo dos indicadores.",
         "BGA DARK exibe o banner da música com uma camada preta de 75%, mantendo o brilho das setas.",
         "Restaurados os shaders dos sensores e do fundo, corrigindo erros de carregamento e renderização.",
         "Corrigido o quadrado preto no efeito de acerto.",
@@ -33,6 +34,7 @@
     {
       "category": "Pontuação e interface",
       "items": [
+        "Tela inicial identificada como PIUWEB PHOENIX 2, com a versão atual no lugar de SINGLE PLAYER.",
         "Grade e plate entram da esquerda para a direita no desktop e da direita para a esquerda no mobile.",
         "Banners dos canais carregados dos arquivos locais do projeto.",
         "Ícones mobile derivados do favicon, incluindo o ícone para iPhone e iPad.",

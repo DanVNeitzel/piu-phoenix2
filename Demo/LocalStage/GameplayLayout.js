@@ -41,15 +41,17 @@
     const separation=receptors().top-screenBox(life,engine).bottom;
     if(separation<8)move(life,0,separation-8);
     const hud=[...document.querySelectorAll('.options-block-l,.options-block-r,#game-pause-button')].map(e=>e.getBoundingClientRect());
-    const hudBottom=Math.max(...hud.map(r=>r.bottom));
     const finalBar=screenBox(life,engine),field=receptors();
     const shift=preferences.fieldY || 0;
     const dx=w/2-(field.left+field.right)/2;
-    let top=Math.max(4,Math.min(h*.5,hudBottom+12+shift*h));
-    // Keep the full bar/receptor row clear of HUD items that share its columns.
+    // Automatic placement avoids only HUD items in the field's actual columns.
     const left=Math.min(finalBar.left,field.left)+dx,right=Math.max(finalBar.right,field.right)+dx;
-    for(const box of hud)if(left<box.right&&right>box.left&&top<box.bottom+8)top=box.bottom+8;
-    move(object,dx,top-finalBar.top);
+    let defaultTop=4;
+    for(const box of hud)if(left<box.right&&right>box.left)defaultTop=Math.max(defaultTop,box.bottom+8);
+    const groupTop=Math.min(finalBar.top,field.top),groupBottom=Math.max(finalBar.bottom,field.bottom);
+    // Manual offsets may pass behind the HUD; keep only the screen-edge limits.
+    const top=Math.max(0,Math.min(Math.max(0,h-(groupBottom-groupTop)),defaultTop+shift*h));
+    move(object,dx,top-groupTop);
   }
   root.PiuGameplayLayout={apply,bounds:screenBox};
 })(globalThis);

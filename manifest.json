@@ -1,6 +1,6 @@
 {
   "$schema": "https://json.schemastore.org/web-manifest-combined.json",
-  "name": "PIUWeb Single Player",
+  "name": "PIUWEB PHOENIX 2",
   "short_name": "PIUWeb",
   "description": "Pump It Up single player com recordes locais",
   "start_url": "./index.html",
