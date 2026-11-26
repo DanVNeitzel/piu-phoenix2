@@ -115,8 +115,8 @@
   function matchesChart(chart, filter) {
     const coop=!!chart.COOP || chart.STEPSTYPE==='pump-routine';
     if(filter?.coop)return coop;
+    if (!filter) return coop || ['pump-single','pump-double','pump-halfdouble'].includes(chart.STEPSTYPE);
     if(coop)return false;
-    if (!filter) return ['pump-single','pump-double','pump-halfdouble'].includes(chart.STEPSTYPE);
     const meter = Number(chart.METER);
     return chart.STEPSTYPE === filter.type && (filter.level === '27+' ? meter >= 27 : meter === Number(filter.level));
   }

@@ -1,7 +1,14 @@
 {
-  "version": "0.8.31",
+  "version": "0.8.32",
   "date": "2026-11-26",
   "updates": [
+    {
+      "category": "Steps cooperativos nos canais originais",
+      "items": [
+        "Steps CO-OP aparecem e podem ser selecionados junto das demais dificuldades nos canais originais das músicas, sem precisar abrir o canal CO-OP.",
+        "Mantidos o canal CO-OP exclusivo para steps cooperativos e os filtros de Difficulty Zone sem steps CO-OP."
+      ]
+    },
     {
       "category": "Favoritos ao pressionar e segurar",
       "items": [

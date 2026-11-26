@@ -21,7 +21,8 @@ test('StepF2 detects owners independent of level; fourth player requires XYZ and
     assert.deepEqual(parsed.COOP.players,players);
     assert.deepEqual(coop.summaries(content)[0].COOP,parsed.COOP);
     assert.equal(library.matchesChart(parsed,{coop:true}),true);
-    assert.equal(library.matchesChart(parsed,null),false);
+    assert.equal(library.matchesChart(parsed,null),true);
+    assert.equal(library.matchesChart(parsed),true);
     assert.equal(library.matchesChart(parsed,{type:'pump-double',level:18}),false);
   }
   assert.equal(coop.owner('1',{players:[1,2,3]}),0);
@@ -33,6 +34,9 @@ test('native Routine merges player streams with unequal resolutions at exact bea
   const level=coop.parse(content,parser).levels[0];
   assert.equal(level.STEPSTYPE,'pump-double');
   assert.equal(level.SOURCE_STEPSTYPE,'pump-routine');
+  assert.equal(library.matchesChart(level,null),true);
+  assert.equal(library.matchesChart(level,{coop:true}),true);
+  assert.equal(library.matchesChart(level,{type:'pump-double',level:12}),false);
   assert.deepEqual(level.COOP.players,[1,2]);
   assert.equal(level.NOTES[0].length,4);
   assert.equal(coop.owner(level.NOTES[0][0][0],level.COOP),1);
