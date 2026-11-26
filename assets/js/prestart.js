@@ -66,6 +66,7 @@
     const label=level.COOP?'CO-OP':typeName(level.STEPSTYPE);
     byId('ps-type').textContent=label;byId('ps-level').textContent=level.COOP?'×'+level.COOP.count:String(level.METER).padStart(2,'0');
     byId('ps-large-level').classList.toggle('ps-coop',!!level.COOP);
+    PiuCoop.applyBadge(byId('ps-large-level'),level.COOP);
     modal.querySelector('.ps-profile span').textContent=level.COOP?level.COOP.count+' JOGADORES · EQUIPE':'SINGLE PLAYER';
     modal.querySelector('.ps-sp').textContent=level.COOP?'CO':'SP';
     let panel=byId('ps-coop-panel');
@@ -79,7 +80,7 @@
     panel.hidden=!level.COOP;PiuCoop.legend(panel.querySelector('.coop-legend'),level.COOP);
     byId('ps-large-level').classList.toggle('ps-double',level.STEPSTYPE!=='pump-single');
     byId('ps-large-level').classList.toggle('ps-half',level.STEPSTYPE==='pump-halfdouble');
-    byId('ps-large-level').setAttribute('aria-label',label+' '+level.METER);
+    byId('ps-large-level').setAttribute('aria-label',level.COOP?label+' · '+level.COOP.count+' jogadores · nível '+level.METER:label+' '+level.METER);
     byId('ps-levels').querySelectorAll('button').forEach(button=>button.setAttribute('aria-pressed',String(Number(button.dataset.chart)===chart_level)));
     const display=String(level.DISPLAYBPM || selsong.meta.DISPLAYBPM || '').split(':').map(Number).filter(n=>Number.isFinite(n)&&n>0);
     byId('ps-bpm').textContent='/ BPM '+(display.length?display.join('–'):PiuScroll.referenceBpm(selsong,chart_level));
@@ -97,7 +98,7 @@
       const chart=selsong.levels[index],button=document.createElement('button');button.type='button';
       button.className='ps-orb'+(chart.STEPSTYPE==='pump-single'?'':chart.STEPSTYPE==='pump-halfdouble'?' ps-double ps-half':' ps-double');button.dataset.chart=String(index);
       button.textContent=String(chart.METER).padStart(2,'0');
-      if(chart.COOP){button.classList.add('ps-coop');button.textContent='×'+chart.COOP.count;}
+      if(chart.COOP){button.classList.add('ps-coop');button.textContent='×'+chart.COOP.count;PiuCoop.applyBadge(button,chart.COOP);}
       button.setAttribute('aria-label',typeName(chart.STEPSTYPE)+' '+chart.METER+(chart.DESCRIPTION?', '+chart.DESCRIPTION:''));
       button.title=[typeName(chart.STEPSTYPE),chart.METER,chart.DESCRIPTION,chart.CREDIT].filter(Boolean).join(' · ');
       if(chart.COOP){button.title='CO-OP · '+chart.COOP.count+' jogadores · nível '+chart.METER;button.setAttribute('aria-label',button.title);}

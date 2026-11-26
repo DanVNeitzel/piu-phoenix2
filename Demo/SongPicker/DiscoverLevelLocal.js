@@ -33,6 +33,7 @@ function discoverLevels(sscPath, content) {
         const item=createListGroupLinkSubtitle(index, level.METER + ' - ' + level.DESCRIPTION,
           level.STEPSTYPE, level.CREDIT, function() { change_level(index); });
         if(level.COOP){item.classList.add('circle-coop');item.querySelector('.fw-bold').textContent='×'+level.COOP.count;
+          PiuCoop.applyBadge(item,level.COOP);
           item.title='CO-OP · '+level.COOP.count+' jogadores · nível '+level.METER;item.setAttribute('aria-label',item.title);}
         gl.append(item);
       });

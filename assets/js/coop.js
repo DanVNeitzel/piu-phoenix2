@@ -166,6 +166,12 @@
     material.customProgramCacheKey=()=> 'coop-neutral-receptor-v1';
     material.userData.coopNeutralReceptor=true;mesh.material=material;
   }
-  root.PiuCoop={analyze,owner,parse,summaries,type,colors,noteskin,kinds,bindings,validBindings,legend,controls,tint,neutralReceptor};
+  function applyBadge(element,coop){
+    if(element.tagName==='DIV')element.setAttribute('role','img');
+    const count=Number(coop?.count);
+    if([2,3,4].includes(count))element.dataset.coopPlayers=String(count);
+    else delete element.dataset.coopPlayers;
+  }
+  root.PiuCoop={analyze,owner,parse,summaries,type,colors,noteskin,kinds,bindings,validBindings,legend,controls,tint,neutralReceptor,applyBadge};
   if(typeof module!=='undefined')module.exports=root.PiuCoop;
 })(globalThis);

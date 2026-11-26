@@ -17,4 +17,12 @@ body.arcade-mobile.desktop-song-select #song-coop-link{bottom:calc(max(4px,env(s
 .coop-controls [role=alert]{color:#ffe25a}
 .coop-controls legend{font-weight:800}
 .listStep.circle-coop,#confirmPlayModal .ps-large-level.ps-coop,#resultLevelBadge.coop{background-image:url('img/elements/random_orb_bg.png')!important;background-size:contain;background-position:center;background-repeat:no-repeat}
+[data-coop-players="2"]{--coop-orb:url('img/phx2/Circle_Coop_x2_Diff_Eval.png');--coop-badge:url('img/phx2/bg_co-op_x2.png');--coop-badge-position:40% 51%}
+[data-coop-players="3"]{--coop-orb:url('img/phx2/Circle_Coop_x3_Diff_Eval.png');--coop-badge:url('img/phx2/bg_co-op_x3.png');--coop-badge-position:50% 51%}
+[data-coop-players="4"]{--coop-orb:url('img/phx2/Circle_Coop_x4_Diff_Eval.png');--coop-badge:url('img/phx2/bg_co-op_x4.png');--coop-badge-position:42% 51%}
+.listStep.circle-coop[data-coop-players],#confirmPlayModal .ps-orb.ps-coop[data-coop-players]{background-image:var(--coop-orb)!important;background-size:175%!important;background-position:50% 65%!important;background-repeat:no-repeat;font-size:0!important;color:transparent!important;text-shadow:none!important}
+.listStep.circle-coop[data-coop-players]>div{visibility:hidden}
+#confirmPlayModal .ps-orb.ps-coop[data-coop-players][aria-pressed=true]:before{content:attr(data-coop-players) 'P'}
+#confirmPlayModal .ps-large-level.ps-coop[data-coop-players],#resultLevelBadge.coop[data-coop-players]{background-image:var(--coop-badge)!important;background-size:145%!important;background-position:var(--coop-badge-position)!important}
+#confirmPlayModal .ps-large-level.ps-coop[data-coop-players]>span,#confirmPlayModal .ps-large-level.ps-coop[data-coop-players]>strong,#resultLevelBadge.coop[data-coop-players]>span,#resultLevelBadge.coop[data-coop-players]>strong{visibility:hidden}
 @media(max-width:600px){.coop-panel{padding:5px;right:5px;top:30px}.coop-panel button{font-size:9px;padding:6px}.coop-legend{gap:3px;font-size:11px}#game-coop{max-width:110px;top:80px;right:5px}.coop-controls{padding:12px}.coop-controls fieldset{padding:5px;gap:3px}.coop-controls button{font-size:11px;padding:4px}}

@@ -165,6 +165,7 @@
     byId('resultLevelBadge').classList.toggle('single',type === 'pump-single');
     const coop=result.coop || result.config?.coop;
     byId('resultLevelBadge').classList.toggle('coop',!!coop);
+    PiuCoop.applyBadge(byId('resultLevelBadge'),coop);
     byId('resultLevelBadge').setAttribute('aria-label',coop?'CO-OP · '+coop.count+' jogadores · pontuação da equipe':byId('stepType').textContent+' '+result.level);
     document.querySelector('.result-player-heading span').textContent=coop?coop.count+' JOGADORES · EQUIPE':'SINGLE PLAYER';
     document.querySelector('.result-actions>span').textContent=coop?'CO-OP · PONTUAÇÃO DA EQUIPE':'SINGLE PLAYER · RECORDES LOCAIS';

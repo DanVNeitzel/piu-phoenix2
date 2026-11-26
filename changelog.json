@@ -1,7 +1,15 @@
 {
-  "version": "0.8.23",
+  "version": "0.8.24",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Ícones e orbs CO-OP",
+      "items": [
+        "Aplicados os novos orbs de CO-OP ×2, ×3 e ×4 na lista de dificuldades e na seleção de nível.",
+        "Confirmação e resultado usam o ícone CO-OP correspondente à quantidade de jogadores, sem sobreposição de textos sobre a arte.",
+        "Mantidos os rótulos de acessibilidade e a indicação de 2P, 3P ou 4P no orb selecionado, em desktop e mobile."
+      ]
+    },
     {
       "category": "Noteskin CO-OP",
       "items": [
