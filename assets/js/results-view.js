@@ -56,7 +56,7 @@
     return 'assets/img/phx2/grades/' + filename + '.png';
   }
   function gradeClass(value, broken = false) {
-    return broken ? 'grade-broken' : '';
+    return broken && normalizedGrade(value) !== 'F' ? 'grade-broken' : '';
   }
   function rank(image, value, broken = false) {
     const grade = normalizedGrade(value);

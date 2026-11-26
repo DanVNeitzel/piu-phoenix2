@@ -24,5 +24,6 @@ body.arcade-mobile.desktop-song-select #song-coop-link{bottom:calc(max(4px,env(s
 .listStep.circle-coop[data-coop-players]>div{visibility:hidden}
 #confirmPlayModal .ps-orb.ps-coop[data-coop-players][aria-pressed=true]:before{content:attr(data-coop-players) 'P'}
 #confirmPlayModal .ps-large-level.ps-coop[data-coop-players],#resultLevelBadge.coop[data-coop-players]{background-image:var(--coop-badge)!important;background-size:145%!important;background-position:var(--coop-badge-position)!important}
+#resultLevelBadge.coop[data-coop-players]{background-size:contain!important;background-position:center!important}
 #confirmPlayModal .ps-large-level.ps-coop[data-coop-players]>span,#confirmPlayModal .ps-large-level.ps-coop[data-coop-players]>strong,#resultLevelBadge.coop[data-coop-players]>span,#resultLevelBadge.coop[data-coop-players]>strong{visibility:hidden}
 @media(max-width:600px){.coop-panel{padding:5px;right:5px;top:30px}.coop-panel button{font-size:9px;padding:6px}.coop-legend{gap:3px;font-size:11px}#game-coop{max-width:110px;top:80px;right:5px}.coop-controls{padding:12px}.coop-controls fieldset{padding:5px;gap:3px}.coop-controls button{font-size:11px;padding:4px}}

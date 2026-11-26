@@ -287,7 +287,7 @@ class SelectionBrowserTests(unittest.TestCase):
         for notes in ['XY00000000','XYZ0000000','XYZ1000000']:
             ssc+='#NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:99;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;\n#NOTES:\n'+notes+'\n0000000000\n;\n'
         self.context.route('**/Test0.ssc',lambda route:route.fulfill(status=200,body=ssc,content_type='text/plain'))
-        for width,height in [(1280,800),(390,844)]:
+        for width,height in [(1280,800),(390,844),(844,390)]:
             self.page.set_viewport_size({'width':width,'height':height})
             self.load()
             for count in [2,3,4]:
@@ -301,12 +301,35 @@ class SelectionBrowserTests(unittest.TestCase):
                   performance:{p:10,gr:0,go:0,b:0,m:0,maxCombo:10}});} """)
                 badge=self.page.locator('#resultLevelBadge')
                 expect(badge).to_have_attribute('data-coop-players',str(count))
-                actual=badge.evaluate("node=>({image:getComputedStyle(node).backgroundImage,overlay:getComputedStyle(node,'::after').content})")
+                actual=badge.evaluate("node=>({image:getComputedStyle(node).backgroundImage,overlay:getComputedStyle(node,'::after').content,size:getComputedStyle(node).backgroundSize,position:getComputedStyle(node).backgroundPosition})")
                 self.assertIn(f'bg_co-op_x{count}.png',actual['image'])
                 self.assertEqual(actual['overlay'],'none')
+                self.assertEqual(actual['size'],'contain')
+                self.assertEqual(actual['position'],'50% 50%')
                 badge.evaluate("""async node=>{const image=new Image();image.src=getComputedStyle(node).backgroundImage.slice(5,-2);await image.decode();} """)
                 self.page.locator('#resultNext').click()
                 expect(self.page.locator('#performance')).to_be_hidden()
+        self.assertFalse(self.errors)
+
+    def test_result_f_keeps_original_appearance_with_and_without_stage_break(self):
+        self.load()
+        for width,height in [(1280,800),(390,844),(844,390)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            for score in [0,550000]:
+                for broken in [False,True]:
+                    self.page.evaluate("""({score,broken})=>{
+                      const config=createSingleConfig();
+                      PiuResults.show({...config.record,config,score,broken,
+                        performance:{p:0,gr:0,go:0,b:0,m:10,maxCombo:0},
+                        previousBest:{score,broken,performance:{},date:'2026-11-26'}});
+                      PiuResults.finishCount();
+                    }""",{'score':score,'broken':broken})
+                    for selector in ['#gradeResult','#resultBestGrade']:
+                        actual=self.page.locator(selector).evaluate("node=>({src:node.src,filter:getComputedStyle(node).filter,broken:node.classList.contains('grade-broken')})")
+                        self.assertEqual(actual['broken'],broken and score>=500000)
+                        if score==0:
+                            self.assertTrue(actual['src'].endswith('/f.png'))
+                            self.assertNotIn('grayscale',actual['filter'])
         self.assertFalse(self.errors)
 
     def test_coop_routes_selection_controls_result_and_return(self):

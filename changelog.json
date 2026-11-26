@@ -1,7 +1,14 @@
 {
-  "version": "0.8.32",
+  "version": "0.8.33",
   "date": "2026-11-26",
   "updates": [
+    {
+      "category": "Ícones CO-OP e grade F no resultado",
+      "items": [
+        "Ajustados os ícones CO-OP x2, x3 e x4 para aparecerem inteiros na tela de resultado, em desktop e mobile.",
+        "O grade F mantém sua aparência original independentemente do Stage Break, sem receber o filtro cinza."
+      ]
+    },
     {
       "category": "Steps cooperativos nos canais originais",
       "items": [

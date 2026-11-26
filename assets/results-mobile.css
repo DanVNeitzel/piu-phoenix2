@@ -64,7 +64,7 @@
 #performance.phoenix-results .result-actions img{width:28px;height:28px;object-fit:contain}
 #performance.phoenix-results .result-actions #resultNext{border-color:#d6d467;background:#332e0c;color:#fff4a3}
 #performance.phoenix-results .result-controls>p{font-size:7px;letter-spacing:.5px;color:#9ab295;margin:0}
-#performance.phoenix-results .result-stage.broken #gradeResult{filter:grayscale(1) brightness(.78) contrast(1.2)}
+#performance.phoenix-results .result-stage.broken #gradeResult.grade-broken{filter:grayscale(1) brightness(.78) contrast(1.2)}
 #performance.phoenix-results .result-stage.broken #resultOutcome{color:#ccc}
 #performance.phoenix-results .result-stage.broken #resultDelta{color:#c0c8b3}
 #performance.phoenix-results .result-stage.broken #resultNewRecord{visibility:hidden}
