@@ -329,6 +329,10 @@ document.addEventListener('click',event=>{
   favoriteClickUntil=0;event.preventDefault();event.stopImmediatePropagation();
 },true);
 function bindFavoriteGesture(card,songData){
+  // Edge copies of the carousel reuse this identity and need their own listeners.
+  card.favoriteSongData=songData;
+  card.draggable=false;
+  card.addEventListener('dragstart',event=>event.preventDefault());
   let gesture=null;
   card.addEventListener('pointerdown',event=>{
     if(event.isPrimary===false || (event.pointerType==='mouse' && event.button!==0))return;
@@ -344,6 +348,7 @@ function bindFavoriteGesture(card,songData){
     document.addEventListener('pointerup',finish,true);document.addEventListener('pointercancel',finish,true);
     gesture.timer=setTimeout(()=>{
       if(!gesture)return;
+      if(!card.isConnected){gesture.finish();return;}
       gesture.triggered=true;favoriteClickUntil=performance.now()+1000;
       toggleFavorite(songData);navigator.vibrate?.(50);
     },500);
@@ -770,24 +775,24 @@ function createListGroupLink(idx, title, number, onclick, songData, channelArtwo
     img.alt = title; img.loading = 'lazy';
     img.addEventListener('error', function() { this.hidden = true; });
     divName.append(img);
-
-    // Adicionar ícone de coração se for favorito
-    if (songData && isFavorite(songData)) {
-      let starIcon = document.createElement('span');
-      starIcon.className = "favorite-star-icon";
-      starIcon.innerHTML = "⭐";
-      starIcon.style.position = "absolute";
-      starIcon.style.top = "10px";
-      starIcon.style.right = "10px";
-      starIcon.style.fontSize = "28px";
-      starIcon.style.zIndex = "10";
-      starIcon.style.textShadow = "#ffc107 0px 0px 4px";
-      starIcon.style.pointerEvents = "none";
-      div1.append(starIcon);
-    }
-
-    if (songData) bindFavoriteGesture(a,songData);
   }
+
+  // Favoriting belongs to the song card, even when its banner is unavailable.
+  if (songData && isFavorite(songData)) {
+    let starIcon = document.createElement('span');
+    starIcon.className = "favorite-star-icon";
+    starIcon.innerHTML = "⭐";
+    starIcon.style.position = "absolute";
+    starIcon.style.top = "10px";
+    starIcon.style.right = "10px";
+    starIcon.style.fontSize = "28px";
+    starIcon.style.zIndex = "10";
+    starIcon.style.textShadow = "#ffc107 0px 0px 4px";
+    starIcon.style.pointerEvents = "none";
+    div1.append(starIcon);
+  }
+
+  if (songData) bindFavoriteGesture(a,songData);
 
   // span.className = "badge bg-primary rounded-pill";
   // span.style = 'height: 20px;'

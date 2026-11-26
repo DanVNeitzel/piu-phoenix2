@@ -1,7 +1,14 @@
 {
-  "version": "0.8.30",
-  "date": "2026-11-25",
+  "version": "0.8.31",
+  "date": "2026-11-26",
   "updates": [
+    {
+      "category": "Favoritos ao pressionar e segurar",
+      "items": [
+        "Restaurado o gesto de pressionar e segurar nas músicas das pontas do carrossel, tanto com mouse quanto por toque.",
+        "Músicas sem banner também podem ser adicionadas e removidas dos favoritos pelo mesmo gesto, sem abrir a confirmação da partida."
+      ]
+    },
     {
       "category": "Retorno na seleção de canais",
       "items": [

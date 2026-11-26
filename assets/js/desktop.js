@@ -77,6 +77,7 @@
       ghost.removeAttribute('data-bs-toggle');
       ghost.tabIndex = -1; ghost.setAttribute('aria-hidden','true');
       ghost.onclick = event => { event.preventDefault(); original.click(); };
+      if(original.favoriteSongData)bindFavoriteGesture(ghost,original.favoriteSongData);
       ghost.querySelectorAll('img').forEach(img => img.onerror = () => img.hidden = true);
       return ghost;
     }

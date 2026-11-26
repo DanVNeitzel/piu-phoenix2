@@ -1,6 +1,7 @@
 .song-card-caption,.desktop-arcade{display:none}
 .wheel-ghost{display:none!important}
 #online-song.song-wheel-moving{scroll-snap-type:none!important;scroll-behavior:auto!important}
+#online-song .listSong{-webkit-touch-callout:none;user-select:none;-webkit-user-select:none}
 @media (min-width:1024px) and (orientation:landscape){
   body.desktop-song-select,body.desktop-channel-select{overflow:hidden;background:#030b10}
   body.desktop-song-select .bg-static,body.desktop-channel-select .bg-static{background-image:url('desktop-stage.svg')!important;background-size:100% 100%;animation:none;filter:none}

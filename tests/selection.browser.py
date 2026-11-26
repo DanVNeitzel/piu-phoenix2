@@ -746,6 +746,49 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertIsNone(self.page.evaluate('currentChannel'))
         self.assertFalse(self.errors)
 
+    def test_long_press_favorites_on_real_and_edge_cards_with_mouse_and_touch(self):
+        for width,height,pointer in [(1280,800,'mouse'),(390,844,'touch')]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.load();self.aligned()
+            cdp=self.context.new_cdp_session(self.page) if pointer=='touch' else None
+            if cdp:
+                cdp.send('Emulation.setTouchEmulationEnabled',{'enabled':True,'maxTouchPoints':1})
+            def hold(card,favorited):
+                key=card.get_attribute('data-song-key');box=card.bounding_box()
+                x=(max(0,box['x'])+min(width,box['x']+box['width']))/2
+                y=box['y']+box['height']/2
+                if cdp:
+                    cdp.send('Input.dispatchTouchEvent',{'type':'touchStart','touchPoints':[{'x':x,'y':y}]})
+                else:
+                    self.page.mouse.move(x,y);self.page.mouse.down()
+                try:
+                    self.page.wait_for_function('({key,favorited})=>getFavorites().some(song=>song.key===key)===favorited',arg={'key':key,'favorited':favorited})
+                finally:
+                    if cdp:
+                        cdp.send('Input.dispatchTouchEvent',{'type':'touchEnd','touchPoints':[]})
+                    else:
+                        self.page.mouse.up()
+                expect(self.page.locator('#confirmPlayModal')).not_to_have_class(re.compile(r'\bshow\b'))
+            card=self.page.locator('#online-song .listSong.active:not(.wheel-ghost)')
+            hold(card,True);hold(card,False)
+            index=self.page.locator('#online-song .wheel-ghost').evaluate_all("nodes=>nodes.findIndex(node=>{const r=node.getBoundingClientRect();return r.right>20 && r.left<innerWidth-20 && r.width>0;})")
+            self.assertGreaterEqual(index,0)
+            edge=self.page.locator('#online-song .wheel-ghost').nth(index)
+            hold(edge,True);hold(edge,False)
+            self.page.evaluate(r"""()=>{
+              const stage=songsJson.children[stageIndex];
+              stage.children.forEach(song=>song.children=song.children.filter(file=>!file.name.match(/\.(png|jpe?g|webp)$/i)));
+              renderChannelSongs(stage,0);
+            }""")
+            self.aligned()
+            card=self.page.locator('#online-song .listSong.active:not(.wheel-ghost)')
+            self.assertEqual(card.locator('img').count(),0)
+            hold(card,True);hold(card,False)
+            self.assertEqual(self.page.evaluate('getFavorites().length'),0)
+            if cdp:
+                cdp.detach()
+        self.assertFalse(self.errors)
+
     def test_favorites_unlock_and_lock_after_last_removal(self):
         self.load()
         self.page.evaluate("toggleFavorite({key:PiuLibrary.songKey(songsJson.children[0].children[0]),name:'Test 0',stageIndex:0,songIndex:0})")
