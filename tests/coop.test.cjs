@@ -68,3 +68,46 @@ test('the shipped library index includes Passacaglia P3 and Super Fantasy P4',()
   }
   assert.ok(index.songs.every(song=>song.charts.some(chart=>chart.COOP)));
 });
+
+test('compact Xsanity annotations remain one sensor and preserve fake holds',()=>{
+  const content=header+chart('{208}{208}{208}{208}{208}{208}{208}{208}{208}{208}\n'+
+    '{308}{308}{308}{308}{308}{308}{308}{308}{308}{308}\n'+
+    '00000000{108}{108}\n0000000000');
+  const level=coop.parse(content,parser).levels[0];
+  assert.ok(level.NOTES[0].every(row=>row.length===10));
+  assert.equal(level.NOTES[0][0][0].type,'2');
+  assert.equal(level.NOTES[0][0][0].fake,'1');
+  assert.equal(level.NOTES[0][1][0].type,'3');
+  assert.equal(level.NOTES[0][2][8].type,'1');
+  assert.equal(level.NOTES[0][2][8].raw,'{108}');
+  assert.deepEqual([...level.SPECIALNOTES],['Xsanity']);
+  assert.equal(level.COOP,null);
+  assert.equal(coop.summaries(content)[0].COOP,null);
+});
+
+test('Xsanity preserves skin and appearance attributes without changing ownership',()=>{
+  const content=header+chart('{X08}{Y02}{Z09}0000000');
+  const level=coop.parse(content,parser).levels[0],row=level.NOTES[0][0];
+  assert.equal(row.length,10);
+  assert.equal(row[0].reserved,'0');assert.equal(row[0].fake,'1');
+  assert.equal(row[1].attribute,'v');assert.equal(row[2].attribute,'s');
+  assert.deepEqual(coop.summaries(content)[0].COOP,level.COOP);
+  // Modern StepF2 annotations keep their original grammar and fields.
+  assert.equal(coop.parse(header+chart('{1|n|0|8}000000000'),parser).levels[0].NOTES[0][0][0].reserved,'8');
+});
+
+test('last note rows accept inline semicolons and commas without changing beats',()=>{
+  for(const ending of [';',' ;','\t;','\r\n;','\n;']){
+    const source=header+'#NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:12;\n#NOTES:\n1000000000,\n0000000001'+ending;
+    const level=parser.parse(source).levels[0];
+    assert.equal(level.NOTES.length,2);
+    assert.equal(level.NOTES[0].length,1);assert.equal(level.NOTES[1].length,1);
+    assert.equal(level.NOTES[0][0][0],'1');assert.equal(level.NOTES[1][0][9],'1');
+  }
+  const compact=header+'#NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:12;\n#NOTES:\n{208}000000000,\n{308}000000000;';
+  assert.equal(coop.parse(compact,parser).levels[0].NOTES[1][0][0].type,'3');
+  const routine=header+'#NOTEDATA:;\n#STEPSTYPE:pump-routine;\n#METER:12;\n#NOTES:\n1000000000&0000000001;';
+  const level=coop.parse(routine,parser).levels[0];
+  assert.equal(level.NOTES[0].length,1);assert.deepEqual(level.COOP.players,[1,2]);
+  assert.throws(()=>parser.parse(header+'#NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:12;\n#NOTES:\n1000000000'));
+});

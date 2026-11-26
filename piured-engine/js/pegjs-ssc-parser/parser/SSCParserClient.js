@@ -222,13 +222,22 @@
         peg$c36 = peg$classExpectation([" ", "\t", "&"], false, false),
         peg$c37 = /^[\n\r]/,
         peg$c38 = peg$classExpectation(["\n", "\r"], false, false),
-        peg$c39 = /^[01234567XxYyZzVHFMLK*BSEIa]/,
-        peg$c40 = peg$classExpectation(["0", "1", "2", "3", "4", "5", "6", "7", "X", "x", "Y", "y", "Z", "z", "V", "H", "F", "M", "L", "K", "*", "B", "S", "E", "I", "a"], false, false),
+        peg$c39 = /^[0123456789XxYyZzVHFMLK*BSEIa]/,
+        peg$c40 = peg$classExpectation(["0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "X", "x", "Y", "y", "Z", "z", "V", "H", "F", "M", "L", "K", "*", "B", "S", "E", "I", "a"], false, false),
         peg$c41 = "{",
         peg$c42 = peg$literalExpectation("{", false),
         peg$c43 = "}",
         peg$c44 = peg$literalExpectation("}", false),
         peg$c45 = function(note) {
+                // Xsanity: {type, noteskin, attribute}, one sensor per token.
+                // Attribute 8 is fake; 2/9 encode vanish/sudden.
+                // https://github.com/tillvit/smeditor/blob/master/app/src/chart/gameTypes/common/BasicNotedataParser.ts
+                if (note.length === 3) return {
+                    type: note[0], reserved: note[1],
+                    attribute: note[2] === '2' ? 'v' : note[2] === '9' ? 's' : 'n',
+                    fake: note[2] === '8' ? '1' : '0',
+                    format: 'xsanity', xsanityAttribute: note[2], raw: '{' + note.join('') + '}'
+                };
                 return note ;
             },
         peg$c46 = "|",
@@ -1577,6 +1586,15 @@
         }
         if (s2 !== peg$FAILED) {
           s3 = peg$parsenote_separator();
+          // A measure/chart delimiter also ends the last row. Do not require a
+          // newline before ',' or ';', and leave the delimiter for its own rule.
+          if (s3 === peg$FAILED) {
+            const boundary = /^[ \t]*[,;]/.exec(input.substring(peg$currPos));
+            if (boundary) {
+              peg$currPos += boundary[0].length - 1;
+              s3 = void 0;
+            }
+          }
           if (s3 !== peg$FAILED) {
             peg$savedPos = s0;
             s1 = peg$c54(s2);
@@ -1802,7 +1820,7 @@
                         const note = notes[i];
                         if ( !['0','1','2','3','X','x','Y','y','Z','z'].includes(note) ) {
                             if ( typeof note === 'object' ) {
-                                specialNotes.add('StepF2') ;
+                                specialNotes.add(note.format === 'xsanity' ? 'Xsanity' : 'StepF2') ;
                             } else {
                                 specialNotes.add(note) ;
                             }

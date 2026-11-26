@@ -282,6 +282,33 @@ class SelectionBrowserTests(unittest.TestCase):
             self.assertEqual(actual['receptor']['colored'],0)
         self.assertFalse(self.errors)
 
+    def test_coop_orbs_in_song_selection_and_score_for_each_player_count(self):
+        ssc='#TITLE:CO-OP Icons;\n#ARTIST:PIUWeb;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;\n'
+        for notes in ['XY00000000','XYZ0000000','XYZ1000000']:
+            ssc+='#NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:99;\n#DESCRIPTION:Team;\n#DIFFICULTY:Edit;\n#NOTES:\n'+notes+'\n0000000000\n;\n'
+        self.context.route('**/Test0.ssc',lambda route:route.fulfill(status=200,body=ssc,content_type='text/plain'))
+        for width,height in [(1280,800),(390,844)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.load()
+            for count in [2,3,4]:
+                orb=self.page.locator(f'#level .circle-coop[data-coop-players="{count}"]')
+                orb.click()
+                actual=orb.evaluate("node=>({image:getComputedStyle(node).backgroundImage,overlay:getComputedStyle(node,'::after').content})")
+                self.assertIn(f'Circle_Coop_x{count}_Diff_Eval.png',actual['image'])
+                self.assertEqual(actual['overlay'],'none')
+                orb.evaluate("""async node=>{const image=new Image();image.src=getComputedStyle(node).backgroundImage.slice(5,-2);await image.decode();} """)
+                self.page.evaluate("""()=>{const config=createSingleConfig();receiveOfflineResult({...config.record,config,score:900000,
+                  performance:{p:10,gr:0,go:0,b:0,m:0,maxCombo:10}});} """)
+                badge=self.page.locator('#resultLevelBadge')
+                expect(badge).to_have_attribute('data-coop-players',str(count))
+                actual=badge.evaluate("node=>({image:getComputedStyle(node).backgroundImage,overlay:getComputedStyle(node,'::after').content})")
+                self.assertIn(f'bg_co-op_x{count}.png',actual['image'])
+                self.assertEqual(actual['overlay'],'none')
+                badge.evaluate("""async node=>{const image=new Image();image.src=getComputedStyle(node).backgroundImage.slice(5,-2);await image.decode();} """)
+                self.page.locator('#resultNext').click()
+                expect(self.page.locator('#performance')).to_be_hidden()
+        self.assertFalse(self.errors)
+
     def test_coop_routes_selection_controls_result_and_return(self):
         ssc='''#TITLE:Mixed;\n#ARTIST:PIUWeb;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
           #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:99;\n#DESCRIPTION:Solo;\n#DIFFICULTY:Edit;
@@ -413,6 +440,41 @@ class SelectionBrowserTests(unittest.TestCase):
         self.load()
         paths=self.page.evaluate("async ()=>[...await difficultyPaths(songsJson.children[3],{type:'pump-double',mode:'double',level:'27+'})]")
         self.assertEqual(paths,['Songs/Test1','Songs/Test2','Songs/Test3'])
+        self.assertFalse(self.errors)
+
+    def test_hold_tail_on_same_line_as_chart_terminator(self):
+        ssc='''#TITLE:Inline terminator;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:12;\n#DESCRIPTION:Test;\n#DIFFICULTY:Edit;
+          #NOTES:\n2000000000\n3000000000;'''
+        self.open_frozen_stage('pump-double',False,{'sscContent':ssc})
+        actual=self.page.evaluate("""()=>{
+          const steps=engine.stage._playerStages[0]._steps,hold=steps.stepList[0];
+          return {rows:engine.song.levels[0].NOTES[0].length,count:steps.stepList.length,
+            complete:!!hold._holdExtensible,end:hold.endTimeStamp};
+        }""")
+        self.assertEqual(actual,{'rows':2,'count':1,'complete':True,'end':1})
+        self.assertFalse(self.errors)
+
+    def test_compact_fake_taps_and_holds_load_without_affecting_judgments(self):
+        ssc='''#TITLE:Xsanity;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;
+          #NOTEDATA:;\n#STEPSTYPE:pump-double;\n#METER:25;\n#DESCRIPTION:Test;\n#DIFFICULTY:Edit;
+          #NOTES:\n{208}{208}20000000\n0000000000\n{308}{308}30000000\n000{108}1{1|n|1|0}0000\n;'''
+        self.open_frozen_stage('pump-double',False,{'sscContent':ssc})
+        actual=self.page.evaluate("""()=>{
+          const stage=engine.stage._playerStages[0],steps=stage._steps;
+          const holds=steps.stepList.filter(step=>step instanceof StepHold);
+          const judged=stage.stepQueue.stepQueue.flatMap(row=>row.stepList);
+          return {width:engine.song.levels[0].NOTES[0].map(row=>row.length),holds:holds.length,
+            complete:holds.every(hold=>hold._holdExtensible && Number.isFinite(hold.endTimeStamp)),
+            judged:judged.length,fakeJudged:judged.some(step=>step instanceof StepHold?step.stepNote.fake:step.fake),
+            ignored:steps.ignoredHoldEnds || 0};
+        }""")
+        self.assertEqual(actual['width'],[10,10,10,10])
+        self.assertEqual(actual['holds'],3)
+        self.assertTrue(actual['complete'])
+        self.assertEqual(actual['judged'],2)
+        self.assertFalse(actual['fakeJudged'])
+        self.assertEqual(actual['ignored'],0)
         self.assertFalse(self.errors)
 
     def test_half_double_touch_six_panels_and_separate_preferences(self):
@@ -575,6 +637,91 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.wait_for_function('songIndex===7 && selsong?.meta.TITLE==="Test 7"')
         self.aligned()
         self.page.wait_for_function("actualMusic.src.endsWith('Test7.wav')")
+        self.assertFalse(self.errors)
+
+    def test_series_zone_groups_channels_and_preserves_result_navigation(self):
+        ids=['1st-to-zero','nx-to-nxa','fiesta-to-fiesta2','prime','prime2','xx','phoenix','phoenix2']
+        labels=['1ST~ZERO','NX~NXA','FIESTA~FIESTA2','PRIME','PRIME 2','XX','PHOENIX','PHOENIX 2']
+        data=catalog()
+        data['children'][0]['children'].append({'name':'SERIES ZONE','channelId':'series-zone','children':[track(11)]})
+        for i,(id,label) in enumerate(zip(ids,labels)):
+            data['children'][0]['children'].append({'name':label,'channelId':id,'banner':'Songs/Test0/Title.PNG','children':[] if id=='xx' else [track(i+1)]})
+        self.context.route('**/piu-songs/songs.json',lambda route:route.fulfill(status=200,body=json.dumps(data),content_type='application/json'))
+        def choose_channel(id):
+            for _ in range(20):
+                if self.page.locator('#stage .channel-highlight').get_attribute('data-channel-id')==id:
+                    break
+                self.page.locator('#arrowChannelRight').click()
+            if id=='prime':
+                self.page.keyboard.press('Enter')
+            else:
+                self.page.locator(f'#stage [data-channel-id="{id}"]').click(force=id=='xx')
+        def check_series_artwork():
+            actual=self.page.locator('#stage .listSong').evaluate_all("""nodes=>nodes.map(node=>({
+              count:node.querySelectorAll('img').length,path:new URL(node.querySelector('img').src).pathname}))""")
+            expected=['Series_Zone_1st_to_ZERO.png','Series_Zone_NX_to_NXA.png','Series_Zone_Fiesta_to_fiesta2.png',
+                      'Series_Zone_Prime.png','Series_Zone_Prime2.png','Series_Zone_XX.png','Series_Zone_Phoenix.png','Series_Zone_Phoenix2.png']
+            self.assertEqual(actual,[{'count':1,'path':'/assets/img/phx2/channels/'+file} for file in expected])
+            self.page.locator('#stage').evaluate("async node=>{await Promise.all([...node.querySelectorAll('img')].map(image=>image.decode()));}")
+        for width,height in [(1280,800),(390,844)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.load()
+            self.page.evaluate('selectChannel(true)')
+            for id in ids:
+                expect(self.page.locator(f'#stage [data-channel-id="{id}"]')).to_have_count(0)
+            choose_channel('series-zone')
+            self.assertTrue(self.page.evaluate('PiuChannels.isSeriesPicker()'))
+            expect(self.page.locator('.blockSelectChannel .card-title')).to_have_text('SERIES ZONE · 1ST~ZERO')
+            self.assertEqual(self.page.locator('#stage .listSong').evaluate_all('nodes=>nodes.map(node=>node.dataset.channelId)'),ids)
+            check_series_artwork()
+            self.assertEqual(self.page.evaluate('channelSongCount(stageIndex)'),7)
+            expect(self.page.locator('#stage [data-channel-id="xx"]')).to_have_attribute('aria-disabled','true')
+            choose_channel('xx')
+            self.assertTrue(self.page.evaluate('PiuChannels.isSeriesPicker()'))
+            choose_channel('prime')
+            self.page.wait_for_function("songsJson.children[stageIndex].channelId==='prime' && chart_level!==null")
+            expect(self.page.locator('.blockSelectChannel')).to_have_class(re.compile(r'\bhide\b'))
+            self.page.evaluate("""()=>{const config=createSingleConfig();sessionStorage.setItem('piu_single_result',JSON.stringify({
+              ...config.record,config,score:900000,performance:{p:10,gr:0,go:0,b:0,m:0,maxCombo:10}}));} """)
+            self.page.goto(self.origin+'/index.html')
+            expect(self.page.locator('#performance')).to_be_visible()
+            self.page.locator('#resultNext').click()
+            expect(self.page.locator('#performance')).to_be_hidden()
+            self.page.wait_for_function("songsJson.children[stageIndex].channelId==='prime' && chart_level!==null")
+            self.page.locator('#desktop-channels-right').click()
+            self.assertTrue(self.page.evaluate('PiuChannels.isSeriesPicker()'))
+            expect(self.page.locator('#stage .channel-highlight')).to_have_attribute('data-channel-id','prime')
+            check_series_artwork()
+            self.page.locator('#desktop-channels-right').click()
+            self.assertFalse(self.page.evaluate('PiuChannels.isSeriesPicker()'))
+            expect(self.page.locator('#stage .channel-highlight')).to_have_attribute('data-channel-id','series-zone')
+            for id in ids:
+                expect(self.page.locator(f'#stage [data-channel-id="{id}"]')).to_have_count(0)
+        self.assertFalse(self.errors)
+
+    def test_main_channels_disable_back_buttons_and_shortcuts(self):
+        for width,height in [(1280,800),(390,844)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.load()
+            self.page.evaluate('selectChannel(true)')
+            for id in ['desktop-return','desktop-channels-right','btnAllChannels']:
+                button=self.page.locator('#'+id)
+                expect(button).to_be_disabled()
+                expect(button).to_have_attribute('aria-disabled','true')
+                self.assertIn('grayscale(1)',button.evaluate('node=>getComputedStyle(node).filter'))
+                button.evaluate("node=>node.dispatchEvent(new MouseEvent('click',{bubbles:true}))")
+            for key in ['q','e','Escape']:
+                self.page.keyboard.press(key)
+            self.page.evaluate('selectionBack()')
+            self.assertTrue(self.page.evaluate('PiuChannels.isRootPicker()'))
+            expect(self.page.locator('.blockSelectSong')).to_have_class(re.compile(r'\bhide\b'))
+            # Navigation and confirmation still enter a channel normally.
+            card=self.page.locator('#stage [data-idx="0"]')
+            card.focus();self.page.keyboard.press('Enter')
+            expect(self.page.locator('.blockSelectChannel')).to_have_class(re.compile(r'\bhide\b'))
+            expect(self.page.locator('#desktop-channels-right')).to_be_enabled()
+            self.page.locator('#desktop-channels-right').click()
+            expect(self.page.locator('#desktop-channels-right')).to_be_disabled()
         self.assertFalse(self.errors)
 
     def test_empty_channels_block_mouse_keyboard_and_direct_entry(self):

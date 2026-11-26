@@ -227,7 +227,7 @@ function songBanner(entry) {
 function hasChart(entry) { return (entry.children || []).some(file => /\.ssc$/i.test(file.name)); }
 function channelSongCount(index) {
   if (index === 'favorites') return getFavorites().filter(favorite => !favorite.unavailable).length;
-  return PiuLibrary.songCount(songsJson?.children[Number(index)]);
+  return PiuLibrary.songCount(songsJson?.children[Number(index)],songsJson);
 }
 
 let imageMusic = '';
@@ -667,6 +667,9 @@ async function change_stage(i, selectedSong = 0, selection = null) {
   document.querySelectorAll('#stage .listSong').forEach(el => el.classList.toggle('active', el.dataset.idx === String(i)));
   channelChartFilter = PiuLibrary.difficulty(stage);
   channelLevelPicker().hidden = true;
+  if(stage.channelId==='series-zone'){
+    window.PiuChannels.openSeries();return;
+  }
   if (channelChartFilter) {
     document.dispatchEvent(new CustomEvent('piu:stagechange'));
     if(selection?.difficultyLevel != null)return selectChannelLevel(selection.difficultyLevel,selection);
@@ -758,10 +761,10 @@ function createListGroupLink(idx, title, number, onclick, songData, channelArtwo
   if (channelArtwork || imageChannel) {
     img.className = "bannerSong";
     img.src = channelArtwork || libraryUrl(imageChannel);
+    img.alt = title;
+    if (channelArtwork) img.dataset.channelArtwork = 'true';
     div1.append(img);
-  }
-
-  if (imageMusic) {
+  } else if (imageMusic) {
     img.className = "bannerSong";
     img.src = libraryUrl(imageMusic);
     img.alt = title; img.loading = 'lazy';
@@ -790,7 +793,7 @@ function createListGroupLink(idx, title, number, onclick, songData, channelArtwo
   // span.style = 'height: 20px;'
   // span.innerHTML = number;
 
-  if (!imageMusic && !imageChannel) {
+  if (!channelArtwork && !imageMusic && !imageChannel) {
     divName.className = 'text-white';
     divName.textContent = title;
   }
@@ -926,6 +929,9 @@ async function readSongList() {
       json = await response.json();
     }
     songsJson = json.children[0];
+    if(PiuLibrary.seriesChannels(songsJson).length && !songsJson.children.some(stage=>stage.channelId==='series-zone')){
+      songsJson.children.push({name:'SERIES ZONE',channelId:'series-zone',virtual:true,children:[]});
+    }
     if(!songsJson.children.some(stage=>stage.channelId==='co-op'))songsJson.children.push({name:'CO-OP',channelId:'co-op',virtual:true,children:[]});
     const coopStage=songsJson.children.find(stage=>stage.channelId==='co-op');
     let coopKeys=[];
@@ -939,8 +945,10 @@ async function readSongList() {
     holder.replaceChildren();
     holder.append(createFavoritesChannelLink());
     songsJson.children.forEach(function(stage, index) {
+      if(PiuLibrary.isSeries(stage))return;
       imageMusic = ''; imageChannel = stage.banner || '';
-      const card = createListGroupLink(index, stage.name, stage.children.filter(hasChart).length, function() { change_stage(index); }, undefined, PiuLibrary.channelArtwork(stage));
+      const card = createListGroupLink(index, stage.name, channelSongCount(index), function() { change_stage(index); }, undefined, PiuLibrary.channelArtwork(stage));
+      if(stage.channelId==='series-zone')card.dataset.channelGroup='series';
       card.dataset.channelId = stage.channelId || ''; holder.append(card);
     });
     const sameCatalog = localStorage.getItem('piu_catalog_source') === resources;

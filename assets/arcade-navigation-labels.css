@@ -1,4 +1,9 @@
 /* The arrow artwork identifies navigation; buttons retain accessible labels. */
+body :is(#desktop-return,#desktop-channels-right,#btnAllChannels):disabled{
+ filter:grayscale(1)!important;
+ opacity:.45;
+ cursor:default!important;
+}
 body :is(#desktop-return,#desktop-channels-right)>span,
 body #confirmPlayModal .ps-corner>span{
  display:none;

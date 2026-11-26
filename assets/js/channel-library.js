@@ -62,6 +62,15 @@
     const file = channelArt[stage?.channelId] || channelArt[channelNames[normalize(stage?.name)]];
     return file ? 'assets/img/phx2/channels/' + file : null;
   }
+  const seriesIds=['1st-to-zero','nx-to-nxa','fiesta-to-fiesta2','prime','prime2','xx','phoenix','phoenix2'];
+  const seriesLabels=['1ST~ZERO','NX~NXA','FIESTA~FIESTA2','PRIME','PRIME 2','XX','PHOENIX','PHOENIX 2'];
+  function isSeries(stage){return seriesIds.includes(stage?.channelId || channelNames[normalize(stage?.name)]);}
+  function seriesChannels(catalog){
+    return seriesIds.flatMap((id,i)=>{
+      const index=(catalog?.children || []).findIndex(stage=>(stage.channelId || channelNames[normalize(stage.name)])===id);
+      return index<0?[]:[{stage:catalog.children[index],index,label:seriesLabels[i]}];
+    });
+  }
   function songKey(song) {
     const chart = (song.children || []).find(file => /\.ssc$/i.test(file.name));
     return chart ? normalize(chart.name) + '|' + normalize(song.name) : '';
@@ -118,17 +127,20 @@
     const format = extension === 'webp' ? 'webp' : 'png';
     return mode && suffix ? 'difficulty-zone/' + mode + '/img/' + prefix + '_lv_' + suffix + '.' + format : null;
   }
-  function songCount(stage) {
+  function songCount(stage,catalog) {
+    if(stage?.channelId==='series-zone' && catalog){
+      return new Set(seriesChannels(catalog).flatMap(({stage})=>(stage.children || []).map(songKey)).filter(Boolean)).size;
+    }
     if(stage?.channelId==='co-op' && stage.coopPaths)return stage.coopPaths.size;
     return (stage?.children || []).filter(song => !!songKey(song)).length;
   }
   function initialStage(catalog, savedId) {
     const stages = catalog.children || [];
-    const saved = stages.findIndex(stage => (stage.channelId || stage.path) === savedId && stage.children.some(song => songKey(song)));
+    const saved = stages.findIndex(stage => (stage.channelId || stage.path) === savedId && songCount(stage,catalog)>0);
     if (saved >= 0) return saved;
     const arcade = stages.findIndex(stage => stage.channelId === 'arcade-mix' && songCount(stage)>0);
     return arcade >= 0 ? arcade : Math.max(0,stages.findIndex(stage => stage.children.some(song => songKey(song))));
   }
-  root.PiuLibrary = {channelArtwork,songKey,entries,resolveFavorite,migrateFavorites,difficulty,matchesChart,levelArtwork,initialStage,songCount};
+  root.PiuLibrary = {channelArtwork,songKey,entries,resolveFavorite,migrateFavorites,difficulty,matchesChart,levelArtwork,initialStage,songCount,isSeries,seriesChannels};
   if (typeof module !== 'undefined') module.exports = root.PiuLibrary;
 })(globalThis);

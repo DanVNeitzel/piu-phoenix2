@@ -169,12 +169,15 @@
     document.body.classList.toggle('desktop-song-select', lobby && !blockSelectSong.classList.contains('hide'));
     document.body.classList.toggle('desktop-channel-select', lobby && !blockSelectChannel.classList.contains('hide'));
     const channelList = document.body.classList.contains('desktop-channel-select');
-    const rightButton = byId('desktop-channels-right');
-    const backLabel=window.PiuChannels?.isLevelPicker()?'Voltar aos canais':
-      channelChartFilter?.type && !channelList?'Voltar aos níveis':channelList?'Voltar às músicas':'Selecionar canal';
-    rightButton.setAttribute('aria-label',backLabel);
-    rightButton.title=backLabel;
-    byId('desktop-return').setAttribute('aria-label',backLabel);
+    const backDisabled=lobby && !!window.PiuChannels?.isRootPicker();
+    const backLabel=backDisabled?'Voltar indisponível: selecione um canal':
+      window.PiuChannels?.isLevelPicker() || window.PiuChannels?.isSeriesPicker()?'Voltar aos canais':
+      channelChartFilter?.type && !channelList?'Voltar aos níveis':
+      currentChannel!=='favorites' && PiuLibrary.isSeries(songsJson?.children[stageIndex]) && !channelList?'Voltar às séries':channelList?'Voltar às músicas':'Selecionar canal';
+    ['desktop-return','desktop-channels-right','btnAllChannels'].forEach(id=>{
+      const button=byId(id);button.disabled=backDisabled;
+      button.setAttribute('aria-disabled',String(backDisabled));button.setAttribute('aria-label',backLabel);button.title=backLabel;
+    });
     updateOptions(); scheduleCenter(false); requestAnimationFrame(positionChannel);
     refreshInterfaceBackground();
     ['Left','Right'].forEach(side=>byId('arrowSong'+side).setAttribute('aria-label',side==='Left'?'Música anterior':'Próxima música'));
@@ -184,6 +187,7 @@
   byId('desktop-return').addEventListener('click',selectionBack);
   const observer = new MutationObserver(updateMode);
   [containerMobGame,blockSelectSong,blockSelectChannel,byId('performance')].forEach(el => observer.observe(el, {attributes:true,attributeFilter:['class']}));
+  document.addEventListener('piu:channelview',updateMode);
   desktop.addEventListener('change', updateMode);
   window.addEventListener('resize', () => { scheduleCenter(false); positionChannel(); });
   const headerObserver = new ResizeObserver(positionChannel);

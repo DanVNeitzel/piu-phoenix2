@@ -287,6 +287,7 @@ class Steps extends GameObject {
 
 
     processNote(note, kind, currentYPosition, XStepPosition , steps, currentTimeInSong, index,  padId, i,j, beat ) {
+        const fake = note?.fake === '1';
         const player = PiuCoop.owner(note,this._song.levels[this._level].COOP);
         note = PiuCoop.type(note);
         // Preserve ownership while mapping symbols to the shared platform actions.
@@ -299,6 +300,7 @@ class Steps extends GameObject {
             // let step = this.stepFactory.getStep(kind);
             let step = new StepNote( this._resourceManager, kind, padId, currentTimeInSong, this._noteskin ) ;
             step.player = player;
+            step.fake = fake;
             if (player) PiuCoop.tint(step.object,player);
 
             let stepMesh = step.object ;
@@ -314,7 +316,7 @@ class Steps extends GameObject {
                 let stepHold = new StepHold(this._resourceManager, step, kind ) ;
 
                 // don't add steps into the stepqueue if they are inside a warp section
-                if (!this.beatManager.isNoteInWarp(beat)) {
+                if (!fake && !this.beatManager.isNoteInWarp(beat)) {
                     this.stepQueue.addStepToStepList(stepHold, index, i,j) ;
                 }
                 this.stepQueue.setHold(kind, padId, stepHold) ;
@@ -323,7 +325,7 @@ class Steps extends GameObject {
             } else {
 
                 // don't add steps into the stepqueue if they are inside a warp section
-                if (!this.beatManager.isNoteInWarp(beat)) {
+                if (!fake && !this.beatManager.isNoteInWarp(beat)) {
                     this.stepQueue.addStepToStepList(step, index, i, j);
                 }
                 steps.add(stepMesh) ;

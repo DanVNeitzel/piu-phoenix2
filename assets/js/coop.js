@@ -27,7 +27,10 @@
         METER:section.match(/#METER\s*:\s*([^;]*);/i)?.[1].trim()};
       const body=section.match(/#NOTES\s*:([\s\S]*?);/i)?.[1] || '';
       if(chart.STEPSTYPE==='pump-routine')chart.ROUTINE_PLAYERS=body.split('&').length;
-      const fields=body.split('&').map(field=>[...field.matchAll(/\{([^}]*)\}|([0-9A-Za-z])/g)].map(match=>match[1]?match[1].split('|')[0]:match[2]));
+      const fields=body.split('&').map(field=>[...field.matchAll(/\{([^}]*)\}|([0-9A-Za-z])/g)].map(match=>{
+        if(!match[1])return match[2];
+        return !match[1].includes('|') && match[1].length===3 ? match[1][0] : match[1].split('|')[0];
+      }));
       const stepf2=fields.length===1 && fields[0].some(note=>symbols[note]);
       chart.NOTES=[fields.flatMap((field,player)=>field.map(note=>({type:note,
         player:chart.STEPSTYPE==='pump-routine' && !stepf2 && !['0','3'].includes(note)?player+1:0})))];

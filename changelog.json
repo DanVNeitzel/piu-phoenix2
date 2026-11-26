@@ -1,7 +1,53 @@
 {
-  "version": "0.8.24",
+  "version": "0.8.30",
   "date": "2026-11-25",
   "updates": [
+    {
+      "category": "Retorno na seleção de canais",
+      "items": [
+        "Na seleção principal de canais, os botões BACK ficam cinza e desativados, e os atalhos Q, E e Esc não retornam à seleção anterior de músicas.",
+        "A navegação e a confirmação de canais continuam disponíveis. O retorno permanece ativo dentro de SERIES ZONE e da seleção de níveis."
+      ]
+    },
+    {
+      "category": "Imagens dos canais em SERIES ZONE",
+      "items": [
+        "Corrigida a substituição dos ícones das séries pelo banner da última música selecionada.",
+        "O ícone próprio de cada canal tem prioridade sobre banners da biblioteca e sobre imagens de músicas, inclusive ao voltar da pontuação."
+      ]
+    },
+    {
+      "category": "Organização de SERIES ZONE",
+      "items": [
+        "1ST~ZERO, NX~NXA, FIESTA~FIESTA2, PRIME, PRIME 2, XX, PHOENIX e PHOENIX 2 ficam dentro de SERIES ZONE, sem aparecer separados na lista principal de canais.",
+        "Navegação por série antes de escolher a música, com retorno de músicas para séries e de séries para os canais principais.",
+        "Mantidos o bloqueio das séries vazias, os favoritos e o retorno à mesma música e dificuldade após a pontuação, em desktop e mobile."
+      ]
+    },
+    {
+      "category": "Encerramento das notas do chart",
+      "items": [
+        "Corrigido o SyntaxError quando a última linha de notas termina diretamente com ponto e vírgula, sem quebra de linha intermediária.",
+        "Separadores de medidas na mesma linha também são aceitos, preservando a quantidade de linhas, os beats e os tempos dos holds.",
+        "Verificados os arquivos locais de Tek -Club Copenhagen- e Hypnosis (SynthWulf Mix), incluindo seus charts Routine."
+      ]
+    },
+    {
+      "category": "Leitura de notas compactadas",
+      "items": [
+        "Corrigido o SyntaxError ao carregar marcações Xsanity como {108}, {208} e {308}, presentes no arquivo local de Destr0yer e em outros charts.",
+        "Cada marcação compactada ocupa um único sensor e preserva o tipo de nota, os atributos e os tempos do chart.",
+        "Notas e holds com atributo fake são exibidos sem gerar julgamentos, misses ou pontuação, incluindo a flag fake do formato StepF2."
+      ]
+    },
+    {
+      "category": "Visibilidade dos orbs CO-OP",
+      "items": [
+        "Corrigida a camada visual de Double que cobria os novos orbs de CO-OP na seleção de música.",
+        "CO-OP ×2, ×3 e ×4 usam sua própria arte sem a camada verde dos modos individuais.",
+        "Verificadas as imagens correspondentes na seleção de música e na tela de pontuação, em desktop e mobile."
+      ]
+    },
     {
       "category": "Ícones e orbs CO-OP",
       "items": [

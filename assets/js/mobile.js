@@ -289,12 +289,16 @@ async function nextStage() {
 }
 
 function selectionBack() {
+  if(window.PiuChannels?.isRootPicker())return;
   if(window.PiuChannels?.back())return;
   if(!blockSelectChannel.classList.contains('hide'))choiceChannel();
   else selectChannel();
 }
 
 function selectChannel(main = false) {
+  if(!main && currentChannel!=='favorites' && PiuLibrary.isSeries(songsJson?.children[stageIndex]) && window.PiuChannels){
+    window.PiuChannels.openSeries();return;
+  }
   if(channelChartFilter?.coop && !selsong)resetSongSelection();
   if(!main && channelChartFilter?.type && currentChannel!=='favorites' && !blockSelectSong.classList.contains('hide') && window.PiuChannels){
     window.PiuChannels.openLevels();return;
@@ -318,6 +322,9 @@ function selectChannel(main = false) {
 
 function choiceChannel() {
   if (!channelSongCount(currentChannel === 'favorites' ? 'favorites' : stageIndex)) return;
+  if(currentChannel!=='favorites' && songsJson?.children[stageIndex]?.channelId==='series-zone'){
+    window.PiuChannels?.openSeries();return;
+  }
   resetAudio();
   blockSelectSong.classList.remove('hide');
   btnSelectMusic.classList.remove('hide');
@@ -407,7 +414,7 @@ document.getElementById('stage').addEventListener('click',function(event){
   obj2.src='assets/sounds/PHOENIX_2_PRE_SELECT_MUSIC.mp3';
   obj2.volume=1;
   obj2.play().catch(function(){});
-  if(!window.PiuChannels?.isLevelPicker() && !event.target.closest('[data-level]'))choiceChannel();
+  if(!window.PiuChannels?.isLevelPicker() && !event.target.closest('[data-level],[data-channel-group]'))choiceChannel();
 });
 
 $(".sound-confirm-pumpitup").click(function () {

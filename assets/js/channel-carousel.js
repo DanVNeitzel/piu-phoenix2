@@ -8,7 +8,7 @@
   description.setAttribute('aria-live','polite');
   wheel.after(description);
   let selected=null,opened=false,pointer=null,ignoreClickUntil=0;
-  let levelMode=false,channelNodes=[],levelStage=null;
+  let levelMode=false,seriesMode=false,channelNodes=[],levelStage=null;
   let availabilityVersion=0;
   const cards=()=>[...wheel.querySelectorAll('.listSong')];
   const visible=()=>!blockSelectChannel.classList.contains('hide');
@@ -93,7 +93,8 @@
       artwork(card);
       updateLock(card);
     });
-    if(heading)heading.textContent=levelMode?'DIFFICULTY ZONE '+channelChartFilter.label:title(selected).replace(/^\d+[- ]*/, '');
+    if(heading)heading.textContent=levelMode?'DIFFICULTY ZONE '+channelChartFilter.label:
+      seriesMode?'SERIES ZONE · '+title(selected):title(selected).replace(/^\d+[- ]*/, '');
     if(levelMode){
       const status=selected.dataset.availability;
       const detail=status==='empty'?'BLOQUEADO · SEM MÚSICAS':status==='loading'?'VERIFICANDO MÚSICAS…':status==='error'?'FALHA NA CONSULTA · CONFIRME PARA TENTAR NOVAMENTE':selected.dataset.songCount+' músicas · S / ENTER PARA CONFIRMAR';
@@ -126,18 +127,23 @@
     if(!levelMode && currentChannel==='favorites')selected=list.find(card=>card.dataset.idx==='favorites') || selected;
     opened=true;wheel.classList.add('channel-wheel-opening');render();
     selected?.focus({preventScroll:true});
+    document.dispatchEvent(new CustomEvent('piu:channelview'));
   }
   function restoreChannels(){
-    if(!levelMode)return;
+    if(!levelMode && !seriesMode)return;
     availabilityVersion++;difficultySelectionVersion++;
-    wheel.replaceChildren(...channelNodes);channelNodes=[];levelMode=false;levelStage=null;
-    document.body.classList.remove('difficulty-level-select');
+    wheel.replaceChildren(...channelNodes);channelNodes=[];levelMode=false;seriesMode=false;levelStage=null;
+    document.body.classList.remove('difficulty-level-select','series-channel-select');
+    const activeStage=PiuLibrary.isSeries(songsJson?.children[stageIndex])?
+      songsJson.children.findIndex(stage=>stage.channelId==='series-zone'):stageIndex;
     cards().forEach(card=>card.classList.toggle('active',currentChannel==='favorites'?
-      card.dataset.idx==='favorites':card.dataset.idx===String(stageIndex)));
+      card.dataset.idx==='favorites':card.dataset.idx===String(activeStage)));
     selected=null;opened=false;ignoreClickUntil=0;pointer=null;
+    document.dispatchEvent(new CustomEvent('piu:channelview'));
   }
   function openLevels(){
     if(!channelChartFilter?.type)return;
+    if(seriesMode)restoreChannels();
     if(levelMode && levelStage!==stageIndex)restoreChannels();
     resetSongSelection();
     if(!levelMode){
@@ -176,10 +182,31 @@
     channelMusic.src='assets/sounds/PHOENIX_2_CHANNEL_THEME.mp3';channelMusic.play().catch(()=>{});
     ignoreClickUntil=0;pointer=null;open();verifyLevels();
   }
+  function openSeries(){
+    if(levelMode)restoreChannels();
+    if(!seriesMode){
+      channelNodes=[...wheel.children];seriesMode=true;
+      const nodes=PiuLibrary.seriesChannels(songsJson).map(({stage,index,label})=>{
+        const card=createListGroupLink(index,label,PiuLibrary.songCount(stage),()=>change_stage(index),undefined,PiuLibrary.channelArtwork(stage));
+        card.dataset.channelId=stage.channelId;
+        card.classList.toggle('active',index===stageIndex);return card;
+      });
+      wheel.replaceChildren(...nodes);
+    }
+    document.body.classList.add('series-channel-select');
+    stopMusicPreview();resetAudio();
+    blockSelectSong.classList.add('hide');btnSelectMusic.classList.add('hide');blockSelectChannel.classList.remove('hide');
+    channelMusic.src='assets/sounds/PHOENIX_2_CHANNEL_THEME.mp3';channelMusic.play().catch(()=>{});
+    ignoreClickUntil=0;pointer=null;open();
+  }
   function back(){
+    if(seriesMode && visible()){selectChannel(true);return true;}
     if(levelMode && visible()){selectChannel(true);return true;}
     if(channelChartFilter?.type && currentChannel!=='favorites' && !blockSelectSong.classList.contains('hide')){
       openLevels();return true;
+    }
+    if(currentChannel!=='favorites' && PiuLibrary.isSeries(songsJson?.children[stageIndex]) && !blockSelectSong.classList.contains('hide')){
+      openSeries();return true;
     }
     return false;
   }
@@ -243,5 +270,5 @@
     if(visible() && !opened)open();
     if(!visible()){opened=false;wheel.classList.remove('channel-wheel-opening');}
   }).observe(blockSelectChannel,{attributes:true,attributeFilter:['class']});
-  root.PiuChannels={open,move,openLevels,restoreChannels,back,isLevelPicker:()=>levelMode&&visible()};
+  root.PiuChannels={open,move,openLevels,openSeries,restoreChannels,back,isLevelPicker:()=>levelMode&&visible(),isSeriesPicker:()=>seriesMode&&visible(),isRootPicker:()=>visible()&&!levelMode&&!seriesMode};
 })(globalThis);

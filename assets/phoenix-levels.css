@@ -1,26 +1,26 @@
 /* Keep the raster rim inside the button and smooth only the artwork, not text. */
-.circle-single,
+.circle-single:not(.circle-coop),
 #confirmPlayModal .ps-orb:not(.ps-coop),
 .player-panel .ph-orb,
 .preview-orb.single{
  --phoenix-orb:url('img/phx2/Circle_Single_Diff_Eval.png');
  --phoenix-orb-size:124%;
 }
-.circle-double,
-#confirmPlayModal .ps-orb.ps-double,
+.circle-double:not(.circle-coop),
+#confirmPlayModal .ps-orb.ps-double:not(.ps-coop),
 .player-panel .ph-orb.ph-double,
 .preview-orb.double{
  --phoenix-orb:url('img/phx2/Circle_Double_Diff_Eval.png');
  --phoenix-orb-size:132%;
 }
 
-.circle-half,
-#confirmPlayModal .ps-orb.ps-half{
+.circle-half:not(.circle-coop),
+#confirmPlayModal .ps-orb.ps-half:not(.ps-coop){
  --phoenix-orb:url('img/phx2/Circle_H_Double_Diff_Eval.png');
  --phoenix-orb-size:132%;
 }
 
-:is(.circle-single,.circle-double),
+:is(.circle-single,.circle-double):not(.circle-coop),
 #confirmPlayModal .ps-orb:not(.ps-coop),
 .player-panel .ph-orb,
 .preview-orb{
@@ -32,7 +32,7 @@
 .preview-orb{position:relative}
 
 /* ::before is already used for the 1P marker on the selected difficulty. */
-:is(.circle-single,.circle-double)::after,
+:is(.circle-single,.circle-double):not(.circle-coop)::after,
 #confirmPlayModal .ps-orb:not(.ps-coop)::after,
 .player-panel .ph-orb::after,
 .preview-orb::after{
