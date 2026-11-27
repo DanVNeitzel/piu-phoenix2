@@ -1,7 +1,13 @@
 {
-  "version": "0.8.43",
+  "version": "0.8.45",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Remoção da prévia da noteskin Phoenix 2",
+      "items": [
+        "Desfeita a criação da prévia da noteskin Phoenix 2, com remoção da página de demonstração, imagens e animação."
+      ]
+    },
     {
       "category": "Touchpad sem margem em cima e embaixo",
       "items": [
