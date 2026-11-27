@@ -244,6 +244,31 @@ class SelectionBrowserTests(unittest.TestCase):
         self.assertIsNone(self.page.evaluate("sessionStorage.getItem('piu_single_result')"))
         self.assertFalse(self.errors)
 
+    def test_phoenix2_arrow_motion_is_shared_paused_and_reduced_motion_safe(self):
+        self.open_frozen_stage('pump-single',False,{'noteskin':'PHOENIX2'})
+        actual=self.page.evaluate("""()=>{
+          const s=engine.stage._playerStages[0],rm=s._resourceManager;
+          const animations=engine._updateList.filter(o=>o instanceof StepNoteTexture&&o._phoenixClock);
+          const materials=rm._materialsDict.NOTESKINS.PHOENIX2;
+          const version=materials.SDL.material.map.version;
+          const before=animations[0]._phoenixClock.value;engine.render();
+          const paused=before===animations[0]._phoenixClock.value;
+          for(let i=0;i<30;i++)for(const animation of animations)animation.update(1/60);
+          const cap=rm.constructHoldCap('dl','PHOENIX2');
+          const result={count:animations.length,paused,moved:animations.every(a=>a._phoenixClock.value>0),
+            uploads:materials.SDL.material.map.version-version,
+            shared:cap.material.userData.phoenixArrowClock===materials.SDL.material.userData.phoenixArrowClock,
+            center:!!materials.SC.material.userData.phoenixArrowClock};
+          cap.material.dispose();return result;
+        }""")
+        self.assertEqual(actual,{'count':4,'paused':True,'moved':True,'uploads':0,'shared':True,'center':False})
+        self.page.emulate_media(reduced_motion='reduce')
+        self.assertTrue(self.page.evaluate("""()=>{
+          const animations=engine._updateList.filter(o=>o instanceof StepNoteTexture&&o._phoenixClock);
+          animations.forEach(a=>a.update(.1));return animations.every(a=>a._phoenixClock.value===0);
+        }"""))
+        self.assertFalse(self.errors)
+
     def test_phoenix_noteskin_selection_native_assets_hold_ends_and_six_fx_frames(self):
         self.check_native_phoenix_noteskin('PHOENIX')
 
@@ -282,7 +307,7 @@ class SelectionBrowserTests(unittest.TestCase):
             self.assertEqual(actual['skin'],skin)
             self.assertEqual(len(actual['ends']),width)
             for end in actual['ends']:
-                self.assertEqual((end['width'],end['height']),(2172,362) if skin=='PHOENIX2' and end['kind']!='c' else (576,96))
+                self.assertEqual((end['width'],end['height']),(576,96))
                 self.assertAlmostEqual(end['y'],end['end'])
                 self.assertAlmostEqual(end['repeat'],1/6)
                 self.assertAlmostEqual(end['bodyEnd'],end['capStart'])

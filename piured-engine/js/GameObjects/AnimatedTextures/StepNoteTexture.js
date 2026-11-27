@@ -33,6 +33,8 @@ class StepNoteTexture extends GameObject {
 
         super(resourceManager);
         this._kind = kind;
+        this._phoenixClock=noteskin==='PHOENIX2'&&kind!=='c'?resourceManager.phoenixArrowClock(kind):null;
+        this._motion=this._phoenixClock?matchMedia('(prefers-reduced-motion:reduce)'):null;
         this._stepAnimationRate = ['PHOENIX','PHOENIX2'].includes(noteskin)?24:animationRate ;
 
         this._map = this._resourceManager.getStepNoteTexture( this._kind, noteskin ) ;
@@ -50,6 +52,9 @@ class StepNoteTexture extends GameObject {
 
     // This one is not empty
     update(delta) {
+        if(this._phoenixClock){
+            this._phoenixClock.value=this._motion.matches?0:this._phoenixClock.value+Math.max(0,Math.min(Number(delta)||0,.1));
+        }
 
         this.updateTextureAnimation(delta) ;
 

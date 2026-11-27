@@ -62,34 +62,35 @@ class ResourceManager {
         }
 
         let stepDic = {};
+        const texture=path=>new PNGTexture(path+(noteskinId==='PHOENIX2'?'?v=0.8.58':''));
         // StepNotes
 
-        stepDic['SDL'] = new PNGTexture(noteskinPath + '/DownLeft TapNote 3x2.PNG');
-        stepDic['SUL'] = new PNGTexture(noteskinPath + '/UpLeft TapNote 3x2.PNG');
-        stepDic['SC'] = new PNGTexture(noteskinPath + '/Center TapNote 3x2.PNG');
-        stepDic['SUR'] = new PNGTexture(noteskinPath + '/UpRight TapNote 3x2.PNG');
-        stepDic['SDR'] = new PNGTexture(noteskinPath + '/DownRight TapNote 3x2.PNG');
+        stepDic['SDL'] = texture(noteskinPath + '/DownLeft TapNote 3x2.PNG');
+        stepDic['SUL'] = texture(noteskinPath + '/UpLeft TapNote 3x2.PNG');
+        stepDic['SC'] = texture(noteskinPath + '/Center TapNote 3x2.PNG');
+        stepDic['SUR'] = texture(noteskinPath + '/UpRight TapNote 3x2.PNG');
+        stepDic['SDR'] = texture(noteskinPath + '/DownRight TapNote 3x2.PNG');
 
 
         //Holds & EndNotes
-        stepDic['HDL'] = new PNGTexture(noteskinPath + '/DownLeft Hold 6x1.PNG');
-        stepDic['HUL'] = new PNGTexture(noteskinPath + '/UpLeft Hold 6x1.PNG');
-        stepDic['HC'] = new PNGTexture(noteskinPath + '/Center Hold 6x1.PNG');
-        stepDic['HUR'] = new PNGTexture(noteskinPath + '/UpRight Hold 6x1.PNG');
-        stepDic['HDR'] = new PNGTexture(noteskinPath + '/DownRight Hold 6x1.PNG');
+        stepDic['HDL'] = texture(noteskinPath + '/DownLeft Hold 6x1.PNG');
+        stepDic['HUL'] = texture(noteskinPath + '/UpLeft Hold 6x1.PNG');
+        stepDic['HC'] = texture(noteskinPath + '/Center Hold 6x1.PNG');
+        stepDic['HUR'] = texture(noteskinPath + '/UpRight Hold 6x1.PNG');
+        stepDic['HDR'] = texture(noteskinPath + '/DownRight Hold 6x1.PNG');
 
         //Receptor
-        stepDic['R'] = new PNGTexture(noteskinPath + '/Center Receptor 1x2.PNG');
+        stepDic['R'] = texture(noteskinPath + '/Center Receptor 1x2.PNG');
 
         //Taps
-        stepDic['T'] = new PNGTexture(noteskinPath + '/Tap 5x2.PNG');
+        stepDic['T'] = texture(noteskinPath + '/Tap 5x2.PNG');
 
         // FX
         const nativePhoenix=['PHOENIX','PHOENIX2'].includes(noteskinId);
-        stepDic['FX'] = new PNGTexture(noteskinPath + (nativePhoenix?'/StepFX 6x1.PNG':'/StepFX 5x1.PNG'));
+        stepDic['FX'] = texture(noteskinPath + (nativePhoenix?'/StepFX 6x1.PNG':'/StepFX 5x1.PNG'));
         if(nativePhoenix){
             for(const [kind,name] of Object.entries({dl:'DownLeft',ul:'UpLeft',c:'Center',ur:'UpRight',dr:'DownRight'})){
-                stepDic['CAP_'+kind]=new PNGTexture(noteskinPath+'/'+name+' HoldCap 6x1.PNG');
+                stepDic['CAP_'+kind]=texture(noteskinPath+'/'+name+' HoldCap 6x1.PNG');
             }
         }
 
@@ -143,6 +144,9 @@ class ResourceManager {
             materialsDict['SC'] = new TransparentMaterial(textureDict['SC'].map);
             materialsDict['SUR'] = new TransparentMaterial(textureDict['SUR'].map);
             materialsDict['SDR'] = new TransparentMaterial(textureDict['SDR'].map);
+            for(const [kind,key] of Object.entries({dl:'SDL',ul:'SUL',ur:'SUR',dr:'SDR'})){
+                this.animatePhoenixArrow(materialsDict[key].material,kind,noteskinId,false);
+            }
 
 
             //Holds & EndNotes
@@ -336,11 +340,61 @@ class ResourceManager {
         }
     }
 
+    phoenixArrowClock(kind) {
+        this._phoenixArrowClocks ??= {};
+        return this._phoenixArrowClocks[kind] ??= {value:0};
+    }
+
+    animatePhoenixArrow(material,kind,noteskinId,cap) {
+        if(noteskinId!=='PHOENIX2'||kind==='c')return;
+        const direction={dl:[-1,-1],ul:[-1,1],ur:[1,1],dr:[1,-1]}[kind];
+        const clock=this.phoenixArrowClock(kind);
+        material.userData.phoenixArrowClock=clock;
+        material.onBeforeCompile=shader=>{
+            shader.uniforms.phoenixArrowTime=clock;
+            shader.uniforms.phoenixArrowDirection={value:new THREE.Vector2(...direction)};
+            shader.uniforms.phoenixArrowGrid={value:new THREE.Vector2(cap?6:3,cap?1:2)};
+            shader.uniforms.phoenixArrowCap={value:cap?1:0};
+            shader.fragmentShader=`uniform float phoenixArrowTime;uniform vec2 phoenixArrowDirection;uniform vec2 phoenixArrowGrid;uniform float phoenixArrowCap;
+                float phoenixInteriorMask(vec4 color){
+                    float blue=(1.-smoothstep(.047,.173,color.r))*smoothstep(.099,.268,color.b);
+                    float red=smoothstep(.388,.700,color.r)*(1.-smoothstep(.106,.173,color.b));
+                    return mix(blue,red,step(0.,phoenixArrowDirection.y))*color.a;
+                }
+            `+shader.fragmentShader;
+            shader.fragmentShader=shader.fragmentShader.replace('#include <map_fragment>',`#include <map_fragment>
+                vec2 arrowUv=fract(vUv*phoenixArrowGrid);
+                vec2 arrowDirection=phoenixArrowDirection*.70710678;
+                // Both copies move at the same constant speed. The resetting copy
+                // has zero weight, eliminating the visible jump at the loop boundary.
+                float phaseA=fract(phoenixArrowTime*.24);
+                float phaseB=fract(phaseA+.5);
+                float blend=.5+.5*cos(phaseA*6.28318530718);
+                vec2 tile=floor(vUv*phoenixArrowGrid);
+                vec2 uvA=clamp(arrowUv-arrowDirection*(phaseA-.5)*.26,vec2(.005),vec2(.995));
+                vec2 uvB=clamp(arrowUv-arrowDirection*(phaseB-.5)*.26,vec2(.005),vec2(.995));
+                vec4 colorA=mapTexelToLinear(texture2D(map,(tile+uvA)/phoenixArrowGrid));
+                vec4 colorB=mapTexelToLinear(texture2D(map,(tile+uvB)/phoenixArrowGrid));
+                float weightA=(1.-blend)*phoenixInteriorMask(colorA);
+                float weightB=blend*phoenixInteriorMask(colorB);
+                float coverage=weightA+weightB;
+                vec3 movingArt=(colorA.rgb*weightA+colorB.rgb*weightB)/max(coverage,.0001);
+                float arrowMask=phoenixInteriorMask(diffuseColor)*coverage;
+                arrowMask*=1.-phoenixArrowCap*smoothstep(.74,.9,arrowUv.y);
+                diffuseColor.rgb=mix(diffuseColor.rgb,movingArt,arrowMask);
+
+            `);
+        };
+        material.customProgramCacheKey=()=> 'phoenix2-continuous-original-flow-v4';
+    }
+
     constructHoldCap(kind,noteskinId) {
         const source=this._textureDict['NOTESKINS'][noteskinId]['CAP_'+kind];
         if(!source)return null;
         const texture=source.cloneMap();texture.repeat.set(1/6,1);
-        return new THREE.Mesh(this._geometryDict['S'].stepGeometry,new TransparentMaterial(texture).material);
+        const material=new TransparentMaterial(texture).material;
+        this.animatePhoenixArrow(material,kind,noteskinId,true);
+        return new THREE.Mesh(this._geometryDict['S'].stepGeometry,material);
     }
 
     constructJudgmentBanner() {

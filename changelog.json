@@ -1,7 +1,47 @@
 {
-  "version": "0.8.56",
+  "version": "0.8.62",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Animação interna contínua da PHOENIX 2",
+      "items": [
+        "Suavizado o movimento da arte original com duas camadas na mesma velocidade e transição gradual entre ciclos, eliminando o salto ao reiniciar a animação.",
+        "Mantidos os contornos externos, o sentido das setas e o processamento na GPU sem redesenhos ou novas texturas por quadro."
+      ]
+    },
+    {
+      "category": "Movimento da arte interna original",
+      "items": [
+        "Removido o desenho procedural que alterava as setas. A animação agora desloca os pixels dos desenhos internos da própria textura PHOENIX 2, na direção de cada seta, preservando os contornos externos."
+      ]
+    },
+    {
+      "category": "Desenhos internos em movimento direcional",
+      "items": [
+        "Os desenhos internos das setas azuis e vermelhas da PHOENIX 2 agora deslizam na direção de cada seta, incluindo cabeças e pontas dos longs, mantendo o contorno externo fixo.",
+        "Mantido o processamento na GPU, sem novas texturas ou desenhos por quadro, com pausa e movimento reduzido."
+      ]
+    },
+    {
+      "category": "Movimento nas setas PHOENIX 2",
+      "items": [
+        "Adicionado brilho em movimento no interior das setas azuis e vermelhas, incluindo cabeças e pontas dos longs, preservando as bordas e o encaixe dos corpos.",
+        "A animação usa a GPU sem redesenhar canvas ou reenviar texturas, acompanha a pausa e respeita a preferência por movimento reduzido."
+      ]
+    },
+    {
+      "category": "Encaixe contínuo dos longs PHOENIX 2",
+      "items": [
+        "Alinhados os corpos dos longs com suas pontas nas cinco direções e nos seis quadros da animação, incluindo bordas brancas e faixas internas, para eliminar os degraus na junção."
+      ]
+    },
+    {
+      "category": "Arquivos atualizados da PHOENIX 2",
+      "items": [
+        "Substituídos os arquivos da noteskin PHOENIX 2 pelo novo pacote fornecido, incluindo a ponta central dourada própria, notas, receptores, corpos, pontas, brilho, efeito de acerto e logo.",
+        "Removidas as adaptações de recorte e redimensionamento usadas no pacote anterior. Os novos atlas são preservados no formato original, com atualização do cache das texturas."
+      ]
+    },
     {
       "category": "AUTOPLAY discreto abaixo do combo",
       "items": [
