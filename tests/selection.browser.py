@@ -144,6 +144,31 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.locator('#arcade-insert').click()
         self.page.evaluate('loginContinue(false)')
 
+    def test_opening_first_tap_anywhere_reveals_ready_before_second_activation(self):
+        for width,height,touch in [(1280,800,False),(390,844,True),(844,390,True)]:
+            with self.browser.new_context(viewport={'width':width,'height':height},has_touch=touch,reduced_motion='reduce') as context:
+                context.route('https://**/*',lambda route:route.abort())
+                page=context.new_page()
+                page.on('pageerror',lambda error:self.errors.append(str(error)))
+                page.goto(self.origin+'/index.html?library=local')
+                ready=page.locator('#btnModalLogin .arcade-ready')
+                expect(ready).to_be_hidden()
+                if touch:
+                    page.touchscreen.tap(6,height/2)
+                else:
+                    page.mouse.click(6,height/2)
+                expect(ready).to_be_visible()
+                expect(ready).to_have_attribute('src','assets/img/phx2/READY.png')
+                self.assertFalse(page.evaluate("document.body.classList.contains('arcade-opening-entering')"))
+                glow=page.locator('#btnModalLogin .arcade-pad').evaluate("node=>({filter:getComputedStyle(node).filter,animation:getComputedStyle(node).animationName})")
+                self.assertIn('drop-shadow',glow['filter'])
+                self.assertEqual(glow['animation'],'none')
+                page.locator('#btnModalLogin').click()
+                page.evaluate("soundGame.dispatchEvent(new Event('ended'))")
+                page.wait_for_function("!document.body.classList.contains('arcade-opening-active')")
+                expect(ready).to_be_hidden()
+        self.assertFalse(self.errors)
+
     def aligned(self):
         self.page.wait_for_function("""()=>{
           const wheel=document.querySelector('#online-song');

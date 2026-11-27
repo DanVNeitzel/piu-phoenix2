@@ -15,6 +15,10 @@ body.arcade-opening-has-video :is(.black_screen.arcade-opening,.container-mob-ti
 /* Keep the complete Phoenix 2 badge visible while it floats over the pad. */
 .arcade-start-pad .arcade-prompt{display:block;width:clamp(110px,9vw,200px);height:clamp(92px,7.5vw,167px);object-fit:contain;object-position:center;margin-bottom:0}
 .arcade-start-pad .arcade-pad{display:block;width:clamp(180px,18vw,420px);height:auto;object-fit:contain}
+.arcade-start-pad :is(.arcade-pad,.arcade-prompt){filter:drop-shadow(0 0 2px #fff46b) drop-shadow(0 0 7px #ffe600) drop-shadow(0 0 17px #ffe100a6)}
+.arcade-start-pad .arcade-prompt{margin-bottom:-12px}
+.arcade-start-pad .arcade-ready{display:none;width:clamp(180px,17vw,300px);height:clamp(30px,2.8vw,50px);object-fit:cover;object-position:center;margin:-3px 0;filter:drop-shadow(0 0 5px #ffe60099)}
+.arcade-opening-ready .arcade-start-pad .arcade-ready{display:block}
 .arcade-start-pad strong{font:16px/1.3 numberLevelV2,system-ui;color:#f2ff85;margin-top:5px}
 .arcade-start-pad span{font:12px/1.4 numberLevel,system-ui;color:#ccead7}
 .arcade-start-pad:focus-visible{outline:2px solid #e9ff89;outline-offset:4px;border-radius:8px}
@@ -26,8 +30,12 @@ body.arcade-opening-has-video :is(.black_screen.arcade-opening,.container-mob-ti
 .arcade-entry-player span{font-size:12px;color:#d2ef8d}
 .arcade-entry-player b{grid-column:2;margin:0;font-size:11px;color:#f4ff83}
 @media(prefers-reduced-motion:no-preference){
- .arcade-start-pad .arcade-prompt{animation:arcade-center-bob 1s ease-in-out infinite}
- .arcade-opening-entering .arcade-prompt{animation-play-state:paused}
+ .arcade-start-pad .arcade-prompt{animation:arcade-center-bob 1s ease-in-out infinite,arcade-yellow-glow 1.2s ease-in-out infinite}
+ .arcade-start-pad .arcade-pad{animation:arcade-yellow-glow 1.2s ease-in-out infinite}
+ .arcade-opening-ready .arcade-start-pad .arcade-ready{animation:arcade-ready-zoom 1s ease-in-out infinite;transform-origin:center}
+ @keyframes arcade-yellow-glow{0%,100%{filter:drop-shadow(0 0 2px #fff46b) drop-shadow(0 0 6px #ffe600) drop-shadow(0 0 14px #ffe10099)}50%{filter:drop-shadow(0 0 3px #fffca3) drop-shadow(0 0 11px #ffed00) drop-shadow(0 0 24px #ffe100cc)}}
+ @keyframes arcade-ready-zoom{0%,100%{transform:scale(.88)}50%{transform:scale(1.08)}}
+ .arcade-opening-entering :is(.arcade-prompt,.arcade-pad,.arcade-ready){animation-play-state:paused}
  @keyframes arcade-center-bob{0%,100%{transform:translateY(-10px)}50%{transform:translateY(3px)}}
  .arcade-opening-ready .arcade-opening-logo{animation:arcade-logo-in .8s ease-out both}
  @keyframes arcade-logo-in{from{opacity:0;transform:translateX(-50%) scale(.8)}to{opacity:1;transform:translateX(-50%) scale(1)}}

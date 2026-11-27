@@ -1,7 +1,21 @@
 {
-  "version": "0.8.39",
+  "version": "0.8.41",
   "date": "2026-11-26",
   "updates": [
+    {
+      "category": "Brilho no aviso e zoom do READY",
+      "items": [
+        "O aviso Press Center Step agora recebe o mesmo brilho amarelo pulsante do step.",
+        "A imagem READY aumenta e diminui continuamente após o primeiro toque, com animação pausada durante a entrada no jogo e desativada na preferência de movimento reduzido."
+      ]
+    },
+    {
+      "category": "Step iluminado e READY na abertura",
+      "items": [
+        "Adicionado brilho amarelo pulsante ao redor do step da abertura, inspirado na referência arcade, com iluminação estática quando o movimento reduzido está ativo.",
+        "O primeiro toque em qualquer área da abertura revela a imagem READY abaixo do step e libera o áudio. A próxima ativação do step inicia a entrada no jogo."
+      ]
+    },
     {
       "category": "Font Awesome na prévia da pontuação",
       "items": [

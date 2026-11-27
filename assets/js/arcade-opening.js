@@ -73,7 +73,8 @@
     attract.style.display='none';
     document.body.classList.remove('arcade-opening-active','arcade-opening-ready','arcade-opening-entering','arcade-opening-has-video');
   }
-  byId('arcade-insert').addEventListener('click',unlock);
+  // The first tap anywhere on the attract screen unlocks audio and reveals READY.
+  attract.addEventListener('click',unlock);
   document.body.addEventListener('animationend',event=>{
     if(event.animationName==='arcade-selection-fade')document.body.classList.remove('arcade-selection-entering');
   });
