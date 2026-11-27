@@ -1,7 +1,14 @@
 {
-  "version": "0.8.62",
+  "version": "0.8.63",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Resultado em paisagem sem rolagem",
+      "items": [
+        "Ajustada a tela de resultado em paisagem para distribuir cabeçalho, pontuação, julgamentos, recorde anterior e controles dentro da altura disponível, sem rolagem ou sobreposição do rodapé.",
+        "Adaptados tamanhos de textos, grades e ícones à altura da tela, incluindo resultados CO-OP, AUTOPLAY e primeira partida sem recorde."
+      ]
+    },
     {
       "category": "Animação interna contínua da PHOENIX 2",
       "items": [

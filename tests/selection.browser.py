@@ -566,6 +566,37 @@ class SelectionBrowserTests(unittest.TestCase):
         expect(self.page.locator('#resultProgress')).to_be_hidden()
         self.assertFalse(self.errors)
 
+    def test_landscape_results_fit_viewport_without_footer_overlap(self):
+        self.load()
+        self.page.emulate_media(reduced_motion='reduce')
+        self.page.add_style_tag(content='#performance *{animation:none!important;transition:none!important}')
+        for width,height in [(568,320),(667,375),(844,390),(915,412),(1280,800),(1600,720)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            for mode in ['first','best','coop']:
+                actual=self.page.evaluate("""mode=>{
+                  const config=createSingleConfig();config.autoplay=mode==='first';
+                  if(mode==='coop')config.coop={count:4,players:[1,2,3,4]};
+                  PiuResults.show({...config.record,title:'INFINITE ENERZY -Overdoze-',artist:'Reku Mochizuki',
+                    config,score:1000000,performance:{p:1303,gr:0,go:0,b:0,m:0,maxCombo:1303},
+                    previousBest:mode==='first'?null:{score:920000,combo:1000,performance:{p:1200,m:8,maxCombo:1000},date:'2026-11-26'}});
+                  PiuResults.finishCount();
+                  const root=document.getElementById('performance'),footer=document.querySelector('.result-controls').getBoundingClientRect();
+                  const targets=['#score','#gradeResult','#plateResult','#resultAccuracy','#resultOutcome','#resultLevelBadge',
+                    '#perfect','#great','#good','#bad','#miss','#maxCombo','#resultKcal','#resultRetry','#resultNext','#resultExport'];
+                  if(mode==='first')targets.push('#resultBestEmpty');else targets.push('#resultBestScore','#resultBestGrade','#resultProgress');
+                  const outside=targets.filter(sel=>{const el=document.querySelector(sel),r=el.getBoundingClientRect();
+                    return r.width<1||r.height<1||r.left<-.5||r.right>innerWidth+.5||r.top<-.5||r.bottom>innerHeight+.5;});
+                  const table=document.querySelector('.result-judgments').getBoundingClientRect();
+                  const current=document.querySelector('.result-current').getBoundingClientRect();
+                  return {outside,scroll:root.scrollHeight-root.clientHeight,wide:root.scrollWidth-root.clientWidth,
+                    footerOverlap:Math.max(table.bottom,current.bottom)-footer.top};
+                }""",mode)
+                self.assertEqual(actual['outside'],[],(width,height,mode,actual))
+                self.assertLessEqual(actual['scroll'],1,(width,height,mode,actual))
+                self.assertLessEqual(actual['wide'],1,(width,height,mode,actual))
+                self.assertLessEqual(actual['footerOverlap'],0,(width,height,mode,actual))
+        self.assertFalse(self.errors)
+
     def test_result_retry_keeps_complete_config_and_handles_storage_failure(self):
         self.load()
         original=self.page.evaluate("""()=>{
