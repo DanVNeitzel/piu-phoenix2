@@ -1,0 +1,173 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Prévia · Resultado sem rolagem · PIUWeb</title>
+<link rel="stylesheet" href="../assets/vendor/fontawesome/css/fontawesome.min.css">
+<link rel="stylesheet" href="../assets/vendor/fontawesome/css/solid.min.css">
+<style>
+@font-face{font-family:Plateia;src:url('../assets/fonts/PlateiaBold.woff') format('woff');font-display:swap}
+*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;background:#030905;color:#eef5e8;font-family:Arial,sans-serif}
+button,select{font:inherit}button,select{cursor:pointer}button:focus-visible,select:focus-visible{outline:2px solid white;outline-offset:2px}
+[hidden]{display:none!important}h1,h2,p{margin:0}button{color:inherit}
+.screen{height:100svh;width:100%;display:grid;grid-template-rows:28px 64px 78px minmax(0,1fr) 52px 52px;gap:12px;padding:10px max(18px,env(safe-area-inset-right)) max(12px,env(safe-area-inset-bottom)) max(18px,env(safe-area-inset-left));max-width:1920px;margin:auto;background:radial-gradient(ellipse at 50% 40%,#142d15b0,transparent 65%),linear-gradient(125deg,#020805,#09100a 55%,#020503)}
+.preview{display:flex;align-items:center;justify-content:space-between;gap:8px;border-bottom:1px solid #2f4729;color:#9cb58b;font-size:11px;letter-spacing:.04em;min-width:0}
+.preview-label{white-space:nowrap}.preview-label b{color:#cbf48b}.preview-options{display:flex;gap:6px;min-width:0}
+.preview select{background:#0c1b10;border:1px solid #405a34;border-radius:3px;color:#d9e7ca;font-size:11px;padding:3px 5px;max-width:160px;height:24px}
+.player-bar{display:flex;justify-content:space-between;align-items:center;padding:0 12px;border:1px solid #91b951;background:linear-gradient(100deg,#0e2114,#040b07);box-shadow:inset 0 1px 8px #8abf2620}
+.identity{display:flex;align-items:center;gap:12px}.avatar{width:44px;height:44px;object-fit:cover;border:1px solid #d6f69e;padding:2px}
+.player-name{font:16px Plateia,Arial}.player-mode{display:block;margin-top:5px;color:#bfdf8f;font-size:12px}
+.page-label{text-align:right;font:italic 18px Plateia,Arial;color:#f4ffe3}.page-label small{display:block;margin-top:6px;font:11px Arial;color:#a4b79a;letter-spacing:.12em}
+.song{display:flex;align-items:center;justify-content:space-between;gap:12px;border-block:1px solid #6caf3c;padding:0 20px;background:linear-gradient(90deg,#0c2110,#1b3a1966,#08130b)}
+.song h1{font:clamp(16px,2vw,26px)/1.3 Plateia,Arial;overflow-wrap:anywhere}.song p{font-size:13px;color:#b6d295;margin-top:6px}
+.chart-badge{width:110px;height:84px;object-fit:contain;flex-shrink:0}
+.evaluation{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.45fr) minmax(0,1fr);gap:16px;min-width:0;min-height:0;align-items:stretch}
+.score-card{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:clamp(8px,1.4vh,18px);padding:12px 8px;border:1px solid #36552f;background:linear-gradient(160deg,#112419c9,#040e08b3);min-width:0;min-height:0;text-align:center;border-radius:3px}
+.current{border-top:2px solid #b7f566}.best{border-color:#666331;background:linear-gradient(160deg,#242510b3,#071109b3)}
+.card-heading{font-size:12px;letter-spacing:.07em;color:#cae9a6;font-weight:bold}.best .card-heading{color:#d8d4a1}
+.score{font:clamp(22px,3.4vw,54px)/1.1 Plateia,Arial;color:#fff;white-space:nowrap;text-shadow:0 3px #000;font-variant-numeric:tabular-nums}
+.accuracy{font-size:12px;color:#b8c9ae;white-space:nowrap}.accuracy strong{color:#fff;font-size:22px;margin-left:8px;font-variant-numeric:tabular-nums}
+.awards{display:flex;flex-direction:column;justify-content:center;align-items:center;gap:8px;min-height:0}
+.grade{display:block;width:clamp(95px,14vw,230px);height:clamp(75px,16vh,160px);object-fit:contain;max-width:100%}.grade.broken{filter:grayscale(1) brightness(.78) contrast(1.2)}
+.plate{width:clamp(85px,12vw,170px);height:38px;object-fit:contain;max-width:100%}
+.evolution{display:flex;flex-wrap:wrap;justify-content:center;gap:5px;max-width:100%}.evolution span{font-size:12px;line-height:1.4;padding:4px 7px;color:#caf49d;background:#12250f;border:1px solid #526a38;border-radius:3px;white-space:nowrap}
+.record-note{font-size:12px;color:#e6ef73}.best-date{font-size:12px;color:#b1b69b}
+.empty-message{font-size:18px;line-height:1.5;color:#d5e6b9;max-width:240px}.empty-subtext{font-size:12px;color:#9eaf90}
+.judgments{display:flex;align-items:center;min-width:0;min-height:0;padding:0 6px}
+table{width:100%;border-collapse:collapse;table-layout:fixed;font-variant-numeric:tabular-nums}
+caption{display:none}
+thead th{font-size:11px;color:#b1c1a5;font-weight:normal;padding:8px 2px}
+thead th:first-child,thead th:last-child{width:25%}
+tbody tr{height:clamp(30px,5.2vh,58px);border-bottom:1px solid #537e33;background:linear-gradient(#14281a55,#0a180d55)}
+tbody td{font:bold clamp(13px,1.25vw,21px) Plateia,Arial;padding:0 8px;color:#fff;text-align:left}
+tbody td:last-child{text-align:right;color:#b7c7ad}tbody th{font:italic bold clamp(12px,1.2vw,19px) Arial;letter-spacing:.03em}
+.perfect{color:#20e6fb}.great{color:#e3ef43}.good{color:#b8f827}.bad{color:#ec64e9}.miss{color:#ff555b}.combo{color:#f1f3e5}.kcal{color:#a8b79f}
+.outcome{display:flex;align-items:center;justify-content:center;gap:14px;padding:8px 12px;min-height:42px;background:#0b1a0eee;border:1px solid #344d2a;font-size:12px;line-height:1.4;color:#afc1a4}
+.outcome strong{font-size:13px;color:#c9f38c;white-space:nowrap}.outcome.is-broken strong{color:#ddd}
+.modifiers{display:flex;justify-content:center;align-items:stretch;gap:8px;min-width:0}
+.modifier{display:flex;align-items:center;justify-content:center;gap:7px;background:#0a160d;border:1px solid #4c6935;border-radius:3px;padding:5px 12px;color:#eff9dd;min-width:0}
+.modifier small{font-size:10px;color:#adc18e}.modifier strong{font-size:13px}.modifier img{width:32px;height:32px;object-fit:contain}.modifier.input{font-size:12px}.modifier.stage-break strong{color:#ecedbb}
+.actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.actions button{border:1px solid #78a346;border-radius:3px;background:#08170d;min-width:0;padding:6px;font:bold 11px/1.4 Plateia,Arial}
+.actions button:first-child{background:linear-gradient(#365622,#183215);border-color:#b7e785}.actions button:hover{background:#25451c}
+.is-empty .best>.best-data{display:none}.is-empty .best>.empty-data{display:contents}.empty-data{display:none}
+.is-empty table tr>:last-child{display:none}.is-empty table thead th:first-child{width:35%}.is-empty table thead th:nth-child(2){width:65%}
+.notification{position:fixed;bottom:72px;left:50%;transform:translateX(-50%);background:#d8edba;color:#15220d;padding:10px 16px;border-radius:4px;font-size:12px;box-shadow:0 3px 20px #000;z-index:5;text-align:center;max-width:90vw}
+@media(orientation:portrait){
+ .screen{grid-template-rows:26px 48px 68px minmax(0,1fr) 40px 48px;gap:8px;padding:6px max(10px,env(safe-area-inset-right)) max(8px,env(safe-area-inset-bottom)) max(10px,env(safe-area-inset-left))}
+ .preview-label{font-size:9px;letter-spacing:0}.preview-label span{display:none}.preview select{font-size:10px;max-width:124px;padding:2px;height:23px}
+ .preview-options{gap:4px}.player-bar{padding:0 7px}.identity{gap:8px}.avatar{width:32px;height:32px}.player-name{font-size:12px}.player-mode{font-size:10px;margin-top:3px}
+ .page-label{font-size:10px}.page-label small{font-size:8px;letter-spacing:.04em;margin-top:4px}.song{padding:0 8px;gap:8px}.song h1{font-size:15px}.song p{font-size:11px;margin-top:4px}.chart-badge{width:76px;height:66px}
+ .evaluation{grid-template-columns:repeat(2,minmax(0,1fr));grid-template-rows:minmax(168px,.9fr) minmax(0,1fr);gap:8px}
+ .score-card{padding:8px 5px;gap:7px;grid-row:1;justify-content:space-evenly}.current{grid-column:1}.best{grid-column:2}
+ .card-heading{font-size:9px;letter-spacing:.01em}.score{font-size:clamp(16px,5.1vw,24px)}.accuracy{font-size:9px}.accuracy strong{font-size:15px;margin-left:4px}
+ .awards{flex-direction:row;gap:5px;height:46px;flex-shrink:0}.grade{width:60px;height:46px}.plate{width:58px;height:30px}
+ .evolution{display:grid;grid-template-columns:1fr 1fr;gap:3px}.evolution span{font-size:9px;padding:2px 4px}.evolution span:first-child{grid-column:1/-1}.record-note{font-size:9px}.best-date{font-size:10px}.empty-message{font-size:14px}.empty-subtext{font-size:10px}
+ .judgments{grid-column:1/-1;grid-row:2;padding:0;align-items:stretch}.judgments table{height:100%}
+ thead th{font-size:10px;padding:4px 2px}tbody tr{height:auto}tbody td{font:bold 13px Plateia,Arial;padding:0 6px}tbody th{font-size:12px}
+ caption{font-size:9px;padding-top:4px}.outcome{gap:3px;flex-direction:column;padding:5px 8px;min-height:0;text-align:center;font-size:10px;line-height:1.3}.outcome strong{font-size:10px}
+ .modifiers{gap:4px}.modifier{padding:3px 4px;gap:2px;flex-direction:column;flex:1}.modifier small{font-size:8px}.modifier strong{font-size:10px}.modifier img{width:26px;height:26px}.modifier.input{font-size:9px}.modifier.stage-break{flex:1.4}
+ .actions{gap:5px}.actions button{font:bold 8px/1.4 Arial;padding:4px}.notification{font-size:10px;bottom:66px}
+}
+@media(orientation:portrait) and (max-height:700px){
+ .screen{grid-template-rows:24px 38px 52px minmax(0,1fr) 34px 44px;gap:5px;padding-top:3px;padding-bottom:5px}
+ .evaluation{grid-template-rows:minmax(168px,.85fr) minmax(0,1fr);gap:5px}.score-card{gap:2px;padding:5px 3px}.awards{height:34px}.grade{height:34px;width:46px}.plate{height:24px;width:50px}
+ .card-heading{font-size:8px}.evolution span{font-size:8px;padding:1px 3px}.accuracy strong{font-size:13px}.best-date{font-size:9px}.avatar{width:27px;height:27px}.chart-badge{height:50px;width:58px}
+ .song h1{font-size:13px}.song p{font-size:10px;margin-top:2px}tbody td{font-size:11px}tbody th{font-size:11px}thead th{font-size:9px;padding:2px}caption{font-size:8px;padding-top:2px}
+ .outcome{font-size:9px;padding:3px 4px}.outcome strong{font-size:9px}.modifier img{width:23px;height:23px}.record-note{font-size:8px}
+}
+@media(orientation:landscape) and (max-height:650px){
+ .screen{grid-template-columns:minmax(0,1fr) minmax(0,1.4fr);grid-template-rows:22px 46px minmax(0,1fr) 34px 40px;gap:5px;padding:4px 12px 6px}
+ .preview{grid-column:1/-1;grid-row:1}.player-bar{grid-column:1;grid-row:2}.song{grid-column:2;grid-row:2}.evaluation{grid-column:1/-1;grid-row:3}.outcome{grid-column:1/-1;grid-row:4}.modifiers{grid-column:1/-1;grid-row:4}.actions{grid-column:1/-1;grid-row:5}.page-label{display:none}
+ .preview{font-size:9px}.preview select{height:21px;font-size:10px;padding:1px 4px}.player-bar{padding:0 8px}.avatar{width:29px;height:29px}.identity{gap:7px}.player-name{font-size:11px}.player-mode{font-size:9px;margin-top:2px}
+ .page-label{font-size:12px}.page-label small{font-size:8px;margin-top:2px}.song{padding:0 12px}.song h1{font-size:16px}.song p{font-size:10px;margin-top:2px}.chart-badge{height:46px;width:65px}
+ .evaluation{gap:10px;grid-template-columns:minmax(0,1fr) minmax(0,1.55fr) minmax(0,1fr)}.score-card{padding:3px 6px;gap:4px}.card-heading{font-size:9px}.score{font-size:clamp(18px,2.7vw,28px)}.accuracy{font-size:10px}.accuracy strong{font-size:15px;margin-left:4px}
+ .awards{flex-direction:row;gap:5px}.grade{height:44px;width:65px}.plate{width:70px;height:26px}.evolution{gap:3px}.evolution span{font-size:9px;padding:1px 4px}.record-note{font-size:9px}.best-date{font-size:9px}
+ .judgments{align-items:stretch;padding:0}table{height:100%}caption{font-size:8px;padding-top:2px}thead th{font-size:9px;padding:2px}tbody tr{height:auto}tbody th{font-size:10px}tbody td{font-size:11px;padding:0 6px}
+ .outcome{padding:3px 7px;gap:8px;min-height:0;font-size:10px}.outcome strong{font-size:10px}.modifiers{gap:6px}.modifier{padding:2px 8px;gap:5px}.modifier small{font-size:8px}.modifier strong{font-size:11px}.modifier img{width:25px;height:25px}.modifier.input{font-size:10px}.actions button{font-size:9px}.empty-message{font-size:14px}.empty-subtext{font-size:10px}
+}
+@media(orientation:landscape) and (max-height:350px){
+ .screen{grid-template-rows:20px 36px minmax(0,1fr) 28px 32px;gap:3px;padding:3px 8px 5px}
+ .score-card{gap:2px;padding:3px}.card-heading{font-size:8px}.score{font-size:18px}.accuracy{font-size:9px}.accuracy strong{font-size:12px}.awards{height:30px}.grade{height:30px;width:42px}.plate{height:22px;width:52px}
+ .evolution{gap:2px}.evolution span{font-size:8px;padding:1px 2px}.record-note{font-size:8px}.best-date{font-size:8px}.song h1{font-size:12px}.song p{font-size:9px}.chart-badge{height:36px;width:48px}
+ .player-name{font-size:10px}.player-mode{font-size:8px}.avatar{height:25px;width:25px}.outcome{font-size:9px;gap:5px}.outcome strong{font-size:9px}.actions button{font-size:8px}.modifier{padding:1px 4px}.modifier img{height:23px;width:23px}
+}
+/* Keep only the outcome and its help button on the score card. */
+.score-card .outcome{display:flex;flex-direction:row;justify-content:center;align-items:center;gap:6px;padding:0;min-height:24px;border:0;background:none;font-size:10px;grid-column:auto;grid-row:auto;max-width:100%}
+.score-card .outcome strong{font-size:10px}
+#result-help{width:28px;height:28px;flex-shrink:0;border:1px solid #789c4a;border-radius:50%;background:#172b12;color:#dcf4b7;font:bold 14px Arial;padding:0}
+#result-help:hover{background:#345422}
+dialog{width:min(440px,calc(100vw - 28px));max-height:calc(100svh - 24px);padding:22px;border:1px solid #9bc857;border-radius:8px;background:#0a170e;color:#e4efda;box-shadow:0 15px 80px #000;font:14px/1.55 Arial}
+dialog::backdrop{background:#000b;backdrop-filter:blur(3px)}
+dialog h2{font-size:19px;color:#dbf7ac;margin:0 0 14px}dialog p{margin:0 0 14px}dialog strong{color:#cce79f}dialog form{margin-top:18px;text-align:right}
+dialog button{min-height:44px;padding:8px 22px;border:1px solid #a9cf69;border-radius:4px;background:#28431b;color:#f0ffdb;font-weight:bold}
+@media(orientation:portrait) and (max-height:700px){.score-card .outcome{min-height:20px;gap:4px}.score-card .outcome strong{font-size:8px}#result-help{width:24px;height:24px;font-size:12px}}
+@media(orientation:landscape) and (max-height:650px){.score-card .outcome{min-height:20px;gap:4px}.score-card .outcome strong{font-size:9px}#result-help{width:24px;height:24px;font-size:12px}dialog{padding:14px;font-size:12px;line-height:1.4}dialog h2{font-size:17px;margin-bottom:10px}dialog p{margin-bottom:10px}dialog form{margin-top:10px}}
+.stage-setting{display:flex;align-items:center;justify-content:center;gap:5px}
+.modifier.stage-break{padding:1px 5px}
+.stage-break #result-help{width:20px;height:20px;font-size:12px}
+/* A dedicated header column keeps help clear of all result information. */
+.player-bar{display:grid;grid-template-columns:minmax(0,1fr) auto auto;gap:12px}
+.player-bar #result-help{grid-column:3;width:44px;height:44px;font-size:20px}
+@media(orientation:portrait){.player-bar{gap:7px}.page-label small{display:none}.player-bar #result-help{width:34px;height:34px;font-size:17px}}
+@media(orientation:portrait) and (max-height:700px){.player-bar #result-help{width:28px;height:28px;font-size:15px}}
+@media(orientation:landscape) and (max-height:650px){.player-bar #result-help{width:32px;height:32px;font-size:16px}}
+@media(orientation:landscape) and (max-height:350px){.player-bar #result-help{width:28px;height:28px;font-size:15px}}
+.modifier .fa-solid{font-size:17px;color:#c9e5a3}
+.modifier.input .fa-solid{font-size:24px;color:#e5f5cf}
+.actions button{display:flex;align-items:center;justify-content:center;gap:8px}
+.actions .fa-solid{font-size:17px}
+.player-bar #result-help .fa-solid{font-size:inherit}
+@media(orientation:portrait){.actions button{gap:5px}.actions .fa-solid{font-size:14px}.modifier .fa-solid{font-size:12px}.modifier.input .fa-solid{font-size:21px}}
+@media(orientation:landscape) and (max-height:650px){.actions .fa-solid{font-size:14px}.modifier .fa-solid{font-size:13px}.modifier.input .fa-solid{font-size:20px}}
+</style>
+</head>
+<body>
+<main class="screen" aria-label="Prévia da tela de resultado sem rolagem">
+ <div class="preview"><span class="preview-label"><b>PRÉVIA</b><span> · RESULTADO SEM ROLAGEM</span></span><div class="preview-options"><select id="scenario" aria-label="Cenário de demonstração"><option value="pass">Stage Pass</option><option value="broken">Grade cinza</option><option value="f">Grade F</option><option value="empty">Sem recorde</option></select><select id="mode" aria-label="Modo de demonstração"><option value="2">CO-OP x2</option><option value="3">CO-OP x3</option><option value="4">CO-OP x4</option><option value="single">Single</option></select></div></div>
+ <header class="player-bar"><div class="identity"><img class="avatar" src="../assets/img/avatar/default.png" alt="Avatar do jogador"><div><strong class="player-name">PIUWEB</strong><span class="player-mode">2 JOGADORES · EQUIPE</span></div></div><div class="page-label">RESULTADO<small>DADOS DE DEMONSTRAÇÃO</small></div><button type="button" id="result-help" aria-label="Entenda o resultado" aria-haspopup="dialog" aria-controls="result-explanation">?</button></header>
+ <section class="song" aria-label="Música e step"><div><h1>Acquaintance</h1><p>Outsider</p></div><img class="chart-badge" src="../assets/img/phx2/bg_co-op_x2.png" alt="CO-OP para 2 jogadores"></section>
+ <div class="evaluation">
+  <section class="score-card current" aria-label="Jogada atual"><h2 class="card-heading" id="score-label">PONTUAÇÃO DA EQUIPE</h2><output class="score" id="current-score">0900000</output><p class="accuracy" title="Julgamentos ponderados, sem bônus de combo">PRECISÃO<strong id="accuracy">87,00%</strong></p><div class="awards"><img class="grade" id="grade" src="../assets/img/phx2/grades/a_plus.png" alt="A+"><img class="plate" id="plate" src="../assets/img/phx2/plates/5_mg.png" alt="Marvelous Game"></div><div class="evolution" aria-label="Diferenças em relação ao recorde anterior"><span id="score-delta">+50.000 pts</span><span id="miss-delta">−3 misses</span><span id="combo-delta">+20 combo</span></div><p class="record-note" id="record-note">NOVO RECORDE</p></section>
+  <section class="judgments" aria-label="Julgamentos"><table><caption>Precisão: P 100% · GR 60% · GO 20% · B 10% · M 0%</caption><thead><tr><th scope="col">Sua jogada</th><th scope="col">Julgamento</th><th scope="col">Recorde anterior</th></tr></thead><tbody>
+   <tr><td id="p">080</td><th scope="row" class="perfect">PERFECT</th><td>075</td></tr>
+   <tr><td id="gr">010</td><th scope="row" class="great">GREAT</th><td>010</td></tr>
+   <tr><td id="go">005</td><th scope="row" class="good">GOOD</th><td>005</td></tr>
+   <tr><td id="b">000</td><th scope="row" class="bad">BAD</th><td>002</td></tr>
+   <tr><td id="m">005</td><th scope="row" class="miss">MISS</th><td>008</td></tr>
+   <tr><td id="combo">070</td><th scope="row" class="combo">MAX COMBO</th><td>050</td></tr>
+   <tr><td>—</td><th scope="row" class="kcal">KCAL</th><td>—</td></tr>
+  </tbody></table></section>
+  <section class="score-card best" aria-label="Recorde anterior"><h2 class="card-heading">RECORDE ANTERIOR</h2><output class="score best-data">0850000</output><div class="awards best-data"><img class="grade" src="../assets/img/phx2/grades/a.png" alt="A"><img class="plate" src="../assets/img/phx2/plates/5_mg.png" alt="Marvelous Game"></div><p class="best-date best-data">26/11/2026 · antes desta partida</p><p class="record-note best-data">STAGE PASS</p><div class="empty-data"><p class="empty-message">Primeira partida<br>neste step</p><p class="empty-subtext">Ainda sem recorde para comparar</p></div></section>
+ </div>
+ <aside class="modifiers" aria-label="Configurações da partida"><div class="modifier" title="Velocidade: X3.5" aria-label="Velocidade: X3.5"><i class="fa-solid fa-gauge-high" aria-hidden="true"></i><strong>X3.5</strong></div><div class="modifier" title="BGA desativado" aria-label="BGA desativado"><i class="fa-solid fa-film" aria-hidden="true"></i><strong>OFF</strong></div><div class="modifier"><img src="../assets/img/CW_settings/noteskin_cover/OLD.png" alt="Noteskin Old"></div><div class="modifier" title="Rush: 100%" aria-label="Rush: 100%"><i class="fa-solid fa-forward-fast" aria-hidden="true"></i><strong>100%</strong></div><div class="modifier input" title="Controles: teclado" aria-label="Controles: teclado"><i class="fa-solid fa-keyboard" aria-hidden="true"></i></div><div class="modifier stage-break" title="A música continua mesmo com a vida zerada"><small>STAGE BREAK</small><div class="stage-setting"><strong>OFF</strong></div></div></aside>
+ <footer class="actions"><button type="button" aria-label="Jogar novamente" title="Jogar novamente"><i class="fa-solid fa-rotate-right" aria-hidden="true"></i><span>REPETIR</span></button><button type="button" aria-label="Próxima música" title="Próxima música"><i class="fa-solid fa-forward-step" aria-hidden="true"></i><span>PRÓXIMA</span></button><button type="button" aria-label="Compartilhar pontuação" title="Compartilhar pontuação"><i class="fa-solid fa-share-nodes" aria-hidden="true"></i><span>COMPARTILHAR</span></button></footer>
+</main>
+<dialog id="result-explanation" aria-labelledby="explanation-title"><h2 id="explanation-title">Entenda o resultado</h2><p id="explanation">Vida mantida até o fim. O grade conserva sua cor original.</p><p><strong>Stage Break OFF:</strong> a música continua mesmo quando a barra de vida chega a zero.</p><p><strong>Precisão:</strong> considera Perfect 100%, Great 60%, Good 20%, Bad 10% e Miss 0%, sem bônus de combo.</p><form method="dialog"><button autofocus>ENTENDI</button></form></dialog>
+<p class="notification" role="status" hidden>Esta é uma prévia visual. A tela principal ainda não foi alterada.</p>
+<script>
+const $=id=>document.getElementById(id);
+function render(){
+ const scenario=$('scenario').value,mode=$('mode').value,isF=scenario==='f',broken=scenario==='broken'||isF,empty=scenario==='empty';
+ document.querySelector('.screen').classList.toggle('is-empty',empty);
+ document.querySelector('.player-mode').textContent=mode==='single'?'SINGLE PLAYER':mode+' JOGADORES · EQUIPE';
+ $('score-label').textContent=mode==='single'?'SCORE':'PONTUAÇÃO DA EQUIPE';
+ const badge=document.querySelector('.chart-badge');badge.src=mode==='single'?'../assets/img/phx2/Circle_Single_Diff_Eval.png':'../assets/img/phx2/bg_co-op_x'+mode+'.png';
+ badge.alt=mode==='single'?'Single':'CO-OP para '+mode+' jogadores';
+ $('current-score').textContent=isF?'0000000':'0900000';$('accuracy').textContent=isF?'0,00%':'87,00%';
+ $('grade').src='../assets/img/phx2/grades/'+(isF?'f':'a_plus')+'.png';$('grade').alt=isF?'F':'A+';$('grade').classList.toggle('broken',broken&&!isF);$('plate').hidden=broken;
+ $('record-note').hidden=broken;$('record-note').textContent='NOVO RECORDE';
+ $('score-delta').textContent=isF?'−850.000 pts':empty?'SEM RECORDE':'+50.000 pts';$('miss-delta').textContent=isF?'+92 misses':'−3 misses';$('combo-delta').textContent=isF?'−50 combo':'+20 combo';
+ $('miss-delta').hidden=empty;$('combo-delta').hidden=empty;
+ for(const [id,value] of Object.entries(isF?{p:'000',gr:'000',go:'000',b:'000',m:'100',combo:'000'}:{p:'080',gr:'010',go:'005',b:'000',m:'005',combo:'070'}))$(id).textContent=value;
+ $('explanation').textContent=isF?'A vida zerou. Stage Break OFF mantém a música. O grade F não muda de cor.':broken?'A vida zerou. Stage Break OFF mantém a música, mas o grade fica cinza.':'Vida mantida até o fim. O grade conserva sua cor original.';
+}
+for(const id of ['scenario','mode'])$(id).addEventListener('change',render);
+let noticeTimeout;document.querySelectorAll('.actions button').forEach(button=>button.addEventListener('click',()=>{const notice=document.querySelector('.notification');notice.hidden=false;clearTimeout(noticeTimeout);noticeTimeout=setTimeout(()=>notice.hidden=true,2500);}));
+$('result-help').addEventListener('click',()=>$('result-explanation').showModal());
+$('result-explanation').addEventListener('click',event=>{const box=event.currentTarget.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)event.currentTarget.close();});
+render();
+</script>
+</body>
+</html>

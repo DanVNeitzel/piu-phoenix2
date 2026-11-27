@@ -311,6 +311,72 @@ class SelectionBrowserTests(unittest.TestCase):
                 expect(self.page.locator('#performance')).to_be_hidden()
         self.assertFalse(self.errors)
 
+    def test_result_details_precision_progress_and_empty_best(self):
+        self.load()
+        for width,height in [(1920,1080),(1280,800),(390,844),(844,390)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.page.evaluate("""()=>{
+              const config=createSingleConfig();config.coop={count:3,players:[1,2,3]};
+              PiuResults.show({...config.record,config,score:900000,broken:true,
+                performance:{p:80,gr:10,go:5,b:0,m:5,maxCombo:70},
+                previousBest:{score:850000,combo:50,performance:{m:8,maxCombo:50},date:'2026-11-26'}});
+              PiuResults.finishCount();
+            }""")
+            expect(self.page.locator('#resultAccuracy')).to_have_text('87,00%')
+            expect(self.page.locator('#resultDelta')).to_have_text('+50.000 pts')
+            expect(self.page.locator('#resultMissDelta')).to_have_text('−3 misses')
+            expect(self.page.locator('#resultComboDelta')).to_have_text('+20 max combo')
+            expect(self.page.locator('#resultProgress .is-improved')).to_have_count(2)
+            expect(self.page.locator('#resultOutcome')).to_have_text('VIDA ESGOTADA')
+            expect(self.page.locator('#resultBreakExplanation')).to_be_visible()
+            expect(self.page.locator('.result-stage-break')).to_have_text(re.compile('STAGE BREAK.*OFF'))
+            expect(self.page.locator('#resultScoreLabel')).to_have_text('PONTUAÇÃO DA EQUIPE')
+            self.page.evaluate("""()=>{const config=createSingleConfig();
+              PiuResults.show({...config.record,config,score:1000000,
+                performance:{p:10,gr:0,go:0,b:0,m:0,maxCombo:10},previousBest:null});
+              PiuResults.finishCount();} """)
+            expect(self.page.locator('#resultAccuracy')).to_have_text('100,00%')
+            expect(self.page.locator('#resultOutcome')).to_have_text('STAGE PASS')
+            expect(self.page.locator('#resultBreakExplanation')).to_be_hidden()
+            expect(self.page.locator('#resultBestEmpty')).to_have_text('Primeira partida neste step')
+            expect(self.page.locator('#resultBestScore')).to_be_hidden()
+            expect(self.page.locator('#resultBestPerfect')).to_be_hidden()
+            expect(self.page.locator('#resultProgress')).to_be_hidden()
+            self.assertLessEqual(self.page.locator('#performance').evaluate('node=>node.scrollWidth'),width)
+        self.page.evaluate("""()=>{const config=createSingleConfig();
+          PiuResults.show({...config.record,config,score:0,
+            performance:{p:0,gr:0,go:0,b:0,m:0,maxCombo:0},previousBest:{score:1}});} """)
+        expect(self.page.locator('#resultAccuracy')).to_have_text('—')
+        expect(self.page.locator('#resultProgress')).to_be_hidden()
+        self.assertFalse(self.errors)
+
+    def test_result_retry_keeps_complete_config_and_handles_storage_failure(self):
+        self.load()
+        original=self.page.evaluate("""()=>{
+          const config=createSingleConfig();
+          Object.assign(config,{speed:3.5,scrollMode:'auto',autoVelocity:650,playback:1.2,offset:17,
+            noteskin:'EXCEED2-OLD',bga:'off',vanish:true,fd:true,hj:true,useTouchInput:true,
+            coop:{count:2,players:[1,2]},coopBindings:PiuCoop.bindings()});
+          PiuResults.show({...config.record,config,broken:true,score:0,
+            performance:{p:0,gr:0,go:0,b:0,m:10,maxCombo:0},previousBest:null});
+          const original=JSON.parse(JSON.stringify(config));config.speed=1;
+          window.originalSetItem=Storage.prototype.setItem;
+          Storage.prototype.setItem=function(key,value){if(key==='piu_single_config')throw new Error('Storage unavailable');return originalSetItem.call(this,key,value);};
+          return original;
+        }""")
+        self.page.locator('#resultRetry').click()
+        expect(self.page.locator('#resultSaveError')).to_have_text('Não foi possível iniciar novamente. Tente outra vez.')
+        expect(self.page.locator('#resultRetry')).to_be_enabled()
+        expect(self.page.locator('#resultNext')).to_be_enabled()
+        self.page.evaluate('()=>{Storage.prototype.setItem=originalSetItem;}')
+        self.context.route('**/localStage.html',lambda route:route.fulfill(status=200,body='<html><body>Nova partida</body></html>',content_type='text/html'))
+        self.page.locator('#resultRetry').click()
+        self.page.wait_for_url('**/localStage.html')
+        saved=self.page.evaluate("JSON.parse(sessionStorage.getItem('piu_single_config'))")
+        self.assertEqual(saved,original)
+        self.assertIsNone(self.page.evaluate("sessionStorage.getItem('piu_single_result')"))
+        self.assertFalse(self.errors)
+
     def test_result_f_keeps_original_appearance_with_and_without_stage_break(self):
         self.load()
         for width,height in [(1280,800),(390,844),(844,390)]:

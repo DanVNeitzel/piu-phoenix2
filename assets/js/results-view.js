@@ -7,6 +7,7 @@
   const plates = {UG:'1_ug',PG:'2_pg',EG:'3_eg',SG:'4_sg',MG:'5_mg',TG:'6_tg',FG:'7_fg',RG:'8_rg'};
   const plateNames = {UG:'ULTIMATE GAME',PG:'PERFECT GAME',EG:'EXTREME GAME',SG:'SUPERB GAME',MG:'MARVELOUS GAME',TG:'TALENTED GAME',FG:'FAIR GAME',RG:'ROUGH GAME'};
   let scoreFrame = null,renderCount = null,resultVersion = 0,awardRevealVersion = -1,leaving=false;
+  let retryConfig = null;
   const resultTheme=new Audio('assets/sounds/PHOENIX_2_RESULT_GRADE.mp3');
   resultTheme.loop=true;resultTheme.preload='none';resultTheme.volume=.9;
   const countSound=new Audio('assets/sounds/_RESULT_GRADE.mp3');
@@ -61,7 +62,7 @@
   function rank(image, value, broken = false) {
     const grade = normalizedGrade(value);
     image.hidden = false; image.src = gradeImage(grade,broken);
-    image.alt = grade + (broken ? ' — Stage Break Off' : ' — Stage Pass');
+    image.alt = grade + (broken ? ' — Vida esgotada' : ' — Stage Pass');
     image.classList.remove('grade-out','grade-broken','grade-cyan');
     const className = gradeClass(grade,broken); if (className) image.classList.add(className);
   }
@@ -75,6 +76,39 @@
   const scoreText = value => String(Math.min(1000000,number(value))).padStart(7,'0');
   const countText = value => value === undefined || value === null || !Number.isFinite(Number(value)) ? '—' : String(number(value)).padStart(3,'0');
   const kcalText = value => typeof value === 'number' && Number.isFinite(value) && value >= 0 ? value.toFixed(3) : '—';
+  function accuracy(perf) {
+    const total=LocalRecords.judgments(perf);
+    if(total<=0)return '—';
+    const weighted=number(perf.p)+.6*number(perf.gr)+.2*number(perf.go)+.1*number(perf.b);
+    return (Math.min(100,100*weighted/total)).toLocaleString('pt-BR',{minimumFractionDigits:2,maximumFractionDigits:2})+'%';
+  }
+  function progress(node, current, previous, label, lowerIsBetter=false) {
+    const available=Number.isFinite(current) && Number.isFinite(previous);
+    node.hidden=!available;
+    if(!available)return;
+    const delta=current-previous;
+    node.textContent=(delta>0?'+':delta<0?'−':'±')+Math.abs(delta).toLocaleString('pt-BR')+' '+label;
+    node.classList.toggle('is-improved',lowerIsBetter?delta<0:delta>0);
+    node.classList.toggle('is-worse',lowerIsBetter?delta>0:delta<0);
+  }
+  function enableActions() {
+    leaving=false;
+    byId('resultNext').disabled=false;byId('resultExport').disabled=false;
+    byId('resultRetry').disabled=!retryConfig;
+  }
+  async function retry() {
+    if(!retryConfig || !await fadeOut())return;
+    try {
+      sessionStorage.setItem('piu_single_config',JSON.stringify(retryConfig));
+      sessionStorage.removeItem('piu_single_result');
+      stopTheme();
+      location.href='localStage.html';
+    } catch(error) {
+      enableActions();view.classList.remove('results-leaving');
+      byId('resultSaveError').hidden=false;
+      byId('resultSaveError').textContent='Não foi possível iniciar novamente. Tente outra vez.';
+    }
+  }
   async function revealAwards() {
     if(renderCount!==null || !view.classList.contains('awards-pending') || awardRevealVersion===resultVersion)return;
     const version=resultVersion;
@@ -116,18 +150,21 @@
     stopCountSound();
     const version=resultVersion;
     byId('resultNext').disabled=true;byId('resultExport').disabled=true;
+    byId('resultRetry').disabled=true;
     view.classList.remove('results-revealing');view.classList.add('results-leaving');
     await new Promise(resolve=>setTimeout(resolve,matchMedia('(prefers-reduced-motion:reduce)').matches?0:600));
     return leaving && version===resultVersion && document.body.classList.contains('results-active');
   }
   function close() {
-    leaving=false;byId('resultNext').disabled=false;byId('resultExport').disabled=false;
+    retryConfig=null;enableActions();
     view.classList.remove('results-revealing','results-leaving','awards-pending','awards-ready');
     finishCount();stopTheme();document.body.classList.remove('results-active');
     requestAnimationFrame(() => document.querySelector('#online-song .listSong.active:not(.wheel-ghost)')?.focus({preventScroll:true}));
   }
   function show(incoming) {
-    leaving=false;byId('resultNext').disabled=false;byId('resultExport').disabled=false;
+    const config=incoming.config || {};
+    retryConfig=config.record && config.sscpath && config.mp3path ? JSON.parse(JSON.stringify(config)) : null;
+    enableActions();
     view.classList.remove('results-leaving','awards-pending','awards-ready');
     finishCount();view.dataset.resultVersion=String(++resultVersion);
     view.classList.add('awards-pending');
@@ -139,6 +176,7 @@
     let best = incoming.previousBest;
     if (!Object.hasOwn(incoming,'previousBest')) { try { best = LocalRecords.best(incoming); } catch (_) { best = null; } }
     const newRecord = passed && (incoming.newRecord ?? (!best || score > best.score));
+    view.classList.toggle('has-no-best',!best);
     root.PiuCommand?.close();
     root.PiuMobileCommand?.close();
     root.PiuPrestart?.close();
@@ -170,14 +208,22 @@
     document.querySelector('.result-player-heading span').textContent=coop?coop.count+' JOGADORES · EQUIPE':'SINGLE PLAYER';
     document.querySelector('.result-actions>span').textContent=coop?'CO-OP · PONTUAÇÃO DA EQUIPE':'SINGLE PLAYER · RECORDES LOCAIS';
     if(coop){byId('stepType').textContent='CO-OP';byId('songLevel').textContent='×'+coop.count;}
+    byId('resultScoreLabel').textContent=coop?'PONTUAÇÃO DA EQUIPE':'SCORE';
+    byId('resultAccuracy').textContent=accuracy(perf);
     byId('score').textContent = scoreText(score); byId('score').setAttribute('aria-live','off');
     rank(byId('gradeResult'),result.grade,broken); plate(byId('plateResult'),result.plate,broken);
     if (!passed && !broken) byId('gradeResult').alt = result.grade + ' — Sem resultado';
-    byId('resultOutcome').textContent = broken ? 'STAGE BREAK OFF' : passed ? 'STAGE PASS' : 'SEM RESULTADO';
+    byId('resultOutcome').textContent = broken ? 'VIDA ESGOTADA' : passed ? 'STAGE PASS' : 'SEM RESULTADO';
+    byId('resultBreakExplanation').hidden=!broken;
+    byId('resultBreakExplanation').textContent=result.grade==='F'
+      ? 'A vida chegou a zero. Com Stage Break OFF, a música continua. O grade F mantém sua aparência original.'
+      : 'A vida chegou a zero. Com Stage Break OFF, a música continua, mas o grade fica cinza.';
     byId('resultOutcome').classList.toggle('is-broken',broken);
     byId('resultNewRecord').hidden = !newRecord;
     const delta = best ? score - best.score : null;
-    byId('resultDelta').textContent = delta === null ? 'SEM RECORDE ANTERIOR' : (delta > 0 ? '+' : delta < 0 ? '−' : '±') + Math.abs(delta).toLocaleString('en-US');
+    const deltaText=value=>(delta>0?'+':delta<0?'−':'±')+Math.floor(value).toLocaleString('pt-BR')+' pts';
+    byId('resultDelta').textContent = delta === null ? 'SEM RECORDE ANTERIOR' : deltaText(Math.abs(delta));
+    byId('resultDelta').title='Diferença em relação ao recorde anterior';
     byId('resultDelta').classList.toggle('is-negative',delta !== null && delta < 0);
     byId('resultBestScore').textContent = best ? scoreText(best.score) : '—';
     byId('resultBestGrade').hidden = !best; byId('resultBestEmpty').hidden = !!best;
@@ -186,6 +232,9 @@
     byId('resultBestOutcome').textContent = best ? 'RECORDE PESSOAL' : 'AINDA SEM RECORDE';
     byId('resultBestDate').textContent = best?.date && Number.isFinite(Date.parse(best.date)) ? new Date(best.date).toLocaleDateString('pt-BR') : 'Antes desta partida';
     const previous = best?.performance || {};
+    progress(byId('resultMissDelta'),perf.m,previous.m,'misses',true);
+    progress(byId('resultComboDelta'),perf.maxCombo,best?.combo ?? previous.maxCombo,'max combo');
+    byId('resultProgress').hidden=!best || (byId('resultMissDelta').hidden && byId('resultComboDelta').hidden);
     [['p','perfect','resultBestPerfect'],['gr','great','resultBestGreat'],['go','good','resultBestGood'],['b','bad','resultBestBad'],['m','miss','resultBestMiss'],['maxCombo','maxCombo','resultBestCombo']].forEach(([key,currentId,bestId]) => {
       byId(currentId).textContent = countText(perf[key]);
       byId(bestId).textContent = countText(key === 'maxCombo' ? best?.combo ?? previous.maxCombo : previous[key]);
@@ -203,8 +252,7 @@
     });
     if(typeof perf.kcal==='number'&&perf.kcal>=0)counter('resultKcal',perf.kcal,kcalText);
     if(typeof previous.kcal==='number'&&previous.kcal>=0)counter('resultBestKcal',previous.kcal,kcalText);
-    if(delta!==null)counter('resultDelta',Math.abs(delta),value=>(delta>0?'+':delta<0?'−':'±')+Math.floor(value).toLocaleString('en-US'));
-    const config = result.config || {};
+    if(delta!==null)counter('resultDelta',Math.abs(delta),deltaText);
     const autoSpeed = config.scrollMode === 'auto';
     byId('resultSpeedKind').textContent = autoSpeed ? 'AV' : 'SPEED';
     PiuControlMode.render(byId('resultControlMode'),!!config.useTouchInput);
@@ -239,7 +287,7 @@
       event.preventDefault(); event.stopImmediatePropagation(); if (!event.repeat) byId('resultNext').click();
     }
   },true);
-  root.PiuResults = {show,close,fadeOut,isLeaving:()=>leaving,rank,plate,gradeImage,gradeClass,exportGrade,finishCount,playTheme,stopTheme};
+  root.PiuResults = {show,close,fadeOut,retry,isLeaving:()=>leaving,rank,plate,gradeImage,gradeClass,exportGrade,finishCount,playTheme,stopTheme};
   root.addEventListener('pagehide',stopCountSound);
   document.addEventListener('visibilitychange',()=>{
     if(document.hidden)stopCountSound();

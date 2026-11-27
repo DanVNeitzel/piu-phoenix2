@@ -260,7 +260,7 @@ try {
         }
         engine.addToDOM('container');
         const touchControls = config.useTouchInput ? engine.stage._playerStages[0].keyListener : null;
-        touchControls?.configureResponsive(config.touchpadSize, touchPreview ? PiuTouchLayout.normalize(config.touchLayout) : PiuTouchLayout.read(style));
+        touchControls?.configureResponsive(config.touchpadSize, config.touchLayout ? PiuTouchLayout.normalize(config.touchLayout) : PiuTouchLayout.read(style));
         if (touchControls) config.touchLayout = touchControls.layoutPreferences;
         function updateTouchLayout() {
             if (finished || !touchControls) return;

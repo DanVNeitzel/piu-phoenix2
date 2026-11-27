@@ -1,7 +1,51 @@
 {
-  "version": "0.8.33",
+  "version": "0.8.39",
   "date": "2026-11-26",
   "updates": [
+    {
+      "category": "Font Awesome na prévia da pontuação",
+      "items": [
+        "Adicionado Font Awesome Free 6.7.2 com arquivos locais e licença, disponível sem conexão externa.",
+        "Indicadores de teclado, velocidade, BGA e Rush usam ícones com nomes acessíveis. Botões de repetir, próxima música e compartilhar receberam ícones e rótulos mais curtos."
+      ]
+    },
+    {
+      "category": "Ajuda em espaço próprio na prévia",
+      "items": [
+        "Movido o botão de ajuda para uma coluna exclusiva no cabeçalho da prévia, separado das configurações e das informações da partida."
+      ]
+    },
+    {
+      "category": "Prévia do resultado mais limpa",
+      "items": [
+        "Removido o bloco Vida esgotada da área principal da prévia da pontuação.",
+        "O botão de ajuda fica junto da configuração Stage Break, com as explicações disponíveis apenas no modal."
+      ]
+    },
+    {
+      "category": "Explicação em modal na prévia do resultado",
+      "items": [
+        "Movidas as explicações de Stage Break, grade e precisão para um modal separado na prévia, aberto pelo botão de ajuda junto do resultado da partida.",
+        "Removida a faixa de explicação da tela principal da prévia para liberar espaço para a pontuação e os julgamentos."
+      ]
+    },
+    {
+      "category": "Prévia do resultado sem rolagem",
+      "items": [
+        "Adicionada uma prévia visual independente da tela de pontuação, com todos os blocos organizados para caber na tela em desktop e celular.",
+        "A prévia permite comparar Stage Pass, vida esgotada, grade F, ausência de recorde, Single e CO-OP x2, x3 e x4 antes da aprovação do layout."
+      ]
+    },
+    {
+      "category": "Resultado mais completo e nova tentativa",
+      "items": [
+        "Separada a configuração Stage Break OFF do resultado Vida esgotada, com explicação do grade cinza e preservação da aparência do grade F.",
+        "Incluída a precisão percentual dos julgamentos sem bônus de combo e a evolução de score, misses e max combo em relação ao recorde anterior.",
+        "Pontuação da equipe em destaque no CO-OP, com mais espaço para os ícones x2, x3 e x4.",
+        "Sem recorde anterior, a tela mostra Primeira partida neste step e oculta os campos vazios de comparação.",
+        "Novo botão Jogar novamente repete o mesmo step com as configurações da partida, incluindo controles cooperativos e layout de toque."
+      ]
+    },
     {
       "category": "Ícones CO-OP e grade F no resultado",
       "items": [

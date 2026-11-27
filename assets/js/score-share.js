@@ -56,7 +56,8 @@
     if(busy||sharing||root.PiuResults.isLeaving?.()||!document.body.classList.contains('results-active'))return;
     const result=document.getElementById('performance'),version=key();
     const shareButton=document.getElementById('resultExport'),nextButton=document.getElementById('resultNext');
-    const nextDisabled=nextButton.disabled;
+    const nextDisabled=nextButton.disabled,retryButton=document.getElementById('resultRetry'),retryDisabled=retryButton.disabled;
+    retryButton.disabled=true;
     busy=true;shareButton.disabled=true;shareButton.setAttribute('aria-busy','true');nextButton.disabled=true;
     try{
       if(cached?.key===version){showPreview(cached);return;}
@@ -73,7 +74,7 @@
           clone.querySelector('.result-stage').style.minHeight=fullHeight+'px';
           clone.querySelector('.result-controls').style.position='static';
           clone.querySelectorAll('.result-background,.result-vignette').forEach(el=>el.style.position='absolute');
-          clone.querySelectorAll('#resultNext,#resultExport').forEach(el=>el.style.visibility='hidden');
+          clone.querySelectorAll('#resultNext,#resultRetry,#resultExport').forEach(el=>el.style.visibility='hidden');
           const originals=[...result.querySelectorAll('img')];
           await Promise.all([...clone.querySelectorAll('img')].map(async (image,index)=>{
             if(image.hidden||!image.matches('.result-rank,.result-plate,.result-background,.result-modifier>img'))return;
@@ -94,7 +95,7 @@
       console.error('Falha ao gerar imagem da pontuação:',error);
       showNotification('Não foi possível gerar a imagem da pontuação. Tente novamente.','error');
     }finally{
-      loading.hidden=true;result.removeAttribute('aria-busy');shareButton.disabled=false;shareButton.removeAttribute('aria-busy');nextButton.disabled=nextDisabled;busy=false;
+      loading.hidden=true;result.removeAttribute('aria-busy');shareButton.disabled=false;shareButton.removeAttribute('aria-busy');nextButton.disabled=nextDisabled;retryButton.disabled=retryDisabled;busy=false;
     }
   }
   window.addEventListener('pagehide',()=>{if(cached)URL.revokeObjectURL(cached.url);cached=null;});
