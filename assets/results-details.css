@@ -136,6 +136,8 @@
   #performance.phoenix-results :is(.result-current,.result-best){height:100%;min-height:0;box-sizing:border-box;padding:0;gap:clamp(1px,.5dvh,4px);align-self:stretch;justify-content:center}
   #performance.phoenix-results .result-current{gap:0}
   #performance.phoenix-results .result-current #gradeResult{min-height:18px}
+  #performance.phoenix-results .result-current #gradeResult{height:clamp(48px,17dvh,150px)}
+  #performance.phoenix-results .result-current .result-plate-slot{height:clamp(22px,7.5dvh,60px)}
   #performance.phoenix-results .result-score-label{font-size:clamp(8px,2dvh,14px);line-height:1.2}
   #performance.phoenix-results :is(.result-score,#score,#resultBestScore){font-size:clamp(21px,6.3dvh,48px);line-height:1.1}
   #performance.phoenix-results :is(.result-delta,.result-best-caption){font-size:clamp(8px,2dvh,12px);line-height:1.2;min-height:0;padding:0}
@@ -165,6 +167,10 @@
   #performance.phoenix-results .result-modifiers .result-stage-break{min-width:60px}
   #performance.phoenix-results .result-modifier img{max-height:100%;object-fit:contain}
   #performance.phoenix-results .result-modifier :is(small,strong){font-size:inherit;line-height:1.15}
+  #performance.phoenix-results .result-modifiers :is(.result-accuracy,#resultAutoplayModifier){display:flex;flex-direction:column;justify-content:center;align-items:center;gap:2px;margin:0;width:auto;flex-shrink:0;white-space:nowrap;padding-inline:8px}
+  #performance.phoenix-results .result-modifiers .result-accuracy{font:clamp(8px,2dvh,12px)/1.15 numberLevel,system-ui}
+  #performance.phoenix-results .result-modifiers .result-accuracy strong{margin:0;font:700 clamp(10px,2.6dvh,16px)/1.15 system-ui}
+  #performance.phoenix-results #resultAutoplayModifier .result-outcome{font-size:inherit;margin:0;padding:0;min-height:0;line-height:1.15}
   #performance.phoenix-results .result-actions{position:static;inset:auto;transform:none;gap:3px 8px}
   #performance.phoenix-results .result-actions>button{min-height:36px;height:clamp(36px,9dvh,48px);padding:3px 5px;font-size:clamp(9px,2.3dvh,12px);line-height:1.2}
   #performance.phoenix-results .result-actions>span{font-size:clamp(7px,1.7dvh,10px);line-height:1.1}

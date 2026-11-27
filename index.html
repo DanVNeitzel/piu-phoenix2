@@ -73,13 +73,13 @@
 <link rel="stylesheet" href="assets/channel-carousel.css">
 <link rel="stylesheet" href="assets/channel-library.css">
 <link rel="stylesheet" href="assets/app-update-notice.css">
-<link rel="stylesheet" href="assets/results-details.css?v=0.8.65">
+<link rel="stylesheet" href="assets/results-details.css?v=0.8.70">
 </head>
 
 <body id="activeScreen">
 
   <section class="black_screen arcade-opening" aria-label="Abertura arcade">
-    <p class="arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.69</span><br>Developed by Daniel Neitzel</p>
+    <p class="arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.70</span><br>Developed by Daniel Neitzel</p>
     <img class="arcade-opening-logo" src="assets/img/mainLogo_phx2.png" alt="Pump It Up Phoenix 2">
     <button type="button" id="arcade-insert" class="arcade-start-pad"><img class="arcade-prompt" src="assets/img/phx2/press_center_step.png" alt="Press Center Step"><img class="arcade-pad" src="assets/img/phx2/step.png" alt=""><strong>TOQUE PARA ATIVAR</strong><span>ou pressione ENTER</span></button>
     <p class="arcade-opening-footer">FREE PLAY · RECORDES LOCAIS</p>
@@ -230,7 +230,7 @@
 
     <div class="col-12 d-grid my-4 gap-3">
       <div class="col-12 startGameTitle">
-        <span class="versionCode arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.69</span><br>Developed by Daniel Neitzel</span>
+        <span class="versionCode arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.70</span><br>Developed by Daniel Neitzel</span>
         <img class="logoTitle arcade-opening-logo" src="assets/img/mainLogo_phx2.png" alt="Pump It Up Phoenix 2">
         <button id="btnModalLogin"
           class="arcade-start-pad" type="button" onclick="PiuOpening.start()">
@@ -431,7 +431,7 @@
               <div class="result-plate-slot"><img id="resultBestPlate" class="result-plate" alt="" hidden></div><p id="resultBestOutcome" class="result-outcome"></p>
             </section>
 </div>
-<div class="result-controls">            <aside class="result-modifiers" aria-label="Configurações usadas"><div class="result-modifier"><small id="resultSpeedKind">SPEED</small><strong id="songSpeed">X1</strong></div><div class="result-modifier"><small>BGA</small><strong id="bgaStatus">ON</strong></div><div class="result-modifier"><img id="resultNoteskin" alt="Noteskin usada"></div><div class="result-modifier"><small>RUSH</small><strong id="songRush">100%</strong></div><div id="resultControlMode" class="result-modifier"></div><div class="result-modifier result-stage-break" title="A partida continua mesmo se a barra de vida chegar a zero."><small>STAGE BREAK</small><strong>OFF</strong></div></aside>
+<div class="result-controls">            <aside class="result-modifiers" aria-label="Configurações usadas"><div id="resultAutoplayModifier" class="result-modifier" hidden><small>MODO</small></div><div class="result-modifier"><small id="resultSpeedKind">SPEED</small><strong id="songSpeed">X1</strong></div><div class="result-modifier"><small>BGA</small><strong id="bgaStatus">ON</strong></div><div class="result-modifier"><img id="resultNoteskin" alt="Noteskin usada"></div><div class="result-modifier"><small>RUSH</small><strong id="songRush">100%</strong></div><div id="resultControlMode" class="result-modifier"></div><div class="result-modifier result-stage-break" title="A partida continua mesmo se a barra de vida chegar a zero."><small>STAGE BREAK</small><strong>OFF</strong></div></aside>
             <footer class="result-actions"><button type="button" id="resultRetry" class="result-action" onclick="PiuResults.retry()">JOGAR NOVAMENTE</button><button type="button" id="resultNext" class="result-action" onclick="nextStage()">PRÓXIMA MÚSICA <kbd>↵</kbd></button><span>SINGLE PLAYER · RECORDES LOCAIS</span><button type="button" id="resultExport" class="result-action" onclick="captureAndShare()">COMPARTILHAR PONTUAÇÃO</button><p id="resultSaveError" role="alert" hidden></p></footer></div>
           </div>
         </section>
@@ -1248,7 +1248,7 @@
   <script src="assets/js/touch-layout-settings.js?v=0.8.43"></script>
   <script src="assets/js/exp-config.js"></script>
   <script src="assets/js/scroll-settings.js"></script>
-  <script src="assets/js/results-view.js?v=0.8.68"></script>
+  <script src="assets/js/results-view.js?v=0.8.70"></script>
   <script src="Demo/DemoLogic.js?v=0.8.54"></script>
   <script src="assets/js/offline-service.js?v=changelog-080"></script>
   <script src="assets/js/mobile.js?v=0.8.30"></script>

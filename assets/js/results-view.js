@@ -19,6 +19,19 @@
     const badge=byId('resultLevelBadge');
     if(portrait.matches) view.querySelector('.result-titlebar').append(badge);
     else view.querySelector('.result-current').prepend(badge);
+    placeResultDetails();
+  }
+  function placeResultDetails() {
+    const current=view.querySelector('.result-current');
+    const precision=view.querySelector('.result-accuracy');
+    const field=byId('resultAutoplayModifier');
+    const inField=!portrait.matches && view.dataset.autoplay==='true';
+    precision.classList.toggle('result-modifier',!portrait.matches);
+    if(portrait.matches) current.insertBefore(precision,byId('gradeResult'));
+    else view.querySelector('.result-modifiers').prepend(precision);
+    field.hidden=!inField;
+    if(inField) field.append(byId('resultOutcome'));
+    else current.querySelector('.result-plate-slot').after(byId('resultOutcome'));
   }
   portrait.addEventListener('change',placeLevelBadge);
   placeLevelBadge();
@@ -176,6 +189,8 @@
     let best = incoming.previousBest;
     if (!Object.hasOwn(incoming,'previousBest')) { try { best = LocalRecords.best(incoming); } catch (_) { best = null; } }
     const autoplay = incoming.autoplay === true || config.autoplay === true;
+    view.dataset.autoplay=String(autoplay);
+    placeResultDetails();
     const newRecord = !autoplay && passed && (incoming.newRecord ?? (!best || score > best.score));
     view.classList.toggle('has-no-best',!best);
     root.PiuCommand?.close();
