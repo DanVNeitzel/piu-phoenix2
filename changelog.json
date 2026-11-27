@@ -1,7 +1,14 @@
 {
-  "version": "0.8.52",
+  "version": "0.8.53",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Desempenho da barra elétrica",
+      "items": [
+        "Substituído o desenho de raios e desfoques em tempo real por uma animação pré-renderizada, eliminando os redesenhos de canvas e envios contínuos de textura à GPU durante a gameplay.",
+        "Mantidos o efeito acima de 90 de combo, o acompanhamento da vida, a pausa e o suporte a movimento reduzido, com atlas menores para Single e Double."
+      ]
+    },
     {
       "category": "Noteskin PHOENIX 2",
       "items": [

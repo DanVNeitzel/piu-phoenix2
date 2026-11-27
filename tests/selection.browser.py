@@ -283,6 +283,35 @@ class SelectionBrowserTests(unittest.TestCase):
             self.assertTrue(self.page.evaluate('electricDisposed'))
         self.assertFalse(self.errors)
 
+    def test_electric_life_bar_animation_avoids_canvas_and_texture_uploads(self):
+        for style in ['pump-single','pump-double','pump-halfdouble']:
+            self.open_frozen_stage(style,True)
+            self.page.wait_for_function("engine.stage._playerStages[0]._lifeBar._electric._texture.image?.complete")
+            actual=self.page.evaluate("""()=>{
+              const fx=engine.stage._playerStages[0]._lifeBar._electric;
+              const draw=PiuLifeElectric.draw;let draws=0;
+              PiuLifeElectric.draw=(...args)=>{draws++;return draw(...args);};
+              const version=fx._texture.version;
+              try{
+                fx.setCombo(91);
+                const frames=new Set();
+                for(let i=0;i<180;i++){
+                  fx.setLife((i%100)/100);fx.update(1/60);
+                  frames.add(fx.object.material.uniforms.electricFrame.value);
+                }
+                return {draws,uploads:fx._texture.version-version,frames:frames.size,
+                  fill:fx.object.material.uniforms.lifeFill.value,
+                  hasCanvas:!!fx._canvas,maxSize:Math.max(fx._texture.image.width,fx._texture.image.height)};
+              }finally{PiuLifeElectric.draw=draw;}
+            }""")
+            self.assertEqual(actual['draws'],0)
+            self.assertEqual(actual['uploads'],0)
+            self.assertFalse(actual['hasCanvas'])
+            self.assertEqual(actual['frames'],24)
+            self.assertAlmostEqual(actual['fill'],.79)
+            self.assertLessEqual(actual['maxSize'],4096)
+        self.assertFalse(self.errors)
+
     def test_half_double_receptors_notes_and_keyboard(self):
         self.open_frozen_stage('pump-halfdouble',False)
         actual=self.page.evaluate("""()=>{
