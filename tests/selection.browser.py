@@ -195,6 +195,55 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.goto(self.origin+'/localStage.html?preview=touchpad')
         self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
 
+    def test_autoplay_command_perfects_holds_and_result_without_saved_data(self):
+        self.page.set_viewport_size({'width':844,'height':390})
+        self.load()
+        self.assertFalse(self.page.evaluate('PiuGameSettings.read().autoplay'))
+        self.page.evaluate("PiuMobileCommand.open('autoplay')")
+        self.assertTrue(self.page.evaluate("document.querySelector('.mc-tabs').getBoundingClientRect().bottom<=document.querySelector('#mc-content').getBoundingClientRect().top"))
+        self.page.locator('#mc-content').get_by_role('button',name='ON',exact=True).click()
+        self.assertTrue(self.page.evaluate('createSingleConfig().autoplay'))
+        self.page.evaluate('PiuMobileCommand.close()')
+        for style in ['pump-single','pump-double','pump-halfdouble']:
+            width=5 if style=='pump-single' else 10 if style=='pump-double' else 6
+            rows=[r+'0'*(width-5) for r in ['11000','20000','01100','00000','00011','30000','10101','00000']]
+            ssc='#TITLE:Autoplay;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;\n#NOTEDATA:;\n#STEPSTYPE:'+style+';\n#METER:10;\n#NOTES:\n'+'\n'.join(rows)+'\n;'
+            self.open_frozen_stage(style,True,{'autoplay':True,'hj':True,'sscContent':ssc})
+            actual=self.page.evaluate("""()=>{
+              const s=engine.stage._playerStages[0],q=s.stepQueue;
+              let time=-.1;
+              Object.defineProperty(s.beatManager,'currentAudioTime',{get:()=>time});
+              Object.defineProperty(s.beatManager,'currentBeat',{get:()=>time*2});
+              s.beatManager.currentBPM=120;s.beatManager.currentTickCount=4;
+              for(let i=0;i<200;i++){time+=1/60;q.update(1/60);q.input();}
+              return {stats:s.judgment.stats,remaining:q.stepQueue.length,holds:q.activeHolds.asList().length,
+                modifier:!document.querySelector('[data-active-modifier="autoplay"]').hidden};
+            }""")
+            self.assertGreater(actual['stats']['p'],4)
+            self.assertEqual([actual['stats'][k] for k in ['gr','go','b','m']],[0,0,0,0])
+            self.assertEqual(actual['remaining'],0)
+            self.assertEqual(actual['holds'],0)
+            self.assertTrue(actual['modifier'])
+        self.page.evaluate("""()=>{
+          const record={...config.record,score:800000,combo:5,grade:'A',date:new Date().toISOString()};
+          LocalRecords.merge([record]);
+          localStorage.setItem('piu_history',JSON.stringify([{...record,step_type:record.type,song_level:record.level}]));
+          localStorage.setItem('last_playCount','17');
+        }""")
+        before=self.page.evaluate("Object.fromEntries(['piu_single_records_v1','piu_history','last_playCount'].map(k=>[k,localStorage.getItem(k)]))")
+        self.page.evaluate("""()=>{document.getElementById('touch-editor').close();engine.paused=false;
+          engine._onStageCleared([{...engine.stage._playerStages[0].judgment.stats}]);}""")
+        self.page.wait_for_url('**/index.html')
+        expect(self.page.locator('#resultOutcome')).to_have_text('AUTOPLAY')
+        self.page.evaluate('PiuResults.finishCount()')
+        expect(self.page.locator('#score')).to_have_text('1000000')
+        expect(self.page.locator('#resultNewRecord')).to_be_hidden()
+        expect(self.page.locator('.result-actions>span')).to_have_text('AUTOPLAY · PONTUAÇÃO NÃO SALVA')
+        after=self.page.evaluate("Object.fromEntries(['piu_single_records_v1','piu_history','last_playCount'].map(k=>[k,localStorage.getItem(k)]))")
+        self.assertEqual(after,before)
+        self.assertIsNone(self.page.evaluate("sessionStorage.getItem('piu_single_result')"))
+        self.assertFalse(self.errors)
+
     def test_phoenix_noteskin_selection_native_assets_hold_ends_and_six_fx_frames(self):
         self.check_native_phoenix_noteskin('PHOENIX')
 

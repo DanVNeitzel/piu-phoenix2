@@ -75,6 +75,7 @@ function createSingleConfig(settings = null) {
         fd: PiuGameSettings.read().fd,
         hj: PiuGameSettings.read().hj,
         randomNote: PiuGameSettings.read().randomNote,
+        autoplay: PiuGameSettings.read().autoplay,
         playback: Number(document.querySelector('.rush-option.focus').value),
         offset: Number(document.getElementById('offset').value),
         noteskin: PiuGameSettings.read().skin,
@@ -94,6 +95,7 @@ function createSingleConfig(settings = null) {
             background_path:libraryUrl(song.children.find(f => /(?:_B|background)\.(png|jpe?g|webp)$/i.test(f.name))?.path || imgpath || songBanner(song)) }
     };
     if (settings) {
+        config.autoplay = settings.autoplay === true;
         Object.assign(config, {scrollMode:settings.mode,autoVelocity:settings.av,noteskin:settings.skin,
             bga:settings.bga,vanish:settings.vanish === true,fd:settings.fd === true,hj:settings.hj === true,randomNote:settings.randomNote === true,playback:settings.rush,offset:settings.offset,
             touchpadSize:1.2-Number(settings.size)/10,touchLayout:settings.touchLayout});

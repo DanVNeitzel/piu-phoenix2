@@ -175,7 +175,8 @@
     const result = {...incoming,score,broken,passed,grade:LocalRecords.grade(score),plate:passed ? LocalRecords.plate({...perf,broken}) : ''};
     let best = incoming.previousBest;
     if (!Object.hasOwn(incoming,'previousBest')) { try { best = LocalRecords.best(incoming); } catch (_) { best = null; } }
-    const newRecord = passed && (incoming.newRecord ?? (!best || score > best.score));
+    const autoplay = incoming.autoplay === true || config.autoplay === true;
+    const newRecord = !autoplay && passed && (incoming.newRecord ?? (!best || score > best.score));
     view.classList.toggle('has-no-best',!best);
     root.PiuCommand?.close();
     root.PiuMobileCommand?.close();
@@ -219,6 +220,10 @@
       ? 'A vida chegou a zero. Com Stage Break OFF, a música continua. O grade F mantém sua aparência original.'
       : 'A vida chegou a zero. Com Stage Break OFF, a música continua, mas o grade fica cinza.';
     byId('resultOutcome').classList.toggle('is-broken',broken);
+    if(autoplay){
+      byId('resultOutcome').textContent='AUTOPLAY';
+      document.querySelector('.result-actions>span').textContent='AUTOPLAY · PONTUAÇÃO NÃO SALVA';
+    }
     byId('resultNewRecord').hidden = !newRecord;
     const delta = best ? score - best.score : null;
     const deltaText=value=>(delta>0?'+':delta<0?'−':'±')+Math.floor(value).toLocaleString('pt-BR')+' pts';

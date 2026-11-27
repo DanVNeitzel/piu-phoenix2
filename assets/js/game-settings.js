@@ -18,11 +18,11 @@
   }
   function defaults() {
     const touch = matchMedia('(pointer:coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    return {mode:'multiplier',speed:1,av:300,skin:'EXCEED2-OLD',bga:'on',vanish:false,fd:false,hj:false,randomNote:false,rush:1,offset:0,touch,size:touch ? 1 : 0,touchLayoutStyle:touchStyle(),touchLayout:PiuTouchLayout.defaults()};
+    return {mode:'multiplier',speed:1,av:300,skin:'EXCEED2-OLD',bga:'on',vanish:false,fd:false,hj:false,randomNote:false,autoplay:false,rush:1,offset:0,touch,size:touch ? 1 : 0,touchLayoutStyle:touchStyle(),touchLayout:PiuTouchLayout.defaults()};
   }
   function read() {
     const scroll = PiuScroll.state();
-    return {mode:scroll.mode,speed:scroll.multiplier,av:scroll.target,skin:selectedNoteskin(),
+    return {mode:scroll.mode,speed:scroll.multiplier,av:scroll.target,skin:selectedNoteskin(),autoplay:localStorage.getItem('piu_autoplay') === 'true',
       bga:value('.bga-option') || 'on',vanish:localStorage.getItem('piu_vanish') === 'true',fd:localStorage.getItem('piu_fd') === 'true',hj:localStorage.getItem('piu_hj') === 'true',randomNote:localStorage.getItem('piu_random_note') === 'true',rush:Number(value('.rush-option') || 1),offset:Number(document.getElementById('offset').value || 0),
       touch:document.getElementById('touchInput').checked,size:Number(document.getElementById('touchpadSize').value),touchLayoutStyle:touchStyle(),touchLayout:PiuTouchLayout.read(touchStyle())};
   }
@@ -43,6 +43,7 @@
     if (typeof state.fd === 'boolean') setFD(state.fd);
     if (typeof state.hj === 'boolean') setHJ(state.hj);
     if (typeof state.randomNote === 'boolean') setRandomNote(state.randomNote);
+    if (typeof state.autoplay === 'boolean') setAutoplay(state.autoplay);
     const input = (id,value) => { const el=document.getElementById(id);el.value=String(value);el.dispatchEvent(new Event('change',{bubbles:true})); };
     input('offset',bounded(state.offset,-5,5,0));
     input('touchpadSize',Math.round(bounded(state.size,0,6,1)));
@@ -74,5 +75,9 @@
     const skins = [...new Set(options().skins.map(skin => skin.value))];
     return skins.length ? skins[Math.floor(Math.random() * skins.length)] : state.skin;
   }
-  root.PiuGameSettings = {read,apply,defaults,options,skinImage,setVanish,setFD,setHJ,setRandomNote,resolveNoteskin};
+  function setAutoplay(enabled) {
+    localStorage.setItem('piu_autoplay',String(enabled === true));
+    PiuScroll.changed();
+  }
+  root.PiuGameSettings = {read,apply,defaults,options,skinImage,setVanish,setFD,setHJ,setRandomNote,setAutoplay,resolveNoteskin};
 })(globalThis);

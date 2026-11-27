@@ -2,6 +2,7 @@
 (function(root) {
   'use strict';
   const commands = [
+    {key:'autoplay',label:'AUTOPLAY',category:'autoplay'},
     {key:'vanish',label:'VANISH',category:'display'},
     {key:'fd',label:'FD',category:'display'},
     {key:'hj',label:'HJ',category:'judge'},

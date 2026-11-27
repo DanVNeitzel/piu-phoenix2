@@ -1,7 +1,26 @@
 {
-  "version": "0.8.53",
+  "version": "0.8.56",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "AUTOPLAY discreto abaixo do combo",
+      "items": [
+        "Reduzida a inscrição AUTOPLAY e removido seu quadro. O aviso acompanha a posição abaixo dos números do combo, permanece visível mesmo quando o combo desaparece e se ajusta à orientação da tela."
+      ]
+    },
+    {
+      "category": "Identificação central do AUTOPLAY",
+      "items": [
+        "Adicionada uma inscrição AUTOPLAY no centro da gameplay enquanto a máquina joga, visível no desktop e no celular, sem bloquear os controles por toque."
+      ]
+    },
+    {
+      "category": "AUTOPLAY no Command Window",
+      "items": [
+        "Adicionada a opção AUTOPLAY ON/OFF no Command Window de desktop e celular. A máquina acerta notas, acordes e longs com PERFECT, com identificação na gameplay.",
+        "A pontuação do AUTOPLAY aparece na tela de resultado como não salva, sem gerar recorde, histórico ou contagem de partidas. Jogar novamente mantém a configuração usada."
+      ]
+    },
     {
       "category": "Desempenho da barra elétrica",
       "items": [

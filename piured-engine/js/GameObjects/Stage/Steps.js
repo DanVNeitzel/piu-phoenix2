@@ -390,7 +390,7 @@ class Steps extends GameObject {
             let step = listActiveHolds[i] ;
 
             // check if hold is pressed.
-            if ( this.keyListener.isHeld(step.kind, step.padId) ) {
+            if ( this.stepQueue.playerStage.playerConfig.autoplay || this.keyListener.isHeld(step.kind, step.padId) ) {
 
                 this.updateHoldPosition(step) ;
 

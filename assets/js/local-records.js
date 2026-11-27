@@ -27,7 +27,7 @@
     }
     const records = new Map(read().map(r => [key(r), r]));
     for (const r of incoming) {
-      if (isBroken(r) || r.passed === false) continue;
+      if (r.autoplay === true || r.config?.autoplay === true || isBroken(r) || r.passed === false) continue;
       const previous = records.get(key(r));
       if (!previous || r.score > previous.score) records.set(key(r), r);
     }

@@ -59,6 +59,11 @@ class StepQueue extends GameObject {
 
         const currentAudioTime = this.beatManager.currentAudioTime;
         const currentBeat = this.beatManager.currentBeat;
+        if (this.playerStage.playerConfig.autoplay) {
+            this.updateAutoplay(currentAudioTime);
+            this.updateActiveHolds(currentAudioTime, delta, currentBeat);
+            return;
+        }
         this.updateActiveHolds(currentAudioTime, delta, currentBeat);
         this.updateStepQueue(currentAudioTime);
 
@@ -67,6 +72,7 @@ class StepQueue extends GameObject {
 
 
     input() {
+        if (this.playerStage.playerConfig.autoplay) return;
 
         const pressedKeys = this.keyInput.getPressed() ;
 
@@ -76,6 +82,20 @@ class StepQueue extends GameObject {
 
         }
 
+    }
+
+    updateAutoplay(currentAudioTime) {
+        // Consume every crossed row, including chords, even after a slow frame.
+        // Holds retain the normal tick scoring; taps earn one PERFECT per row.
+        while (this.stepQueue.length && this.stepQueue[0].timeStamp <= currentAudioTime) {
+            const notes=this.stepQueue[0].stepList;
+            for (const note of notes) note.pressed=true;
+            if (notes.some(note=>!(note instanceof StepHold))) this.playerStage.judgment.perfect();
+            this.needToAnimateReceptorFX(notes);
+            this.removeNotesFromStepObject(notes);
+            this.removeFirstElement();
+            this.checkForNewHolds=true;
+        }
     }
 
 
@@ -538,6 +558,7 @@ class StepQueue extends GameObject {
 
 
     areHoldsBeingPressed() {
+        if (this.playerStage.playerConfig.autoplay) return true;
 
         let listActiveHolds = this.activeHolds.asList() ;
         for ( var i = 0 ; i <  listActiveHolds.length ; i++) {

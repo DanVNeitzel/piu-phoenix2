@@ -46,6 +46,28 @@ function showStageLoadError(message){
     document.documentElement.classList.remove('stage-loading');
     gameStatus.textContent=message;
 }
+function updateAutoplayLabel(){
+    const label=document.getElementById('game-autoplay');
+    const judgment=engine?.stage?._playerStages[0]?.judgment?.object;
+    if(!label || label.hidden || !judgment)return;
+    judgment.userData.autoplayBaseY ??= judgment.position.y;
+    judgment.position.y=judgment.userData.autoplayBaseY;
+    engine.scene.updateMatrixWorld(true);engine.camera.updateMatrixWorld(true);
+    // A fixed anchor below the digits stays visible through combo fades and bounces.
+    const world=judgment.localToWorld(new THREE.Vector3(0,-1.65,0));
+    const anchor=world.clone().project(engine.camera);
+    const screenY=(1-anchor.y)*innerHeight/2;
+    const targetY=Math.min(screenY,innerHeight-label.offsetHeight-24);
+    if(targetY<screenY){
+        // Reserve room below the combo on short landscape screens.
+        const direction=new THREE.Vector3(anchor.x,1-targetY/innerHeight*2,.5).unproject(engine.camera).sub(engine.camera.position);
+        const target=engine.camera.position.clone().addScaledVector(direction,(world.z-engine.camera.position.z)/direction.z);
+        const delta=judgment.parent.worldToLocal(target).sub(judgment.parent.worldToLocal(world.clone()));
+        judgment.position.add(delta);engine.scene.updateMatrixWorld(true);
+    }
+    label.style.left=Math.max(label.offsetWidth/2+8,Math.min(innerWidth-label.offsetWidth/2-8,(anchor.x+1)*innerWidth/2))+'px';
+    label.style.top=Math.max(8,targetY)+'px';
+}
 function updateHudLayout(){
     const modifiers=document.getElementById('game-modifiers');
     const beside=matchMedia('(orientation:landscape) and (max-width:1023px), (orientation:landscape) and (pointer:coarse)').matches;
@@ -168,6 +190,7 @@ try {
         location.replace('index.html');
     } else {
         gameplayProtected = true;
+        document.getElementById('game-autoplay').hidden = config.autoplay !== true;
         PiuActiveModifiers.render(document.querySelector('.options-block-r'),config,{tag:'p'});
         window.PIU_SSC = {path:config.resources + config.sscpath, text:config.sscContent};
         engine = new Engine({transparentBackground:config.bga === 'dark'});
@@ -240,6 +263,7 @@ try {
         playerConfig.vanish = config.vanish === true;
         playerConfig.fd = config.fd === true;
         playerConfig.hardJudgment = config.hj === true;
+        playerConfig.autoplay = config.autoplay === true;
         engine.addPlayer(playerConfig);
         const coop=engine.song.levels[config.chartLevel].COOP;
         config.coop=coop;config.record.coop=coop;
@@ -272,10 +296,13 @@ try {
         touchControls?.configureResponsive(config.touchpadSize, config.touchLayout ? PiuTouchLayout.normalize(config.touchLayout) : PiuTouchLayout.read(style));
         if (touchControls) config.touchLayout = touchControls.layoutPreferences;
         function updateTouchLayout() {
-            if (finished || !touchControls) return;
-            touchControls.updateResponsiveLayout();
-            PiuGameplayLayout.apply(engine);
-            touchControls.updateResponsiveLayout();
+            if (finished) return;
+            if(touchControls){
+                touchControls.updateResponsiveLayout();
+                PiuGameplayLayout.apply(engine);
+                touchControls.updateResponsiveLayout();
+            }
+            updateAutoplayLabel();
         }
         updateHudLayout();
         let hudFrame=null;
@@ -294,28 +321,30 @@ try {
             finished = true;
             fpsCounter?.stop();
             const perf = performances[0], outcome = LocalRecords.evaluate(perf), points = outcome.score;
-            const result = {...config.record, ...outcome, date:new Date().toISOString(), performance:{...perf}, config,
+            const result = {...config.record, ...outcome, autoplay:config.autoplay === true, date:new Date().toISOString(), performance:{...perf}, config,
                 previousBest:null, newRecord:false};
             try {
                 result.previousBest = LocalRecords.best(config.record);
-                result.newRecord = result.passed && (!result.previousBest || points > result.previousBest.score);
-                LocalRecords.merge([{...config.record, score:points, combo:perf.maxCombo,
-                    plate:result.plate, grade:result.grade, date:result.date, broken:result.broken, passed:result.passed,
-                    performance:{p:perf.p,gr:perf.gr,go:perf.go,b:perf.b,m:perf.m,maxCombo:perf.maxCombo,broken:result.broken}}]);
-                const history = JSON.parse(localStorage.getItem('piu_history') || '[]');
-                history.unshift({...config.record, score:points, grade:result.grade.replace(/\+/g, '_plus'),
-                    plate:result.plate, broken:result.broken, passed:result.passed, date:result.date, step_type:result.type, song_level:result.level,
-                    song_speed:config.scrollMode === 'auto' ? 'AV ' + config.autoVelocity : config.speed + 'X', ssc_path:result.ssc, max_combo:perf.maxCombo,
-                    perfects:perf.p, greats:perf.gr, goods:perf.go, bads:perf.b, misses:perf.m});
-                localStorage.setItem('piu_history', JSON.stringify(history.slice(0,200)));
-                localStorage.setItem('last_playCount', String((Number(localStorage.getItem('last_playCount')) || 0) + 1));
+                if (!result.autoplay) {
+                    result.newRecord = result.passed && (!result.previousBest || points > result.previousBest.score);
+                    LocalRecords.merge([{...config.record, score:points, combo:perf.maxCombo,
+                        plate:result.plate, grade:result.grade, date:result.date, broken:result.broken, passed:result.passed,
+                        performance:{p:perf.p,gr:perf.gr,go:perf.go,b:perf.b,m:perf.m,maxCombo:perf.maxCombo,broken:result.broken}}]);
+                    const history = JSON.parse(localStorage.getItem('piu_history') || '[]');
+                    history.unshift({...config.record, score:points, grade:result.grade.replace(/\+/g, '_plus'),
+                        plate:result.plate, broken:result.broken, passed:result.passed, date:result.date, step_type:result.type, song_level:result.level,
+                        song_speed:config.scrollMode === 'auto' ? 'AV ' + config.autoVelocity : config.speed + 'X', ssc_path:result.ssc, max_combo:perf.maxCombo,
+                        perfects:perf.p, greats:perf.gr, goods:perf.go, bads:perf.b, misses:perf.m});
+                    localStorage.setItem('piu_history', JSON.stringify(history.slice(0,200)));
+                    localStorage.setItem('last_playCount', String((Number(localStorage.getItem('last_playCount')) || 0) + 1));
+                }
             } catch (error) { result.error = 'Não foi possível salvar os dados locais: ' + error.message; }
             sessionStorage.removeItem('piu_single_config');
             try {
                 sessionStorage.setItem('piu_single_result', JSON.stringify(result));
                 location.replace('index.html');
             } catch(error) {
-                gameStatus.textContent = result.score + ' pontos · ' + result.grade + (result.error || ' · Recorde salvo.');
+                gameStatus.textContent = result.score + ' pontos · ' + result.grade + (result.autoplay ? ' · AUTOPLAY · Pontuação não salva.' : result.error || ' · Recorde salvo.');
             }
         };
         gameStatus.textContent = 'Carregando áudio…';
