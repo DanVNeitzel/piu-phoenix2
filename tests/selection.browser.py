@@ -673,13 +673,65 @@ class SelectionBrowserTests(unittest.TestCase):
             self.assertAlmostEqual(actual['control']['top'],actual['pause']['top'],delta=1)
             self.assertLess(actual['control']['right'],actual['pause']['left'])
             for icon in actual['modifiers']:
-                self.assertGreater(icon['top'],actual['stage']['bottom'])
+                if width>height and width<1024:
+                    self.assertGreater(icon['left'],actual['stage']['right'])
+                    self.assertGreaterEqual(icon['top'],actual['stage']['top'])
+                else:
+                    self.assertGreater(icon['top'],actual['stage']['bottom'])
                 self.assertGreaterEqual(icon['left'],0)
                 self.assertLessEqual(icon['right'],width)
                 self.assertLessEqual(icon['bottom'],height)
                 for other in [actual['field'],actual['life'],*actual['pads']]:
                     overlap=min(icon['right'],other['right'])-max(icon['left'],other['left'])>1 and min(icon['bottom'],other['bottom'])-max(icon['top'],other['top'])>1
                     self.assertFalse(overlap,(width,height,icon,other))
+        self.assertFalse(self.errors)
+
+    def test_touchpad_can_reach_screen_edges_in_each_style_and_orientation(self):
+        for style in ['pump-single','pump-double','pump-halfdouble']:
+            self.page.set_viewport_size({'width':844,'height':390})
+            self.open_frozen_stage(style,True,{'bga':'dark','vanish':True,'fd':True,'hj':True,'randomNote':True,'playback':1.2})
+            for width,height in [(844,390),(568,320),(390,844),(320,568)]:
+                self.page.set_viewport_size({'width':width,'height':height})
+                for offset in [-.45,.45]:
+                    actual=self.page.evaluate("""({style,offset})=>{
+                      engine.onWindowResize();updateHudLayout();
+                      const prefs=PiuTouchLayout.defaults();prefs.landscape.left.x=-.45;prefs.landscape.right.x=.45;prefs.portrait.x=offset;
+                      PiuTouchLayout.save(prefs,style);
+                      const input=engine.stage._playerStages[0].keyListener;
+                      input.configureResponsive(input.responsiveSize,PiuTouchLayout.read(style));
+                      PiuGameplayLayout.apply(engine);input.updateResponsiveLayout();
+                      return input.getVisiblePads().map(pad=>PiuGameplayLayout.bounds(pad.object,engine));
+                    }""",{'style':style,'offset':offset})
+                    left=min(pad['left'] for pad in actual);right=max(pad['right'] for pad in actual)
+                    if width>height or offset<0:
+                        self.assertAlmostEqual(left,0,delta=1,msg=(style,width,height,actual))
+                    if width>height or offset>0:
+                        self.assertAlmostEqual(right,width,delta=1,msg=(style,width,height,actual))
+                    for pad in actual:
+                        self.assertGreaterEqual(pad['top'],-1)
+                        self.assertLessEqual(pad['bottom'],height+1)
+        self.assertFalse(self.errors)
+
+    def test_touchpad_can_reach_top_and_bottom_without_margins(self):
+        for style in ['pump-single','pump-double','pump-halfdouble']:
+            self.page.set_viewport_size({'width':844,'height':390})
+            self.open_frozen_stage(style,True)
+            for width,height in [(844,390),(568,320),(390,844),(320,568)]:
+                self.page.set_viewport_size({'width':width,'height':height})
+                for offset in [-1,1]:
+                    pads=self.page.evaluate("""({style,offset})=>{
+                      engine.onWindowResize();updateHudLayout();
+                      const prefs=PiuTouchLayout.defaults();prefs.landscape.left.y=offset;prefs.landscape.right.y=offset;prefs.portrait.y=offset;
+                      PiuTouchLayout.save(prefs,style);
+                      const input=engine.stage._playerStages[0].keyListener;
+                      input.configureResponsive(input.responsiveSize,PiuTouchLayout.read(style));
+                      PiuGameplayLayout.apply(engine);input.updateResponsiveLayout();
+                      return input.getVisiblePads().map(pad=>PiuGameplayLayout.bounds(pad.object,engine));
+                    }""",{'style':style,'offset':offset})
+                    for pad in pads:
+                        self.assertAlmostEqual(pad['top'] if offset<0 else pad['bottom'],0 if offset<0 else height,delta=1,msg=(style,width,height,offset,pad))
+                        self.assertGreaterEqual(pad['left'],-1)
+                        self.assertLessEqual(pad['right'],width+1)
         self.assertFalse(self.errors)
 
     def test_touch_editor_saves_resets_and_cancels_per_mode(self):

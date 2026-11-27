@@ -56,3 +56,16 @@ test('legacy preferences remain readable if migration cannot write to storage', 
     assert.equal(layout.read('pump-double').portrait.opacity, .65);
     assert.throws(() => layout.save(layout.defaults(), 'pump-single'), /Storage unavailable/);
 });
+
+test('vertical offsets cover the full screen and survive saving in each orientation', () => {
+    const {layout} = setup();
+    for (const style of ['pump-single','pump-double','pump-halfdouble']) {
+        const value=layout.defaults();
+        value.portrait.y=-1;value.landscape.left.y=-1;value.landscape.right.y=1;
+        layout.save(value,style);
+        const saved=layout.read(style);
+        assert.equal(saved.portrait.y,-1);
+        assert.equal(saved.landscape.left.y,-1);
+        assert.equal(saved.landscape.right.y,1);
+    }
+});

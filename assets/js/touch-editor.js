@@ -6,7 +6,7 @@
   const dialog=document.createElement('dialog');dialog.id='touch-editor';dialog.setAttribute('aria-labelledby','te-title');
   dialog.innerHTML='<div class="te-handles"></div><section class="te-panel"><header><div><span id="te-orientation"></span><h2 id="te-title">Ajustar touchpad</h2></div><button type="button" id="te-toggle" aria-expanded="true">Ver jogo</button></header><div class="te-content"><p>Partida pausada. Arraste o contorno do pad ou use os ajustes abaixo.</p><nav id="te-sides" aria-label="Pad a posicionar"><button type="button" data-side="left">Esquerdo</button><button type="button" data-side="right">Direito</button></nav><div id="te-ranges"></div><button type="button" id="te-reset">Restaurar esta orientação</button><p class="te-hint">Os pads permanecem dentro da tela. Barra e sensores podem se mover por toda a altura da tela, inclusive atrás dos indicadores.</p></div><footer><p id="te-status" role="status" aria-live="polite">As mudanças aparecem na hora.</p><div><button type="button" id="te-cancel">Cancelar</button><button type="button" id="te-save">Salvar</button></div></footer></section>';
   document.body.append(dialog);
-  const definitions=[['size','Tamanho do pad',60,140],['x','Posição horizontal do pad',-45,45],['y','Posição vertical do pad',-60,60],['opacity','Transparência',0,90],['fieldWidth','Largura dos sensores e notas',20,100],['lifeWidth','Largura da barra de vida',20,100],['lifeHeight','Espessura da barra de vida',50,250],['fieldY','Altura da barra e receptores',-100,100]];
+  const definitions=[['size','Tamanho do pad',60,140],['x','Posição horizontal do pad',-45,45],['y','Posição vertical do pad',-100,100],['opacity','Transparência',0,90],['fieldWidth','Largura dos sensores e notas',20,100],['lifeWidth','Largura da barra de vida',20,100],['lifeHeight','Espessura da barra de vida',50,250],['fieldY','Altura da barra e receptores',-100,100]];
   for(const [key,label,min,max]of definitions){
     const row=document.createElement('label');row.className='te-range';row.htmlFor='te-'+key;
     const text=document.createElement('span');text.textContent=label;const output=document.createElement('output');output.id='te-'+key+'-value';output.htmlFor='te-'+key;text.append(output);
@@ -27,7 +27,7 @@
     });
     button.addEventListener('pointermove',event=>{
       if(!drag||drag.pointer!==event.pointerId||drag.mode!==mode())return;
-      const value=position();value.x=Math.max(-.45,Math.min(.45,drag.offset.x+(event.clientX-drag.x)/innerWidth));value.y=Math.max(-.6,Math.min(.6,drag.offset.y+(event.clientY-drag.y)/innerHeight));schedule();updateControls();
+      const value=position();value.x=Math.max(-.45,Math.min(.45,drag.offset.x+(event.clientX-drag.x)/innerWidth));value.y=Math.max(-1,Math.min(1,drag.offset.y+(event.clientY-drag.y)/innerHeight));schedule();updateControls();
     });
     const end=()=>{drag=null;};button.addEventListener('pointerup',end);button.addEventListener('pointercancel',end);button.addEventListener('lostpointercapture',end);
     return button;

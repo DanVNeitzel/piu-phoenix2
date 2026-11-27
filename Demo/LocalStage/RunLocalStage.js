@@ -48,10 +48,19 @@ function showStageLoadError(message){
 }
 function updateHudLayout(){
     const modifiers=document.getElementById('game-modifiers');
+    const beside=matchMedia('(orientation:landscape) and (max-width:1023px), (orientation:landscape) and (pointer:coarse)').matches;
+    modifiers.classList.toggle('game-modifiers-beside-stage',beside);
     const blocks=[...modifiers.children].filter(block=>!block.hidden);
     const stage=document.querySelector('.options-block-l').getBoundingClientRect();
     const size=blocks[0]?.getBoundingClientRect().height || 44;
     const gap=parseFloat(getComputedStyle(modifiers).rowGap) || 4;
+    if(beside){
+        const maxRows=Math.max(1,Math.floor((innerHeight*.4+gap)/(size+gap)));
+        const columns=Math.max(1,Math.ceil(blocks.length/maxRows),Math.min(blocks.length,Math.floor((innerWidth*.25-stage.right)/(size+gap))));
+        modifiers.style.setProperty('--game-modifier-columns',String(columns));
+        modifiers.style.top=stage.top+'px';modifiers.style.left=(stage.right+gap)+'px';
+        return;
+    }
     const available=Math.min(innerHeight-stage.bottom-16,innerWidth>innerHeight?innerHeight:innerHeight*.35);
     const rows=Math.max(1,Math.min(blocks.length,Math.floor((available+gap)/(size+gap))));
     modifiers.style.setProperty('--game-modifier-rows',String(rows));

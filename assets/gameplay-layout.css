@@ -1,4 +1,4 @@
-/* Stage and controls occupy the top corners; modifiers sit below the stage. */
+/* Stage and controls occupy the top corners; mobile landscape puts modifiers beside Stage. */
 #game-fps {
     position: fixed;
     left: max(8px, env(safe-area-inset-left));
@@ -330,6 +330,12 @@ body .game-top-controls #playControlMode{
 }
 body .game-top-controls #playControlMode img{width:30px;height:30px;object-fit:contain}
 body .game-top-controls #game-pause-button{position:static;inset:auto}
+body #game-modifiers.game-modifiers-beside-stage,
+body #game-modifiers.game-modifiers-beside-stage:has(>p:nth-child(4 of :not([hidden]))){
+    --game-hud-icon:36px;
+    grid-auto-flow:row;grid-template-columns:repeat(var(--game-modifier-columns,3),var(--game-hud-icon));
+    grid-template-rows:none;grid-auto-rows:var(--game-hud-icon)
+}
 @media(max-width:350px){body{--game-hud-icon:36px}}
 @media(min-width:1024px) and (orientation:landscape){
     body{--game-hud-icon:var(--game-hud-size);--game-modifier-gap:var(--game-hud-gap)}

@@ -118,15 +118,17 @@ class TouchInput extends GameObject {
             return engine.camera.position.clone().addScaledVector(direction, (z - engine.camera.position.z) / direction.z);
         };
         const place = (pad, x, y, pixels, offset = {}, side = '') => {
-            const minX = side === 'right' ? w / 2 + pixels / 2 + 6 : pixels / 2 + 8;
-            const maxX = side === 'left' ? w / 2 - pixels / 2 - 6 : w - pixels / 2 - 8;
+            const requestedX=x+(offset.x || 0)*w,requestedY=y+(offset.y || 0)*h;
+            const minX = side === 'right' ? w / 2 + pixels / 2 + 6 : pixels / 2;
+            const maxX = side === 'left' ? w / 2 - pixels / 2 - 6 : w - pixels / 2;
             x = Math.max(minX, Math.min(maxX, x + (offset.x || 0) * w));
-            let minimumTop = 4;
-            for (const element of document.querySelectorAll('.options-block-l,.game-top-controls')) {
+            const manualY=landscape?!!offset.y:!!appearance.y;
+            let minimumTop = manualY?0:4;
+            if(!manualY)for (const element of document.querySelectorAll('.options-block-l,.game-top-controls,#game-modifiers.game-modifiers-beside-stage')) {
                 const hud = element.getBoundingClientRect();
                 if (x - pixels / 2 < hud.right && x + pixels / 2 > hud.left) minimumTop = Math.max(minimumTop, hud.bottom + 8);
             }
-            y = Math.max(minimumTop + pixels / 2, Math.min(h - pixels / 2 - 12, y + (offset.y || 0) * h));
+            y = Math.max(minimumTop + pixels / 2, Math.min(h - pixels / 2, requestedY));
             const bounds = new THREE.Box3().setFromObject(pad.object);
             const width = this.halfDouble ? Math.max(bounds.max.x - bounds.min.x, bounds.max.y - bounds.min.y) : bounds.max.x - bounds.min.x;
             const target = worldPoint(x + pixels / 2, y).distanceTo(worldPoint(x - pixels / 2, y));
@@ -134,9 +136,9 @@ class TouchInput extends GameObject {
             pad.object.scale.x *= scale; pad.object.scale.y *= scale;
             pad.object.position.copy(this._mesh.worldToLocal(worldPoint(x, y)));
             engine.scene.updateMatrixWorld(true);
-            if (this.halfDouble) {
-                // Three-button pads are taller than they are wide. Fit their projected
-                // bounds rather than treating them as the square pads used by Double.
+            {
+                // Fit the actual projected shape so every style can reach the edges
+                // without clipping, including after an orientation change.
                 for (let pass = 0; pass < 3; pass++) {
                     const box = new THREE.Box3().setFromObject(pad.object), points = [];
                     for (const bx of [box.min.x,box.max.x]) for (const by of [box.min.y,box.max.y]) for (const bz of [box.min.z,box.max.z]) {
@@ -147,8 +149,12 @@ class TouchInput extends GameObject {
                     const top = Math.min(...points.map(p=>p.y)), bottom = Math.max(...points.map(p=>p.y));
                     const fit = Math.max((right-left)/pixels,(bottom-top)/pixels);
                     if (fit > 1.001) {pad.object.scale.x/=fit;pad.object.scale.y/=fit;}
+                    const actualWidth=(right-left)/Math.max(1,fit),actualHeight=(bottom-top)/Math.max(1,fit);
+                    const targetX=Math.max(side==='right'?w/2+actualWidth/2+6:actualWidth/2,
+                        Math.min(side==='left'?w/2-actualWidth/2-6:w-actualWidth/2,requestedX));
+                    const targetY=Math.max(minimumTop+actualHeight/2,Math.min(h-actualHeight/2,requestedY));
                     const a = this._mesh.worldToLocal(worldPoint((left+right)/2,(top+bottom)/2));
-                    const b = this._mesh.worldToLocal(worldPoint(x,y));
+                    const b = this._mesh.worldToLocal(worldPoint(targetX,targetY));
                     pad.object.position.add(b.sub(a));
                     engine.scene.updateMatrixWorld(true);
                 }
@@ -156,10 +162,13 @@ class TouchInput extends GameObject {
         };
         const bottom = Math.max(28, h * 0.045);
         if (landscape) {
-            const sidebar=document.getElementById('game-modifiers')?.getBoundingClientRect();
-            const margin=Math.max(14,w*.025,sidebar?sidebar.right+10:0);
+            const modifiers=document.getElementById('game-modifiers');
+            const sidebar=modifiers?.getBoundingClientRect();
+            const beside=modifiers?.classList.contains('game-modifiers-beside-stage');
+            const margin=beside?0:Math.max(14,w*.025,sidebar?sidebar.right+10:0);
+            const headerBottom=beside?Math.max(sidebar?.bottom || 0,...[...document.querySelectorAll('.options-block-l,.game-top-controls')].map(element=>element.getBoundingClientRect().bottom))+8:0;
             const base = Math.min(h - 136, w * 0.30, Math.max(140, Math.min(360, h * 0.62, w * 0.28) * this.responsiveSize));
-            const size = Math.min(h - 88, (w - 48) / 2, Math.max(70,(w-2*margin-140)/2), Math.max(90, base * multiplier));
+            const size = Math.min(h - Math.max(88,headerBottom+12), (w - 48) / 2, Math.max(70,(w-2*margin-140)/2), Math.max(90, base * multiplier));
             const y = h - bottom - size / 2;
             place(this.pads[0], margin + size / 2, y, size, appearance.left, 'left');
             place(this.mirrorPad || this.pads[1], w - margin - size / 2, y, size, appearance.right, 'right');
@@ -171,10 +180,22 @@ class TouchInput extends GameObject {
             // Double charts keep their two independent sets together at the bottom.
             const base = Math.min((w - 36) / 2, Math.max(110, Math.min(w * 0.43, h * 0.30) * this.responsiveSize));
             const size = Math.min((w - 36) / 2, Math.max(70, base * multiplier));
-            const x = Math.max(size + 14, Math.min(w - size - 14, w / 2 + (appearance.x || 0) * w));
+            const x = Math.max(size + 5, Math.min(w - size - 5, w / 2 + (appearance.x || 0) * w));
             const y = h - bottom - size / 2 + (appearance.y || 0) * h;
             place(this.pads[0], x - size / 2 - 5, y, size);
             place(this.pads[1], x + size / 2 + 5, y, size);
+            // Three-button pads leave space inside their nominal square. Clamp the
+            // whole pair by its rendered bounds instead of preserving that space.
+            const boxes=this.pads.map(pad=>PiuGameplayLayout.bounds(pad.object,engine));
+            const left=Math.min(...boxes.map(box=>box.left)),right=Math.max(...boxes.map(box=>box.right));
+            const center=Math.max((right-left)/2,Math.min(w-(right-left)/2,w/2+(appearance.x || 0)*w));
+            const delta=center-(left+right)/2;
+            for(const pad of this.pads){
+                const box=PiuGameplayLayout.bounds(pad.object,engine),px=(box.left+box.right)/2,py=(box.top+box.bottom)/2;
+                const a=this._mesh.worldToLocal(worldPoint(px,py)),b=this._mesh.worldToLocal(worldPoint(px+delta,py));
+                pad.object.position.add(b.sub(a));
+            }
+            engine.scene.updateMatrixWorld(true);
         }
         for (const pad of this.getVisiblePads()) for (const tile of Object.values(pad._tiles)) tile.object.material.opacity = this.touchOpacity;
     }

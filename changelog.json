@@ -1,7 +1,21 @@
 {
-  "version": "0.8.41",
-  "date": "2026-11-26",
+  "version": "0.8.43",
+  "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Touchpad sem margem em cima e embaixo",
+      "items": [
+        "O ajuste manual do touchpad permite encostar os pads também nas bordas superior e inferior da tela, sem cortar as setas.",
+        "Ampliado o deslocamento vertical para alcançar toda a altura da tela, tanto arrastando quanto pelo controle de posição, em retrato e paisagem."
+      ]
+    },
+    {
+      "category": "Touchpad nas bordas e indicadores no celular deitado",
+      "items": [
+        "Removida a margem lateral mínima do ajuste do touchpad para permitir encostar os pads nas bordas da tela.",
+        "No celular em orientação horizontal, os ícones das configurações ficam ao lado do STAGE, liberando a área dos pads."
+      ]
+    },
     {
       "category": "Brilho no aviso e zoom do READY",
       "items": [
