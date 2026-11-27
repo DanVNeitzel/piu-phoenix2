@@ -1,7 +1,13 @@
 {
-  "version": "0.8.70",
+  "version": "0.8.71",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Ajustes de resultado exclusivos do mobile",
+      "items": [
+        "Limitados ao mobile em paisagem os campos de precisão e AUTOPLAY junto aos modificadores e o aumento do grade e plate. Restaurada a apresentação anterior desses elementos no desktop."
+      ]
+    },
     {
       "category": "Precisão e AUTOPLAY junto aos modificadores",
       "items": [

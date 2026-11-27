@@ -566,6 +566,34 @@ class SelectionBrowserTests(unittest.TestCase):
         expect(self.page.locator('#resultProgress')).to_be_hidden()
         self.assertFalse(self.errors)
 
+    def test_result_extra_fields_and_larger_awards_are_mobile_only(self):
+        self.load()
+        for autoplay in [True,False]:
+            self.page.evaluate("""autoplay=>{const config=createSingleConfig();config.autoplay=autoplay;
+              PiuResults.show({...config.record,config,score:1000000,
+                performance:{p:390,gr:0,go:0,b:0,m:0,maxCombo:390},previousBest:null});
+              PiuResults.finishCount();}""",autoplay)
+            for width,height,mobile in [(844,390,True),(1280,800,False),(915,412,True),(390,844,False),(1600,720,False)]:
+                self.page.set_viewport_size({'width':width,'height':height})
+                self.page.wait_for_function("""mobile=>document.querySelector('.result-accuracy').classList.contains('result-modifier')===mobile""",arg=mobile)
+                actual=self.page.evaluate("""()=>{
+                  const current=document.querySelector('.result-current'),fields=document.querySelector('.result-modifiers');
+                  const accuracy=document.querySelector('.result-accuracy'),outcome=document.querySelector('#resultOutcome');
+                  return {precisionInFields:fields.contains(accuracy),precisionInCurrent:current.contains(accuracy),
+                    outcomeInFields:fields.contains(outcome),outcomeInCurrent:current.contains(outcome),
+                    fieldHidden:document.querySelector('#resultAutoplayModifier').hidden,
+                    plateHeight:current.querySelector('.result-plate-slot').getBoundingClientRect().height};
+                }""")
+                self.assertEqual(actual['precisionInFields'],mobile)
+                self.assertEqual(actual['precisionInCurrent'],not mobile)
+                self.assertEqual(actual['outcomeInFields'],mobile and autoplay)
+                self.assertEqual(actual['outcomeInCurrent'],not (mobile and autoplay))
+                self.assertEqual(actual['fieldHidden'],not (mobile and autoplay))
+                if width>height:
+                    expected=min(60,max(22,height*.075)) if mobile else min(44,max(16,height*.055))
+                    self.assertAlmostEqual(actual['plateHeight'],expected,delta=.1)
+        self.assertFalse(self.errors)
+
     def test_landscape_results_fit_viewport_without_footer_overlap(self):
         self.load()
         self.page.emulate_media(reduced_motion='reduce')

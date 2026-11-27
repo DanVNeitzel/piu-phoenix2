@@ -15,6 +15,7 @@
   function stopCountSound(){countSound.pause();countSound.currentTime=0;}
   const grayExports = new Map();
   const portrait = matchMedia('(orientation:portrait)');
+  const mobileLandscape = matchMedia('(max-width:1023px) and (orientation:landscape)');
   function placeLevelBadge() {
     const badge=byId('resultLevelBadge');
     if(portrait.matches) view.querySelector('.result-titlebar').append(badge);
@@ -25,15 +26,16 @@
     const current=view.querySelector('.result-current');
     const precision=view.querySelector('.result-accuracy');
     const field=byId('resultAutoplayModifier');
-    const inField=!portrait.matches && view.dataset.autoplay==='true';
-    precision.classList.toggle('result-modifier',!portrait.matches);
-    if(portrait.matches) current.insertBefore(precision,byId('gradeResult'));
-    else view.querySelector('.result-modifiers').prepend(precision);
+    const inField=mobileLandscape.matches && view.dataset.autoplay==='true';
+    precision.classList.toggle('result-modifier',mobileLandscape.matches);
+    if(mobileLandscape.matches) view.querySelector('.result-modifiers').prepend(precision);
+    else current.insertBefore(precision,byId('gradeResult'));
     field.hidden=!inField;
     if(inField) field.append(byId('resultOutcome'));
     else current.querySelector('.result-plate-slot').after(byId('resultOutcome'));
   }
   portrait.addEventListener('change',placeLevelBadge);
+  mobileLandscape.addEventListener('change',placeResultDetails);
   placeLevelBadge();
   async function exportGrade(image,size={}) {
     const source = image.currentSrc || image.src;
