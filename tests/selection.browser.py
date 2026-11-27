@@ -195,6 +195,48 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.goto(self.origin+'/localStage.html?preview=touchpad')
         self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
 
+    def test_phoenix_noteskin_selection_native_assets_hold_ends_and_six_fx_frames(self):
+        self.load()
+        selected=self.page.evaluate("""()=>{
+          selectNote(document.querySelector('.noteskin-option[value="PHOENIX"]'));
+          return {skin:createSingleConfig().noteskin,cover:PiuGameSettings.skinImage('PHOENIX')};
+        }""")
+        self.assertEqual(selected,{'skin':'PHOENIX','cover':'assets/img/CW_settings/noteskin_cover/PHOENIX.png'})
+        failures=[]
+        self.page.on('response',lambda response:failures.append(response.url) if response.status>=400 and '/PHOENIX/' in response.url else None)
+        for style in ['pump-single','pump-double','pump-halfdouble']:
+            width=5 if style=='pump-single' else 10 if style=='pump-double' else 6
+            rows=['0'*width,'2'*width,'0'*width,'0'*width,'3'*width,'0'*width,'1'*width,'0'*width]
+            ssc='#TITLE:PHOENIX;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;\n#NOTEDATA:;\n#STEPSTYPE:'+style+';\n#METER:10;\n#NOTES:\n'+'\n'.join(rows)+'\n;'
+            self.open_frozen_stage(style,True,{'noteskin':'PHOENIX','sscContent':ssc})
+            self.page.wait_for_function("engine.stage._playerStages[0]._steps.stepList.filter(n=>n instanceof StepHold).every(n=>n._holdCap?.material.map.image?.complete)")
+            actual=self.page.evaluate("""()=>{
+              const stage=engine.stage._playerStages[0],holds=stage._steps.stepList.filter(n=>n instanceof StepHold);
+              const fx=stage.padReceptors['0'].cFX;fx.animate();const frames=[];
+              for(let i=0;i<6;i++){fx.update(i===0?0:.06);frames.push(fx._animationPosition);}
+              fx.update(.07);
+              const ends=holds.map(hold=>({kind:hold.kind,width:hold._holdCap.material.map.image.width,height:hold._holdCap.material.map.image.height,
+                y:hold._holdCap.position.y,end:hold._endBeat,repeat:hold._holdCap.material.map.repeat.x,
+                bodyEnd:hold._holdExtensible.object.position.y-hold._holdExtensible.object.scale.y/2,
+                capStart:hold._holdCap.position.y+hold._holdCap.scale.y/2}));
+              return {skin:stage._noteskin,ends,frames,ended:fx.object.material.opacity===0,
+                receptor:[stage.padReceptors['0']._receptor.material.uniforms.textureReceptor.value.image.width,
+                  stage.padReceptors['0']._receptor.material.uniforms.textureReceptor.value.image.height],
+                coverLoaded:document.getElementById('playNoteSkin').complete&&document.getElementById('playNoteSkin').naturalWidth>0};
+            }""")
+            self.assertEqual(actual['skin'],'PHOENIX')
+            self.assertEqual(len(actual['ends']),width)
+            for end in actual['ends']:
+                self.assertEqual((end['width'],end['height']),(576,96))
+                self.assertAlmostEqual(end['y'],end['end'])
+                self.assertAlmostEqual(end['repeat'],1/6)
+                self.assertAlmostEqual(end['bodyEnd'],end['capStart'])
+            self.assertEqual(actual['frames'],[0,1,2,3,4,5])
+            self.assertTrue(actual['ended'] and actual['coverLoaded'])
+            self.assertEqual(actual['receptor'],[480,192])
+        self.assertEqual(failures,[])
+        self.assertFalse(self.errors)
+
     def test_electric_life_bar_current_combo_layout_pause_and_disposal(self):
         for style in ['pump-single','pump-double','pump-halfdouble']:
             self.open_frozen_stage(style,True)

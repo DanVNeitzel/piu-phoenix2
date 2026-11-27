@@ -1,7 +1,21 @@
 {
-  "version": "0.8.49",
+  "version": "0.8.51",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Correção das pontas dos longs PHOENIX",
+      "items": [
+        "Corrigido o encontro entre o corpo e as cinco pontas originais dos longs: o corpo agora termina no início da imagem de acabamento, sem ultrapassar a seta."
+      ]
+    },
+    {
+      "category": "Noteskin PHOENIX com os arquivos fornecidos",
+      "items": [
+        "Adicionada a noteskin PHOENIX ao seletor usando a arte do pacote z3phoenix fornecido pelo usuário, com animações nas cinco direções e receptores próprios.",
+        "Integrados os corpos e as cinco pontas animadas dos holds, incluindo a ponta dourada central, e os seis quadros do efeito de acerto.",
+        "Corrigida uma camada de escurecimento que continuava visível mesmo marcada como oculta, preservando as cores originais das notas."
+      ]
+    },
     {
       "category": "Barra de vida elétrica durante a partida",
       "items": [

@@ -85,7 +85,12 @@ class ResourceManager {
         stepDic['T'] = new PNGTexture(noteskinPath + '/Tap 5x2.PNG');
 
         // FX
-        stepDic['FX'] = new PNGTexture(noteskinPath + '/StepFX 5x1.PNG');
+        stepDic['FX'] = new PNGTexture(noteskinPath + (noteskinId==='PHOENIX'?'/StepFX 6x1.PNG':'/StepFX 5x1.PNG'));
+        if(noteskinId==='PHOENIX'){
+            for(const [kind,name] of Object.entries({dl:'DownLeft',ul:'UpLeft',c:'Center',ur:'UpRight',dr:'DownRight'})){
+                stepDic['CAP_'+kind]=new PNGTexture(noteskinPath+'/'+name+' HoldCap 6x1.PNG');
+            }
+        }
 
         this._textureDict['NOTESKINS'][noteskinId] = stepDic;
 
@@ -328,6 +333,13 @@ class ResourceManager {
                 return new THREE.Mesh(this._geometryDict['H'].holdGeometry, materialsDict['HDR'].material);
                 break;
         }
+    }
+
+    constructHoldCap(kind,noteskinId) {
+        const source=this._textureDict['NOTESKINS'][noteskinId]['CAP_'+kind];
+        if(!source)return null;
+        const texture=source.cloneMap();texture.repeat.set(1/6,1);
+        return new THREE.Mesh(this._geometryDict['S'].stepGeometry,new TransparentMaterial(texture).material);
     }
 
     constructJudgmentBanner() {

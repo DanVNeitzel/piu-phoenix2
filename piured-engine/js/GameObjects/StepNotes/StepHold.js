@@ -77,6 +77,13 @@ class StepHold extends GameObject {
         this._holdExtensible.object.position.z = this.holdZDepth ;
         this._holdExtensible.object.position.x = this._stepNote.object.position.x ;
         this._object.add(this._holdExtensible.object) ;
+        this._holdCap=this._resourceManager.constructHoldCap(this._stepNote.kind,noteskin);
+        if(this._holdCap){
+            this._holdCap.position.x=this._stepNote.object.position.x;
+            this._holdCap.position.z=this.holdZDepth+.00001;
+            this._capAnimation=this._resourceManager.getHoldExtensibleTexture(this._stepNote.kind,noteskin);
+            this._object.add(this._holdCap);
+        }
     }
 
 
@@ -138,11 +145,25 @@ class StepHold extends GameObject {
         } else if (this._lastGapLength >=0 && this._holdExtensible.object.scale.y < 0) {
             this._holdExtensible.object.scale.y *= 1 ;
         }
+        if(this._holdCap){
+            this._holdCap.position.y=this._endBeat;
+            this._holdCap.scale.y=this._lastGapLength<0?-1:1;
+            // Native caps already include the last half-note of body above the arrow.
+            // Stop the repeating strip at that edge, not below the cap's artwork.
+            const direction=this._lastGapLength<0?-1:1;
+            const bodyLength=Math.max(0,gap-0.5);
+            this._holdExtensible.size=bodyLength;
+            this._holdExtensible.object.scale.y=direction*bodyLength;
+            this._holdExtensible.object.position.y=this._stepNote.object.position.y-direction*bodyLength/2;
+        }
 
 
     }
 
     update(delta) {
+        if(this._holdCap){
+            this._holdCap.material.map.offset.x=this._capAnimation.offset.x;
+        }
 
         const gapLength = this.gapLength() ;
 

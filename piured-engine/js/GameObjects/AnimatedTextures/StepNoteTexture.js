@@ -33,7 +33,7 @@ class StepNoteTexture extends GameObject {
 
         super(resourceManager);
         this._kind = kind;
-        this._stepAnimationRate = animationRate ;
+        this._stepAnimationRate = noteskin==='PHOENIX'?24:animationRate ;
 
         this._map = this._resourceManager.getStepNoteTexture( this._kind, noteskin ) ;
 

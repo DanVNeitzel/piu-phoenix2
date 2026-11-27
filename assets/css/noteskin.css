@@ -140,7 +140,7 @@ CONFIG NOTESKIN
 }
 
 .select-noteskin>option[value="PHOENIX"] {
-  background-image: url(../img/CW_settings/noteskin_cover/OLD.png);
+  background-image: url(../img/CW_settings/noteskin_cover/PHOENIX.png);
 }
 
 .select-noteskin>option[value="ZERO-CANOND"] {
@@ -375,7 +375,7 @@ CONFIG NOTESKIN
 
 .select-noteskin>button[value="PHOENIX"],
 .select-noteskin>button[value="PHOENIX"].focus {
-  background-image: url(../img/CW_settings/noteskin_cover/OLD.png);
+  background-image: url(../img/CW_settings/noteskin_cover/PHOENIX.png);
 }
 
 .select-noteskin>button[value="ZERO-CANOND"] {

@@ -31,6 +31,7 @@ class Explosion extends GameObject {
         super(resourceManager);
         this._explosionAnimationRate = 3 ;
         this._mesh = this._resourceManager.constructExplosion( noteskin ) ;
+        this._nativePhoenix=noteskin==='PHOENIX';
 
     }
 
@@ -40,6 +41,7 @@ class Explosion extends GameObject {
         this._mesh.material.map.repeat.set(2/20,2/4);
         // explosionMap.offset.set( 0 , 0 );
         this._mesh.material.map.offset.set(  1/20 , 1/4 );
+        if(this._nativePhoenix){this._mesh.material.map.repeat.set(1/6,1);this._mesh.material.map.offset.set(0,0);}
 
         // explosionMap.blending = THREE.AdditiveBlending ;
 
@@ -69,9 +71,19 @@ class Explosion extends GameObject {
         this._animationPosition = 0 ;
         this._lastStepTimeStamp = 0 ;
         this._mesh.material.map.offset.set( 1 / 20, 1 / 4);
+        if(this._nativePhoenix)this._mesh.material.map.offset.set(0,0);
     }
 
     update(delta) {
+        if(this._nativePhoenix){
+            if(this._animationPosition<6){
+                this._lastStepTimeStamp+=delta;
+                this._animationPosition=Math.floor(this._lastStepTimeStamp/.06);
+                if(this._animationPosition<6)this._mesh.material.map.offset.set(this._animationPosition/6,0);
+            }
+            this._mesh.material.opacity=this._animationPosition<6?1:0;
+            return;
+        }
 
 
         if (this._animationPosition <= 4 ) {

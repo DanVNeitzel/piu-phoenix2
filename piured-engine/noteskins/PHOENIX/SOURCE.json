@@ -1,0 +1,9 @@
+{
+  "source": "z3phoenix-20261127T034928Z-1-001.zip",
+  "sha256": "4f417372a733a0416e3b438b68b1b1c45bad72c2c4c6ea9925184d27acb3fc23",
+  "notes": "User-supplied z3phoenix artwork. Original PNG bytes preserved except hold body strips tiled to 6x1 atlases.",
+  "tap_frames": 6,
+  "tap_cycle_seconds": 0.25,
+  "explosion_frames": 6,
+  "explosion_frame_seconds": 0.06
+}
