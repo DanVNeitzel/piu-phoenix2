@@ -1,7 +1,37 @@
 {
-  "version": "0.8.64",
+  "version": "0.8.69",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Posição lateral do selo em paisagem",
+      "items": [
+        "Deslocado o selo do nível para o espaço marcado entre a pontuação e a tabela, junto ao topo, preservando o destaque e a leitura dos dados."
+      ]
+    },
+    {
+      "category": "Nível acima do SCORE em paisagem",
+      "items": [
+        "Movido o selo do nível para acima do SCORE da jogada atual e restaurado o alinhamento central dos nomes dos julgamentos."
+      ]
+    },
+    {
+      "category": "Selo em primeiro plano e ampliado",
+      "items": [
+        "Aumentado novamente o selo do nível no resultado em paisagem e corrigida sua camada para aparecer à frente das linhas da tabela, mantendo a posição central."
+      ]
+    },
+    {
+      "category": "Selo central e maior em paisagem",
+      "items": [
+        "Centralizado o selo do nível no meio da tela de resultado e aumentado seu tamanho em cerca de 30%, com os julgamentos alinhados à direita para manter a leitura."
+      ]
+    },
+    {
+      "category": "Nível centralizado no resultado em paisagem",
+      "items": [
+        "Movido o selo do nível para o meio da tabela, entre os números e os nomes dos julgamentos, liberando espaço vertical no resultado em paisagem."
+      ]
+    },
     {
       "category": "README e capturas atualizados",
       "items": [

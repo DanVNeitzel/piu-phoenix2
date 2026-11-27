@@ -18,7 +18,7 @@
   function placeLevelBadge() {
     const badge=byId('resultLevelBadge');
     if(portrait.matches) view.querySelector('.result-titlebar').append(badge);
-    else view.querySelector('.result-comparison').prepend(badge);
+    else view.querySelector('.result-current').prepend(badge);
   }
   portrait.addEventListener('change',placeLevelBadge);
   placeLevelBadge();

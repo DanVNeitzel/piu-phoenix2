@@ -115,7 +115,7 @@
   body.results-active{overflow:hidden}
   #performance.phoenix-results{height:100dvh;min-height:0;overflow:hidden}
   #performance.phoenix-results .result-stage{
-    --result-badge:clamp(30px,10dvh,80px);
+    --result-badge:clamp(48px,17dvh,128px);
     display:grid;grid-template-rows:clamp(26px,8dvh,64px) clamp(28px,9dvh,72px) minmax(0,1fr) auto;
     height:100dvh;min-height:0;max-height:100dvh;box-sizing:border-box;
     gap:clamp(3px,1dvh,8px);overflow:hidden;
@@ -134,6 +134,8 @@
   #performance.phoenix-results #resultArtist{font-size:clamp(8px,2dvh,12px);line-height:1.15}
   #performance.phoenix-results .result-evaluation{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.65fr) minmax(0,1fr);grid-template-rows:minmax(0,1fr);gap:clamp(8px,2vw,24px);align-items:stretch;padding:0}
   #performance.phoenix-results :is(.result-current,.result-best){height:100%;min-height:0;box-sizing:border-box;padding:0;gap:clamp(1px,.5dvh,4px);align-self:stretch;justify-content:center}
+  #performance.phoenix-results .result-current{gap:0}
+  #performance.phoenix-results .result-current #gradeResult{min-height:18px}
   #performance.phoenix-results .result-score-label{font-size:clamp(8px,2dvh,14px);line-height:1.2}
   #performance.phoenix-results :is(.result-score,#score,#resultBestScore){font-size:clamp(21px,6.3dvh,48px);line-height:1.1}
   #performance.phoenix-results :is(.result-delta,.result-best-caption){font-size:clamp(8px,2dvh,12px);line-height:1.2;min-height:0;padding:0}
@@ -145,11 +147,11 @@
   #performance.phoenix-results :is(.result-outcome,.result-new-record){font-size:clamp(7px,1.8dvh,12px);line-height:1.2}
   #performance.phoenix-results .result-progress{font-size:clamp(7px,1.8dvh,11px);line-height:1.1;gap:3px}
   #performance.phoenix-results .result-progress span{padding:1px 3px}
-  #performance.phoenix-results .result-comparison{display:grid;grid-template-rows:var(--result-badge) minmax(0,1fr);gap:3px;min-height:0;align-items:stretch;justify-items:center}
-  #performance.phoenix-results #resultLevelBadge{width:var(--result-badge);height:var(--result-badge);margin:0}
+  #performance.phoenix-results .result-comparison{position:relative;display:grid;grid-template-rows:minmax(0,1fr);gap:0;min-height:0;align-items:stretch;justify-items:center}
+  #performance.phoenix-results #resultLevelBadge{position:relative;inset:auto;align-self:flex-end;transform:translateX(calc(clamp(8px,2vw,24px)/2));z-index:3;width:var(--result-badge);height:var(--result-badge);margin:0;flex-shrink:0}
   #performance.phoenix-results #resultLevelBadge.coop{width:calc(var(--result-badge)*1.35);height:var(--result-badge)}
-  #performance.phoenix-results .result-level strong{font-size:clamp(14px,4dvh,30px)}
-  #performance.phoenix-results .result-level span{font-size:clamp(6px,1.5dvh,10px)}
+  #performance.phoenix-results .result-level strong{font-size:clamp(24px,6.8dvh,48px)}
+  #performance.phoenix-results .result-level span{font-size:clamp(9px,2.5dvh,16px)}
   #performance.phoenix-results .result-judgments{height:100%;min-height:0}
   #performance.phoenix-results .result-judgments thead tr{height:clamp(10px,2.5dvh,20px)}
   #performance.phoenix-results .result-judgments thead th{font-size:clamp(6px,1.6dvh,10px);line-height:1}
