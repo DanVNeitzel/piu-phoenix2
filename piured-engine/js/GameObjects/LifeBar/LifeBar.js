@@ -42,6 +42,8 @@ class LifeBar extends GameObject {
         this._back = this.setUpBack(kind) ;
         this._bar = this.setUpBar(kind) ;
         this._front = this.setUpFront(kind) ;
+        this._electric = new LFBarElectric(resourceManager,kind);
+        this._object.add(this._electric.object);
 
         this._barSize = 0.5 ;
         this.setsize(this._barSize);
@@ -64,10 +66,15 @@ class LifeBar extends GameObject {
         }
 
         this._bar.setsize(size) ;
+        this._electric.setLife(size);
 
     }
 
 
+
+    setCombo(combo) {
+        this._electric.setCombo(combo);
+    }
 
     setUpBack(kind) {
         let back = new LFBack(this._resourceManager, kind) ;

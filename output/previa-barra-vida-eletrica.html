@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Prévia · Barra de vida elétrica · PIUWeb</title>
+<style>
+@font-face{font-family:Plateia;src:url('../assets/fonts/PlateiaBold.woff') format('woff')}
+*{box-sizing:border-box}body{margin:0;background:#030a0c;color:#e8f4ef;font-family:Arial,sans-serif}main{max-width:1100px;margin:auto;padding:26px 24px;min-height:100svh;display:flex;flex-direction:column;gap:22px}h1{font:clamp(16px,2.2vw,25px)/1.5 Plateia,Arial;margin:6px 0}header p{margin:0;color:#9cb6b0;font-size:13px;line-height:1.6}.eyebrow{font-size:11px;font-weight:bold;color:#bde98b;letter-spacing:.16em}.hero{padding:22px 0 18px;border:1px solid #31504a;border-radius:8px;background:radial-gradient(ellipse at center,#12332d99,#041015 80%);overflow:hidden}.hero-top{display:flex;justify-content:space-between;align-items:center;padding:0 24px;gap:12px}.hero-top h2{margin:0;font-size:12px;font-weight:normal;letter-spacing:.1em;color:#b4c8c0}.status{font-size:10px;letter-spacing:.07em;padding:6px 9px;color:#a3bbb1;border:1px solid #3e584c;border-radius:4px;white-space:nowrap}.status.active{border-color:#44dce9;color:#bcfbff;background:#0b43454d;box-shadow:0 0 12px #25e3ff15}canvas{display:block;width:100%;height:180px}.combo{text-align:center;margin:0;font-size:11px;color:#94b8b2;letter-spacing:.15em}.combo strong{display:block;font:32px/1.5 Plateia,Arial;color:white;letter-spacing:0}.hero-note{text-align:center;font-size:12px;color:#99b8af;margin:8px 14px 0}.controls{border:1px solid #29433b;background:#07150f;border-radius:6px;padding:18px;display:grid;grid-template-columns:1fr 1fr;gap:18px 26px}.controls label{font-size:12px;font-weight:bold;color:#b7cdc4;display:block}.controls output{float:right;color:#fff;font-variant-numeric:tabular-nums}input{width:100%;accent-color:#8ee6ce;margin:14px 0 0;cursor:pointer}.buttons{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:8px}button{border:1px solid #526f4c;border-radius:4px;padding:10px 16px;background:#12251b;color:#e9f3e2;font:700 11px Arial;cursor:pointer;min-height:40px}button:hover{background:#29422a}button:focus-visible,input:focus-visible{outline:2px solid #fff;outline-offset:3px}button.break{border-color:#865c63;color:#f7c2c6;background:#29171d}button.pause{margin-left:auto;border-color:#47656a;background:#102329;color:#bfdee4}.comparison{display:grid;grid-template-columns:1fr 1fr;gap:16px}.comparison section{border:1px solid #29453d;border-radius:6px;background:#071310;padding:14px 0 8px}.comparison h2{margin:0 16px;font-size:11px;line-height:1.5;color:#bdd0c7}.comparison h2 span{float:right;color:#7d9991;font-weight:normal}.comparison canvas{height:115px}.comparison section:last-child{border-color:#2d6970}.comparison section:last-child h2 span{color:#8be8ef}footer{font-size:11px;line-height:1.5;color:#829d92;display:flex;justify-content:space-between;gap:14px;margin-top:auto}
+@media(max-width:650px){main{padding:16px 12px;gap:16px}header p{font-size:12px}.hero{padding:15px 0}.hero-top{padding:0 14px}.hero-top h2{font-size:10px}.status{font-size:8px;padding:5px}.hero canvas{height:125px}.combo strong{font-size:25px}.hero-note{font-size:11px}.controls{padding:12px;gap:14px;grid-template-columns:1fr}.buttons{gap:5px}.buttons button{font-size:10px;padding:8px 10px}.buttons .pause{margin-left:0}.comparison{gap:8px}.comparison h2{margin:0 8px;font-size:9px}.comparison h2 span{display:block;float:none;margin-top:3px}.comparison canvas{height:80px}footer{font-size:10px;flex-direction:column;gap:3px}}
+</style>
+</head>
+<body>
+<main>
+ <header><span class="eyebrow">PRÉVIA ANIMADA · PARA APROVAÇÃO</span><h1>BARRA DE VIDA / EFEITO ELÉTRICO</h1><p>Relâmpagos azul-ciano, borda luminosa e energia percorrendo a barra.</p></header>
+ <section class="hero" aria-label="Demonstração da barra de vida">
+  <div class="hero-top"><h2>VIDA <span id="life-label">100%</span></h2><span id="status" class="status active" role="status">EFEITO ELÉTRICO ATIVO</span></div>
+  <canvas id="main-bar" aria-label="Prévia da barra de vida com efeito elétrico"></canvas>
+  <p class="combo">COMBO ATUAL<strong id="combo-label">120</strong></p><p class="hero-note" id="note">Combo acima de 90: a eletricidade permanece ativa.</p>
+ </section>
+ <section class="controls" aria-label="Controles da demonstração">
+  <label for="combo">Combo atual <output id="combo-value" for="combo">120</output><input id="combo" type="range" min="0" max="200" value="120"></label>
+  <label for="life">Barra de vida <output id="life-value" for="life">100%</output><input id="life" type="range" min="10" max="100" value="100"></label>
+  <div class="buttons"><button type="button" data-combo="90">COMBO 90</button><button type="button" data-combo="91">COMBO 91</button><button type="button" class="break" data-combo="0">QUEBRAR COMBO</button><button type="button" id="pause" class="pause" aria-pressed="false">PAUSAR ANIMAÇÃO</button></div>
+ </section>
+ <div class="comparison"><section><h2>COMBO 90 <span>Barra normal</span></h2><canvas id="normal-bar" aria-label="Barra normal com combo 90"></canvas></section><section><h2>COMBO 91 <span>Efeito elétrico</span></h2><canvas id="electric-bar" aria-label="Barra elétrica com combo 91"></canvas></section></div>
+ <footer><span>Prévia independente: o efeito ainda não foi aplicado ao jogo.</span><span>Ativa com combo ≥ 91 · desativa com combo ≤ 90</span></footer>
+</main>
+<script src="../assets/js/life-electric.js?v=0.8.49"></script>
+<script>
+const frame=new Image(),texture=new Image();frame.src='../piured-engine/stage_UHD/LifeMeterBar_S_Front.png';texture.src='../piured-engine/stage_UHD/LifeMeterBar_S_Bar%201x2.png';
+const $=id=>document.getElementById(id),combo=$('combo'),life=$('life'),reduced=matchMedia('(prefers-reduced-motion:reduce)');
+let clock=0,last=0,paused=reduced.matches,manual=false;
+const canvases=[$('main-bar'),$('normal-bar'),$('electric-bar')];
+function update(){const active=Number(combo.value)>90;$('combo-label').textContent=combo.value;$('combo-value').textContent=combo.value;$('life-label').textContent=life.value+'%';$('life-value').textContent=life.value+'%';$('status').textContent=active?'EFEITO ELÉTRICO ATIVO':'BARRA NORMAL';$('status').classList.toggle('active',active);$('main-bar').setAttribute('aria-label',active?'Barra de vida elétrica: combo '+combo.value:'Barra de vida normal: combo '+combo.value);$('note').textContent=active?'Combo acima de 90: a eletricidade permanece ativa.':'Combo de 90 ou menos: efeito elétrico desligado.';render(clock);}
+function bar(canvas,electric,t,fill=1){
+ const box=canvas.getBoundingClientRect(),w=box.width,h=box.height,dpr=Math.min(devicePixelRatio||1,2);if(!w||!h)return;
+ const pw=Math.round(w*dpr),ph=Math.round(h*dpr);if(canvas.width!==pw||canvas.height!==ph){canvas.width=pw;canvas.height=ph;}
+ const ctx=canvas.getContext('2d');ctx.setTransform(dpr,0,0,dpr,0,0);ctx.clearRect(0,0,w,h);
+ const margin=w<300?13:w<500?20:40,bw=w-2*margin,bh=Math.max(17,Math.min(60,bw/11.7)),x=margin,y=(h-bh)/2;
+ if(!frame.complete||!frame.naturalWidth||!texture.complete||!texture.naturalWidth)return;
+ ctx.drawImage(frame,x,y,bw,bh);
+ const ix=x+bw*.023,iy=y+bh*.25,iw=bw*.954,ih=bh*.5;
+ ctx.fillStyle='#020e18';ctx.fillRect(ix,iy,iw,ih);
+ ctx.save();ctx.beginPath();ctx.rect(ix,iy,iw*fill,ih);ctx.clip();
+ ctx.translate(ix+iw,iy);ctx.scale(-1,1);ctx.drawImage(texture,0,0,texture.naturalWidth,texture.naturalHeight/2,0,0,iw,ih);ctx.restore();
+ if(!electric)return;
+ PiuLifeElectric.draw(ctx,{x,y,width:bw,height:bh},t,fill);
+}
+function render(t){bar(canvases[0],Number(combo.value)>90,t,Number(life.value)/100);bar(canvases[1],false,t);bar(canvases[2],true,t+.23);}
+function paint(now){if(last&&!paused&&!manual)clock+=(now-last)/1000;last=now;render(clock);requestAnimationFrame(paint);}
+function pauseLabel(){$('pause').textContent=paused?'REPRODUZIR ANIMAÇÃO':'PAUSAR ANIMAÇÃO';$('pause').setAttribute('aria-pressed',String(paused));}
+combo.addEventListener('input',update);life.addEventListener('input',update);document.querySelectorAll('[data-combo]').forEach(button=>button.onclick=()=>{combo.value=button.dataset.combo;update();});$('pause').onclick=()=>{manual=false;paused=!paused;pauseLabel();};
+window.ElectricLifePreview={renderAt(t){manual=true;clock=t;render(t);},setCombo(value){combo.value=value;update();},isElectric:()=>Number(combo.value)>90};
+new ResizeObserver(()=>render(clock)).observe($('main-bar'));reduced.addEventListener('change',()=>{paused=reduced.matches;pauseLabel();});pauseLabel();Promise.all([frame.decode(),texture.decode()]).then(()=>{update();requestAnimationFrame(paint);});
+</script>
+</body>
+</html>

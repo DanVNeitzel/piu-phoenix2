@@ -87,6 +87,7 @@ class JudgmentScale extends GameObject {
 
     updateCombo(value) {
         this.comboCount = value ;
+        this._lifeBar.setCombo(value);
         if (this.comboCount > this.stats.maxCombo) {
             this.stats.maxCombo = this.comboCount ;
         }

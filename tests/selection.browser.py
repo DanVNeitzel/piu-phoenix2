@@ -195,6 +195,46 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.goto(self.origin+'/localStage.html?preview=touchpad')
         self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
 
+    def test_electric_life_bar_current_combo_layout_pause_and_disposal(self):
+        for style in ['pump-single','pump-double','pump-halfdouble']:
+            self.open_frozen_stage(style,True)
+            for width,height in [(1280,800),(844,390),(390,844)]:
+                self.page.set_viewport_size({'width':width,'height':height})
+                actual=self.page.evaluate("""()=>{
+                  engine.onWindowResize();updateHudLayout();
+                  const stage=engine.stage._playerStages[0],bar=stage._lifeBar,fx=bar._electric,judge=stage.judgment;
+                  const input=stage.keyListener;
+                  input.updateResponsiveLayout();PiuGameplayLayout.apply(engine);input.updateResponsiveLayout();
+                  judge.updateCombo(90);const off=!fx.object.visible;
+                  const before=PiuGameplayLayout.bounds(bar.object,engine);
+                  judge.updateCombo(91);fx.update(.1);const on=fx.object.visible;
+                  const after=PiuGameplayLayout.bounds(bar.object,engine);
+                  judge.updateCombo(150);judge.miss();const reset={visible:fx.object.visible,combo:judge.comboCount,max:judge.stats.maxCombo};
+                  judge.updateCombo(150);judge.bad();const badOff=!fx.object.visible;
+                  judge.updateCombo(91);bar.setsize(.2);const low=fx._life;bar.setsize(1);
+                  const stats=JSON.stringify(judge.stats),time=fx._time;engine.render();
+                  const paused=fx._time===time;fx.update(.1);
+                  return {off,on,reset,badOff,low,paused,statsUnchanged:stats===JSON.stringify(judge.stats),
+                    drift:Math.max(...['left','right','top','bottom'].map(key=>Math.abs(before[key]-after[key]))),
+                    attached:fx.object.parent===bar.object};
+                }""")
+                self.assertTrue(actual['off'] and actual['on'] and actual['badOff'])
+                self.assertEqual(actual['reset'],{'visible':False,'combo':0,'max':150})
+                self.assertAlmostEqual(actual['low'],.2)
+                self.assertTrue(actual['paused'] and actual['statsUnchanged'] and actual['attached'])
+                self.assertLess(actual['drift'],.1)
+            self.page.emulate_media(reduced_motion='reduce')
+            self.page.wait_for_function("engine.stage._playerStages[0]._lifeBar._electric._motion.matches")
+            self.assertTrue(self.page.evaluate("""()=>{const fx=engine.stage._playerStages[0]._lifeBar._electric,time=fx._time;fx.update(.5);return time===fx._time;}"""))
+            self.page.emulate_media(reduced_motion='no-preference')
+            self.page.evaluate("""()=>{
+              window.electricDisposed=false;
+              engine.stage._playerStages[0]._lifeBar._electric._texture.addEventListener('dispose',()=>window.electricDisposed=true);
+              PiuTouchEditor.cancel();
+            }""")
+            self.assertTrue(self.page.evaluate('electricDisposed'))
+        self.assertFalse(self.errors)
+
     def test_half_double_receptors_notes_and_keyboard(self):
         self.open_frozen_stage('pump-halfdouble',False)
         actual=self.page.evaluate("""()=>{

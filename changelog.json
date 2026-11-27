@@ -1,7 +1,34 @@
 {
-  "version": "0.8.45",
+  "version": "0.8.49",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Barra de vida elétrica durante a partida",
+      "items": [
+        "Aplicado ao jogo o efeito elétrico aprovado, ativado pelo combo atual a partir de 91 e desligado ao cair para 90 ou menos, incluindo quebra de combo.",
+        "O efeito acompanha a posição e o tamanho da barra nos modos Single, Double e Half Double, respeita a pausa e mantém iluminação estática com movimento reduzido."
+      ]
+    },
+    {
+      "category": "Restaurado o efeito elétrico anterior",
+      "items": [
+        "Restaurada a primeira animação elétrica da prévia da barra de vida, com os relâmpagos mais rápidos e irregulares, conforme preferência do usuário."
+      ]
+    },
+    {
+      "category": "Prévia da barra elétrica mais fluida",
+      "items": [
+        "Suavizados os relâmpagos, as partículas e o brilho da prévia com movimento contínuo, eliminando as trocas bruscas de posição entre quadros.",
+        "Mantida a ativação da eletricidade apenas com combo acima de 90."
+      ]
+    },
+    {
+      "category": "Prévia da barra de vida elétrica por combo",
+      "items": [
+        "Criada uma prévia animada independente da barra de vida com borda elétrica azul-ciano e relâmpagos, inspirada nas referências enviadas.",
+        "A demonstração permite testar o efeito ativo a partir de combo 91 e seu desligamento ao cair para 90 ou menos, incluindo quebra de combo."
+      ]
+    },
     {
       "category": "Remoção da prévia da noteskin Phoenix 2",
       "items": [
