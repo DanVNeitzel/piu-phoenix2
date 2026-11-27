@@ -1,10 +1,12 @@
 # PIUWeb · Phoenix
 
+**Versão 0.8.64 · Atualizado em 27/11/2026**
+
 Simulador de ritmo para navegador com interface inspirada no Pump It Up Phoenix, seleção de músicas e dificuldades, controles por teclado ou toque e recordes locais. O projeto usa a engine **PIURED** para carregar os charts e executar as partidas.
 
 ## Preview
 
-Capturas reais da aplicação executada localmente em desktop. A música usada na demonstração é **Final Audition 2**, de **BanYa**.
+Capturas da versão atual executada localmente, com **Final Audition 2**, de **BanYa**, e a noteskin **PHOENIX 2**. A gameplay e o resultado demonstram o modo **AUTOPLAY**, cuja pontuação não é salva em recordes ou histórico.
 
 ### Tela inicial
 
@@ -26,16 +28,33 @@ Capturas reais da aplicação executada localmente em desktop. A música usada n
 
 ![Resultado da partida com pontuação, julgamentos e comparação com recorde pessoal](docs/images/score.jpg)
 
+### Command Window e AUTOPLAY
+
+![Opção AUTOPLAY no Command Window do celular](docs/images/command-window.jpg)
+
+### Gameplay no celular em paisagem
+
+![Touchpads nas laterais, noteskin PHOENIX 2 e indicação de AUTOPLAY abaixo do combo](docs/images/jogando-mobile.jpg)
+
+### Resultado no celular em paisagem
+
+![Pontuação, precisão, grade, julgamentos e ações visíveis sem rolagem](docs/images/score-mobile.jpg)
+
 ## Recursos
 
 - Abertura arcade e seleção de músicas por canais, com preview de áudio e favoritos.
 - Canais e níveis vazios do Difficulty Zone aparecem com cadeado vermelho e não permitem entrada por clique, toque ou teclado.
 - SERIES ZONE reúne 1ST~ZERO, NX~NXA, FIESTA~FIESTA2, PRIME, PRIME 2, XX, PHOENIX e PHOENIX 2. Escolha a série para acessar suas músicas; voltar segue o caminho músicas → séries → canais principais.
 - Escolha de charts Single, Double e Half Double, quando disponíveis na música.
-- Ajustes de velocidade, velocidade automática, playback, offset e noteskin.
+- Command Window no desktop e no celular, com velocidade, Auto Velocity, playback, offset, noteskin, VANISH, FD, HJ, RANDOM NOTE e AUTOPLAY.
+- Noteskins **PHOENIX** e **PHOENIX 2**, com receptores, notas, corpos e pontas próprios para os longs. A PHOENIX 2 inclui movimento contínuo da arte interna das setas azuis e vermelhas.
 - Controles por teclado e touchpad com ajustes de layout para dispositivos móveis.
 - Pausa e retomada da partida, com confirmação para abandonar.
-- Resultado com score, classificação, julgamentos, combo e comparação com o recorde pessoal.
+- Efeito elétrico na barra de vida quando o combo atual ultrapassa 90, com animação pré-renderizada para reduzir o trabalho durante a gameplay.
+- Resultado com score, precisão em porcentagem, classificação, julgamentos e evolução de score, misses e max combo em relação ao recorde pessoal.
+- Resultado em paisagem ajustado à altura da tela, sem rolagem nem rodapé cobrindo informações. Sem recorde anterior, aparece “Primeira partida neste step”.
+- Botão **Jogar novamente**, mantendo o step e as configurações da partida.
+- **AUTOPLAY** acerta notas, acordes e longs com PERFECT. A pontuação aparece no resultado, mas não gera recordes, histórico ou contagem de partidas.
 - Histórico e recordes salvos no navegador, com opção de compartilhar a pontuação como imagem.
 - Manifest e ícones para adicionar o aplicativo à tela inicial.
 - Aviso de nova versão nos menus de canais, músicas e níveis, com atualização que preserva os dados locais.
@@ -56,6 +75,8 @@ Abra **http://127.0.0.1:8765/** em um navegador com JavaScript, WebGL e áudio h
 4. Se o navegador solicitar uma interação para liberar o áudio, pressione **Iniciar partida**.
 5. Ao terminar, confira o resultado e siga para a próxima música.
 
+Para assistir a um chart, abra **Command Window → AUTOPLAY → ON** antes de iniciar. O aviso **AUTOPLAY** permanece visível abaixo do combo e o resultado identifica **PONTUAÇÃO NÃO SALVA**. Selecione **OFF** para voltar a jogar manualmente e registrar resultados normalmente.
+
 Nos menus de seleção, o jogo verifica novas versões a cada minuto e ao voltar ao aplicativo. **Atualizar agora** baixa os arquivos e reinicia o jogo, preservando recordes, histórico e preferências. **Agora não** recolhe o aviso para um botão discreto; uma nova versão publicada faz o aviso aparecer novamente. Durante a partida, o aviso fica oculto.
 
 ### Controles padrão
@@ -71,7 +92,9 @@ As teclas podem ser alteradas nas configurações.
 
 O ajuste do touchpad possui perfis **SINGLE**, **DOUBLE** e **HALFDOUBLE**, selecionados automaticamente pelo chart. Cada perfil mantém suas configurações de retrato e paisagem. Salvar ou restaurar uma orientação afeta somente o perfil em uso; ajustes antigos compartilhados são preservados como ponto inicial para Single e Double.
 
-**CO-OP / Routine** é identificado pelas marcações dos participantes no chart, sem depender do nível 99. Esses charts ficam no canal **CO-OP** e não entram no filtro Double do Difficulty Zone. O aplicativo inclui um índice das músicas cooperativas de toda a biblioteca publicada, sem depender da lista parcial do canal ou de visitas prévias a outros canais. Bibliotecas locais e arquivos novos são verificados ao abrir os canais. Músicas com charts individuais e cooperativos também mostram um botão para abrir a opção CO-OP.
+O editor permite encostar os touchpads nas quatro bordas da tela. No celular em paisagem, os indicadores de configurações ficam ao lado do stage para liberar espaço para os controles.
+
+**CO-OP / Routine** é identificado pelas marcações dos participantes no chart, sem depender do nível 99. Esses charts aparecem no canal **CO-OP** e nos canais de origem das músicas e não entram no filtro Double do Difficulty Zone. O aplicativo inclui um índice das músicas cooperativas de toda a biblioteca publicada, sem depender da lista parcial do canal ou de visitas prévias a outros canais. Bibliotecas locais e arquivos novos são verificados ao abrir os canais. Músicas com charts individuais e cooperativos também mostram um botão para abrir a opção CO-OP.
 
 O índice publicado em `assets/data/coop-index.json` é gerado pela leitura das notas dos arquivos SSC. Após atualizar a biblioteca, regenere-o com `node scripts/build-coop-index.cjs`. O comando aceita a URL da biblioteca e a data local `YYYY-MM-DD` como argumentos opcionais; arquivos indisponíveis são registrados no índice e não impedem sua geração.
 
@@ -87,7 +110,7 @@ O catálogo e as mídias são carregados de uma biblioteca separada. A origem pa
 
 A biblioteca fornece `songs.json`, charts `.ssc`, arquivos de áudio e imagens. Para usar outra biblioteca, ajuste essa origem e preserve a estrutura esperada pelo carregador. Se estiver em outro domínio, o servidor da biblioteca precisa permitir o acesso aos arquivos via CORS.
 
-Os banners dos canais usam as imagens inclu?das em `assets/img/phx2/channels/`. Para usar um cat?logo local em `localhost` ou `127.0.0.1`, abra `index.html?library=local`: o carregador tenta `/piu-songs/songs.json` no mesmo servidor e usa a biblioteca publicada como alternativa. Sem esse par?metro, usa diretamente o cat?logo publicado.
+Os banners dos canais usam as imagens incluídas em `assets/img/phx2/channels/`. Para usar um catálogo local em `localhost` ou `127.0.0.1`, abra `index.html?library=local`: o carregador tenta `/piu-songs/songs.json` no mesmo servidor e usa a biblioteca publicada como alternativa. Sem esse parâmetro, usa diretamente o catálogo publicado.
 
 É necessária conexão para acessar as mídias da biblioteca remota. O manifest e os recordes locais, por si só, não garantem que todas as músicas estejam disponíveis offline. Recordes e preferências ficam associados ao navegador e à origem utilizada; limpar os dados do site remove esses dados.
 
@@ -101,7 +124,7 @@ A implementação incluída em [`piured-engine/`](piured-engine/) deriva da **[p
 | Parser SSC | Leitura de metadados, dificuldades e notas de arquivos StepMania SSC. |
 | Áudio | Carregamento e sincronização da música, com suporte a MP3 e OGG. |
 | Timing | Tratamento de BPM, stops, delays, scrolls, speeds e warps nos módulos de música. |
-| Estilos Pump | Charts `pump-single`, `pump-double` e `pump-halfdouble`. |
+| Estilos Pump | Charts `pump-single`, `pump-double`, `pump-halfdouble` e CO-OP / `pump-routine`. |
 | Entrada | Configurações de teclado e toque conectadas aos jogadores. |
 | Recursos visuais | Noteskins, texturas, geometrias, julgamentos, combo e barra de vida. |
 
@@ -109,7 +132,7 @@ A implementação incluída em [`piured-engine/`](piured-engine/) deriva da **[p
 
 `index.html` → seleção e configuração → `sessionStorage` → `localStage.html` → engine → resultado → `index.html`
 
-[`Demo/DemoLogic.js`](Demo/DemoLogic.js) prepara a configuração da música e do jogador. [`Demo/LocalStage/RunLocalStage.js`](Demo/LocalStage/RunLocalStage.js) cria a instância de `Engine`, configura o palco com `StageConfig`, adiciona o jogador com `PlayerConfig` e conecta os controles. Ao concluir a música, a aplicação retorna à interface de resultados e registra a jogada no armazenamento local.
+[`Demo/DemoLogic.js`](Demo/DemoLogic.js) prepara a configuração da música e do jogador. [`Demo/LocalStage/RunLocalStage.js`](Demo/LocalStage/RunLocalStage.js) cria a instância de `Engine`, configura o palco com `StageConfig`, adiciona o jogador com `PlayerConfig` e conecta os controles. Ao concluir a música, a aplicação retorna à interface de resultados e registra a jogada no armazenamento local, exceto quando o AUTOPLAY está ativo.
 
 O ponto principal da engine é [`piured-engine/js/Engine.js`](piured-engine/js/Engine.js). A existência de abstrações para múltiplos jogadores na engine não implica que esta interface single player ofereça partidas online.
 
@@ -126,6 +149,18 @@ O ponto principal da engine é [`piured-engine/js/Engine.js`](piured-engine/js/E
 ├── docs/images/          # Capturas usadas neste README
 └── manifest.json         # Metadados para instalação na tela inicial
 ```
+
+### Atualizar as capturas
+
+O script [`scripts/capture-readme.py`](scripts/capture-readme.py) refaz as oito imagens deste README usando o chart real de Final Audition 2 em AUTOPLAY. Para executá-lo, mantenha a biblioteca em `../piu-songs/`, com `songs.json` e as mídias da música, e instale Playwright com Chromium no ambiente Python:
+
+```sh
+python -m pip install playwright
+python -m playwright install chromium
+python scripts/capture-readme.py
+```
+
+O script abre um servidor temporário, captura as telas de desktop e celular e fecha o navegador ao terminar. Ele avança o chart de forma determinística para gerar a demonstração, sem gravar recordes ou histórico. Essas dependências são usadas apenas para gerar as capturas; o jogo continua estático e sem etapa de compilação.
 
 ## Créditos e licença
 

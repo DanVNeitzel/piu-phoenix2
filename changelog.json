@@ -1,7 +1,13 @@
 {
-  "version": "0.8.63",
+  "version": "0.8.64",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "README e capturas atualizados",
+      "items": [
+        "Atualizados o README e as capturas da aplicação para documentar as noteskins PHOENIX, o AUTOPLAY, a barra elétrica, os resultados sem rolagem em paisagem e os controles atuais."
+      ]
+    },
     {
       "category": "Resultado em paisagem sem rolagem",
       "items": [
