@@ -1,7 +1,14 @@
 {
-  "version": "0.8.51",
+  "version": "0.8.52",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Noteskin PHOENIX 2",
+      "items": [
+        "Adicionada PHOENIX 2 como opção separada no seletor de noteskins, com os arquivos fornecidos de notas, receptores, corpos dos longs, pontas direcionais e efeito de acerto.",
+        "Ajustadas as margens dos atlas para preservar a proporção das notas e o acabamento dos longs. A ponta central dourada usa o arquivo PHOENIX enviado anteriormente, ausente no novo pacote."
+      ]
+    },
     {
       "category": "Correção das pontas dos longs PHOENIX",
       "items": [

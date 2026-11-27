@@ -31,7 +31,7 @@ class Explosion extends GameObject {
         super(resourceManager);
         this._explosionAnimationRate = 3 ;
         this._mesh = this._resourceManager.constructExplosion( noteskin ) ;
-        this._nativePhoenix=noteskin==='PHOENIX';
+        this._nativePhoenix=['PHOENIX','PHOENIX2'].includes(noteskin);
 
     }
 

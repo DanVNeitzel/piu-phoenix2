@@ -32,7 +32,7 @@ class HoldExtensibleTexture extends GameObject {
     constructor(resourceManager, kind, animationRate, noteskin) {
         super(resourceManager);
         this._kind = kind;
-        this._stepAnimationRate = noteskin==='PHOENIX'?24:animationRate ;
+        this._stepAnimationRate = ['PHOENIX','PHOENIX2'].includes(noteskin)?24:animationRate ;
 
         this._map = this._resourceManager.getHoldExtensibleTexture( this._kind, noteskin ) ;
 

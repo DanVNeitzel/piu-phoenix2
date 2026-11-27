@@ -85,8 +85,9 @@ class ResourceManager {
         stepDic['T'] = new PNGTexture(noteskinPath + '/Tap 5x2.PNG');
 
         // FX
-        stepDic['FX'] = new PNGTexture(noteskinPath + (noteskinId==='PHOENIX'?'/StepFX 6x1.PNG':'/StepFX 5x1.PNG'));
-        if(noteskinId==='PHOENIX'){
+        const nativePhoenix=['PHOENIX','PHOENIX2'].includes(noteskinId);
+        stepDic['FX'] = new PNGTexture(noteskinPath + (nativePhoenix?'/StepFX 6x1.PNG':'/StepFX 5x1.PNG'));
+        if(nativePhoenix){
             for(const [kind,name] of Object.entries({dl:'DownLeft',ul:'UpLeft',c:'Center',ur:'UpRight',dr:'DownRight'})){
                 stepDic['CAP_'+kind]=new PNGTexture(noteskinPath+'/'+name+' HoldCap 6x1.PNG');
             }

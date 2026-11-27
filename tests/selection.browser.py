@@ -196,19 +196,25 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
 
     def test_phoenix_noteskin_selection_native_assets_hold_ends_and_six_fx_frames(self):
+        self.check_native_phoenix_noteskin('PHOENIX')
+
+    def test_phoenix2_noteskin_selection_native_assets_hold_ends_and_six_fx_frames(self):
+        self.check_native_phoenix_noteskin('PHOENIX2')
+
+    def check_native_phoenix_noteskin(self, skin):
         self.load()
-        selected=self.page.evaluate("""()=>{
-          selectNote(document.querySelector('.noteskin-option[value="PHOENIX"]'));
-          return {skin:createSingleConfig().noteskin,cover:PiuGameSettings.skinImage('PHOENIX')};
-        }""")
-        self.assertEqual(selected,{'skin':'PHOENIX','cover':'assets/img/CW_settings/noteskin_cover/PHOENIX.png'})
+        selected=self.page.evaluate("""skin=>{
+          selectNote(document.querySelector('.noteskin-option[value="'+skin+'"]'));
+          return {skin:createSingleConfig().noteskin,cover:PiuGameSettings.skinImage(skin)};
+        }""", skin)
+        self.assertEqual(selected,{'skin':skin,'cover':'assets/img/CW_settings/noteskin_cover/'+skin+'.png'})
         failures=[]
-        self.page.on('response',lambda response:failures.append(response.url) if response.status>=400 and '/PHOENIX/' in response.url else None)
+        self.page.on('response',lambda response:failures.append(response.url) if response.status>=400 and '/'+skin+'/' in response.url else None)
         for style in ['pump-single','pump-double','pump-halfdouble']:
             width=5 if style=='pump-single' else 10 if style=='pump-double' else 6
             rows=['0'*width,'2'*width,'0'*width,'0'*width,'3'*width,'0'*width,'1'*width,'0'*width]
             ssc='#TITLE:PHOENIX;\n#MUSIC:Test0.wav;\n#BPMS:0=120;\n#OFFSET:0;\n#NOTEDATA:;\n#STEPSTYPE:'+style+';\n#METER:10;\n#NOTES:\n'+'\n'.join(rows)+'\n;'
-            self.open_frozen_stage(style,True,{'noteskin':'PHOENIX','sscContent':ssc})
+            self.open_frozen_stage(style,True,{'noteskin':skin,'sscContent':ssc})
             self.page.wait_for_function("engine.stage._playerStages[0]._steps.stepList.filter(n=>n instanceof StepHold).every(n=>n._holdCap?.material.map.image?.complete)")
             actual=self.page.evaluate("""()=>{
               const stage=engine.stage._playerStages[0],holds=stage._steps.stepList.filter(n=>n instanceof StepHold);
@@ -224,10 +230,10 @@ class SelectionBrowserTests(unittest.TestCase):
                   stage.padReceptors['0']._receptor.material.uniforms.textureReceptor.value.image.height],
                 coverLoaded:document.getElementById('playNoteSkin').complete&&document.getElementById('playNoteSkin').naturalWidth>0};
             }""")
-            self.assertEqual(actual['skin'],'PHOENIX')
+            self.assertEqual(actual['skin'],skin)
             self.assertEqual(len(actual['ends']),width)
             for end in actual['ends']:
-                self.assertEqual((end['width'],end['height']),(576,96))
+                self.assertEqual((end['width'],end['height']),(2172,362) if skin=='PHOENIX2' and end['kind']!='c' else (576,96))
                 self.assertAlmostEqual(end['y'],end['end'])
                 self.assertAlmostEqual(end['repeat'],1/6)
                 self.assertAlmostEqual(end['bodyEnd'],end['capStart'])

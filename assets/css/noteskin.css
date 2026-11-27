@@ -373,6 +373,11 @@ CONFIG NOTESKIN
   background-image: url(../img/noteskin/PRIME2/thumbnail.gif);
 }
 
+.select-noteskin>button[value="PHOENIX2"],
+.select-noteskin>button[value="PHOENIX2"].focus {
+  background-image: url(../img/CW_settings/noteskin_cover/PHOENIX2.png);
+}
+
 .select-noteskin>button[value="PHOENIX"],
 .select-noteskin>button[value="PHOENIX"].focus {
   background-image: url(../img/CW_settings/noteskin_cover/PHOENIX.png);

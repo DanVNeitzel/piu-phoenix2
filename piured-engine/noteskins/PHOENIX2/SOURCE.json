@@ -1,0 +1,28 @@
+{
+  "source": "User-supplied z3phoenix2 directory",
+  "files": {
+    "BASE 1x2 - (res 320x128).png": "55a7f6c27dad60a6b19d847701e956af88717020b0a231346140ce79ad0881f5",
+    "Center Hold Body Active (res 64x64).png": "32caffb031cc9955ef6eac776c13939ecb792cbafcf1c7432688dc75ca6cd2bc",
+    "Center Tap Note (res 192x128) 3x2.png": "a75d6f48f9cfba0e572e5d5fccfe6a74d59f83b166499f1e22fb4a77197c05ba",
+    "DownLeft Hold Body Active (res 64x64).png": "0c841023b31c35123074021c22812042a0d1a0c88b19c584fed9621c19b96144",
+    "DownLeft Hold BottomCap Active (res 384x64) 6x1.png": "d2d10479bceb9ca3ec40995b16f4b2d9c044d30bf34715f9ac403eca4a8204fe",
+    "DownLeft Tap Note (res 192x128) 3x2.png": "12b9d40eded2e534cf3c342122f0e0de1fab43adc3cca21b3e665ebefbb94b31",
+    "DownRight Hold Body Active (res 64x64).png": "732e8c6e10a2a55366aed93856b73302fc8e806817033f18e03e47d8e2f39221",
+    "DownRight Hold BottomCap Active (res 384x64) 6x1.png": "395cff048c2a9a69c26d49629ac75c6f12e1cbbe981cee4290a6ecae1161a2fc",
+    "DownRight Tap Note (res 192x128) 3x2.png": "88a181f229b307b997da1842aedf7ef4c82285dca9ef6804e9912b83a6717226",
+    "GLOW 5x2 (res 320x128).PNG": "7624c1e69af11b82e576678db6d0d90dfa379d6be6615365eab875c0dd1c5fcb",
+    "NOTE_LOGO.png": "8dcbad719fabf6cdc1edf40e7147a861bfaf6b3b788bc0b6b65e196b3b181f4a",
+    "UpLeft Hold Body Active (res 64x64).png": "a8db9c7a46f7c133cb8756a93033cac99bcf07a0916d5b23ec1d8f368c0c8660",
+    "UpLeft Hold BottomCap Active (res 384x64) 6x1.png": "2d512c5d9005a720f4c8f198546867239f92bd1912bf4e27db7e52f1a3c1d4ed",
+    "UpLeft Tap Note (res 192x128) 3x2.png": "b48c00ca42acc63721f102f322a3148d66e60ed897c2a9755cbbea73c6727861",
+    "UpRight Hold Body Active (res 64x64).png": "f7e1d7760222c11d4d0634a9c52d7883549f1c96bca9fc2c70881b649bebe42c",
+    "UpRight Hold BottomCap Active (res 384x64) 6x1.png": "039685be31971bea723f47db3fc35f822aaf2bfbb5d9a6ec50afc863546903ec",
+    "UpRight Tap Note (res 192x128) 3x2.png": "a2196dd1edc50dbf74d477bbfd214ae5fa8430efccc97d147f459ebf4d7894ba",
+    "_explosion (res 1536x256) 6x1.png": "9925fc2105717669ebde16d3ab84a0bb6f782959f99e51d6197df3c6f2e7a0ac"
+  },
+  "notes": "Original taps, glow, explosion and logo. Body strips matched to cap connector widths and tiled; directional caps cropped vertically at y=163 to square frames; receptor lanes padded, uniformly resized and aligned to engine lane spacing. Central cap reused from previously supplied PHOENIX artwork (not included in this package).",
+  "tap_frames": 6,
+  "tap_cycle_seconds": 0.25,
+  "explosion_frames": 6,
+  "explosion_frame_seconds": 0.06
+}
