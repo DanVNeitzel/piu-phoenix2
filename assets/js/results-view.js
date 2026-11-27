@@ -19,7 +19,8 @@
   function placeLevelBadge() {
     const badge=byId('resultLevelBadge');
     if(portrait.matches) view.querySelector('.result-titlebar').append(badge);
-    else view.querySelector('.result-current').prepend(badge);
+    else if(mobileLandscape.matches) view.querySelector('.result-current').prepend(badge);
+    else view.querySelector('.result-comparison').prepend(badge);
     placeResultDetails();
   }
   function placeResultDetails() {
@@ -35,7 +36,7 @@
     else current.querySelector('.result-plate-slot').after(byId('resultOutcome'));
   }
   portrait.addEventListener('change',placeLevelBadge);
-  mobileLandscape.addEventListener('change',placeResultDetails);
+  mobileLandscape.addEventListener('change',placeLevelBadge);
   placeLevelBadge();
   async function exportGrade(image,size={}) {
     const source = image.currentSrc || image.src;

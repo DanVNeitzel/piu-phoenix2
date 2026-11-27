@@ -1,7 +1,19 @@
 {
-  "version": "0.8.71",
+  "version": "0.8.73",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Resultado desktop no formato arcade",
+      "items": [
+        "Reorganizado o resultado desktop com modificadores na lateral, pontuação e premiações maiores à esquerda e selo do nível acima do início de uma tabela mais compacta. Preservado o layout mobile em paisagem."
+      ]
+    },
+    {
+      "category": "Resultado desktop restaurado",
+      "items": [
+        "Restaurados no desktop o selo do nível acima da tabela, seus tamanhos e o espaçamento anterior da pontuação. Mantida a apresentação aprovada no mobile em paisagem."
+      ]
+    },
     {
       "category": "Ajustes de resultado exclusivos do mobile",
       "items": [

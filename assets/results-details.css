@@ -170,6 +170,31 @@
   #performance.phoenix-results .result-actions>span{font-size:clamp(7px,1.7dvh,10px);line-height:1.1}
 }
 
+/* Arcade desktop composition: side modifiers, large awards and compact table. */
+@media(min-width:1024px) and (orientation:landscape){
+  #performance.phoenix-results:is(.show,.collapsing){background:#030906}
+  #performance.phoenix-results .result-stage{--result-badge:clamp(64px,12dvh,110px);grid-template-rows:clamp(42px,8dvh,72px) clamp(42px,9dvh,80px) minmax(0,1fr) auto;padding:8px 2vw 6px 7vw;gap:clamp(6px,1.5dvh,14px)}
+  #performance.phoenix-results .result-evaluation{grid-template-columns:minmax(0,1fr) minmax(0,2fr) minmax(0,.85fr);gap:2vw;align-items:center}
+  #performance.phoenix-results .result-current{height:auto;align-self:center;gap:clamp(2px,.6dvh,6px)}
+  #performance.phoenix-results .result-current #score{font-size:clamp(32px,4vw,64px)}
+  #performance.phoenix-results .result-current .result-score-label{font-size:clamp(12px,2dvh,18px)}
+  #performance.phoenix-results .result-current #gradeResult{height:clamp(100px,22dvh,210px);max-width:330px;min-height:0}
+  #performance.phoenix-results .result-current .result-plate-slot{height:clamp(44px,9dvh,80px)}
+  #performance.phoenix-results .result-current #plateResult{max-width:280px}
+  #performance.phoenix-results .result-comparison{height:min(58dvh,560px);align-self:center;grid-template-rows:var(--result-badge) minmax(0,1fr);gap:clamp(6px,1dvh,12px)}
+  #performance.phoenix-results #resultLevelBadge{position:static;align-self:auto;justify-self:start;transform:none;margin:0 0 0 8px}
+  #performance.phoenix-results .result-level strong{font-size:clamp(14px,4dvh,30px)}
+  #performance.phoenix-results .result-level span{font-size:clamp(6px,1.5dvh,10px)}
+  #performance.phoenix-results .result-judgments tbody :is(td,th){font-size:clamp(13px,2.5dvh,21px)}
+  #performance.phoenix-results .result-judgments tbody td:first-child{padding-left:10px}
+  #performance.phoenix-results.has-no-best .result-judgments tr>:first-child{width:20%}
+  #performance.phoenix-results.has-no-best .result-judgments tr>th:nth-child(2){width:80%;text-align:center;padding:0;transform:translateX(-25%)}
+  #performance.phoenix-results .result-best{height:auto;align-self:center}
+  #performance.phoenix-results .result-modifiers{position:absolute;top:25dvh;left:.7vw;width:5vw;flex-direction:column;align-items:center;gap:6px}
+  #performance.phoenix-results .result-modifiers .result-modifier{width:clamp(44px,4.5vw,64px);height:clamp(36px,6.5dvh,58px);min-width:0;padding:3px;flex-shrink:0;border-radius:4px;font-size:clamp(9px,1.7dvh,14px)}
+  #performance.phoenix-results .result-modifiers .result-stage-break{min-width:0}
+}
+
 /* Extra result fields and larger awards are exclusive to mobile landscape. */
 @media(max-width:1023px) and (orientation:landscape){
   #performance.phoenix-results .result-current #gradeResult{height:clamp(48px,17dvh,150px)}

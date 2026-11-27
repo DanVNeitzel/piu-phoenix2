@@ -576,11 +576,14 @@ class SelectionBrowserTests(unittest.TestCase):
             for width,height,mobile in [(844,390,True),(1280,800,False),(915,412,True),(390,844,False),(1600,720,False)]:
                 self.page.set_viewport_size({'width':width,'height':height})
                 self.page.wait_for_function("""mobile=>document.querySelector('.result-accuracy').classList.contains('result-modifier')===mobile""",arg=mobile)
+                badge_parent='.result-current' if mobile else '.result-comparison' if width>height else '.result-titlebar'
+                self.page.wait_for_function("""parent=>document.querySelector(parent).contains(document.querySelector('#resultLevelBadge'))""",arg=badge_parent)
                 actual=self.page.evaluate("""()=>{
                   const current=document.querySelector('.result-current'),fields=document.querySelector('.result-modifiers');
                   const accuracy=document.querySelector('.result-accuracy'),outcome=document.querySelector('#resultOutcome');
                   return {precisionInFields:fields.contains(accuracy),precisionInCurrent:current.contains(accuracy),
                     outcomeInFields:fields.contains(outcome),outcomeInCurrent:current.contains(outcome),
+                    badgePosition:getComputedStyle(document.querySelector('#resultLevelBadge')).position,
                     fieldHidden:document.querySelector('#resultAutoplayModifier').hidden,
                     plateHeight:current.querySelector('.result-plate-slot').getBoundingClientRect().height};
                 }""")
@@ -590,7 +593,8 @@ class SelectionBrowserTests(unittest.TestCase):
                 self.assertEqual(actual['outcomeInCurrent'],not (mobile and autoplay))
                 self.assertEqual(actual['fieldHidden'],not (mobile and autoplay))
                 if width>height:
-                    expected=min(60,max(22,height*.075)) if mobile else min(44,max(16,height*.055))
+                    self.assertEqual(actual['badgePosition'],'relative' if mobile else 'static')
+                    expected=min(60,max(22,height*.075)) if mobile else min(80,max(44,height*.09))
                     self.assertAlmostEqual(actual['plateHeight'],expected,delta=.1)
         self.assertFalse(self.errors)
 
