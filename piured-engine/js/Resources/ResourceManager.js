@@ -20,6 +20,10 @@
 
 class ResourceManager {
 
+    static usesFullFrameNoteskinAtlas(noteskinId) {
+        return noteskinId === 'PHOENIX' || noteskinId === 'PHOENIX2' || noteskinId.startsWith('PUMP-');
+    }
+
 
     _materialsDict = { 'NOTESKINS': {} };
     _geometryDict = {};
@@ -86,9 +90,9 @@ class ResourceManager {
         stepDic['T'] = texture(noteskinPath + '/Tap 5x2.PNG');
 
         // FX
-        const nativePhoenix=['PHOENIX','PHOENIX2'].includes(noteskinId);
-        stepDic['FX'] = texture(noteskinPath + (nativePhoenix?'/StepFX 6x1.PNG':'/StepFX 5x1.PNG'));
-        if(nativePhoenix){
+        const fullFrameAtlas = ResourceManager.usesFullFrameNoteskinAtlas(noteskinId);
+        stepDic['FX'] = texture(noteskinPath + (fullFrameAtlas ? '/StepFX 6x1.PNG' : '/StepFX 5x1.PNG'));
+        if(fullFrameAtlas){
             for(const [kind,name] of Object.entries({dl:'DownLeft',ul:'UpLeft',c:'Center',ur:'UpRight',dr:'DownRight'})){
                 stepDic['CAP_'+kind]=texture(noteskinPath+'/'+name+' HoldCap 6x1.PNG');
             }

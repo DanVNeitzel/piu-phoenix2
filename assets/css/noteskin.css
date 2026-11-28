@@ -422,3 +422,7 @@ CONFIG NOTESKIN
 .select-noteskin>button[value="ZERO-SLIME"].focus {
   background-image: url(../img/noteskin/ZERO-SLIME/thumbnail.gif);
 }
+
+.select-noteskin > button.pump-noteskin {
+  background-image: var(--noteskin-cover);
+}

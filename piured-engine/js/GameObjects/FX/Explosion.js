@@ -31,7 +31,7 @@ class Explosion extends GameObject {
         super(resourceManager);
         this._explosionAnimationRate = 3 ;
         this._mesh = this._resourceManager.constructExplosion( noteskin ) ;
-        this._nativePhoenix=['PHOENIX','PHOENIX2'].includes(noteskin);
+        this._fullFrameAtlas = ResourceManager.usesFullFrameNoteskinAtlas(noteskin);
 
     }
 
@@ -41,7 +41,7 @@ class Explosion extends GameObject {
         this._mesh.material.map.repeat.set(2/20,2/4);
         // explosionMap.offset.set( 0 , 0 );
         this._mesh.material.map.offset.set(  1/20 , 1/4 );
-        if(this._nativePhoenix){this._mesh.material.map.repeat.set(1/6,1);this._mesh.material.map.offset.set(0,0);}
+        if(this._fullFrameAtlas){this._mesh.material.map.repeat.set(1/6,1);this._mesh.material.map.offset.set(0,0);}
 
         // explosionMap.blending = THREE.AdditiveBlending ;
 
@@ -71,11 +71,11 @@ class Explosion extends GameObject {
         this._animationPosition = 0 ;
         this._lastStepTimeStamp = 0 ;
         this._mesh.material.map.offset.set( 1 / 20, 1 / 4);
-        if(this._nativePhoenix)this._mesh.material.map.offset.set(0,0);
+        if(this._fullFrameAtlas)this._mesh.material.map.offset.set(0,0);
     }
 
     update(delta) {
-        if(this._nativePhoenix){
+        if(this._fullFrameAtlas){
             if(this._animationPosition<6){
                 this._lastStepTimeStamp+=delta;
                 this._animationPosition=Math.floor(this._lastStepTimeStamp/.06);

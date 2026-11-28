@@ -86,7 +86,7 @@
   <script src="piured-engine/js/Resources/Textures/PNGTexture.js"></script>
 
 
-  <script src="piured-engine/js/Resources/ResourceManager.js?v=0.8.62"></script>
+  <script src="piured-engine/js/Resources/ResourceManager.js?v=0.8.82"></script>
 
   <script src="piured-engine/js/GameObjects/GameObject.js"></script>
 
@@ -121,7 +121,7 @@
   <script src="piured-engine/js/GameObjects/StepNotes/StepNote.js"></script>
 
   <script src="piured-engine/js/GameObjects/FX/StepBounce.js"></script>
-  <script src="piured-engine/js/GameObjects/FX/Explosion.js?v=0.8.52"></script>
+  <script src="piured-engine/js/GameObjects/FX/Explosion.js?v=0.8.82"></script>
   <script src="piured-engine/js/GameObjects/FX/Tap.js"></script>
   <script src="piured-engine/js/GameObjects/FX/WhiteTap.js"></script>
 
@@ -250,7 +250,9 @@
       playDisplay.hidden = !['off','dark'].includes(bga);
       playRush.hidden = !Number.isFinite(Number(rush)) || Number(rush) === 1 || Number(rush) <= 0;
       let count = localStorage.getItem("last_playCount");
-      playNoteSkin.src = imgPath + noteskin + "/thumbnail.gif";
+      playNoteSkin.src = noteskin.startsWith('PUMP-')
+        ? 'assets/img/CW_settings/noteskin_cover/' + noteskin + '.png'
+        : imgPath + noteskin + '/thumbnail.gif';
       playSpeed.textContent = config?.scrollMode === 'auto' ? 'AV ' + config.autoVelocity : speed + 'X';
       count = Number(count) + 1;
       console.log(count);

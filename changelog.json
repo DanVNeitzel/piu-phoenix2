@@ -1,7 +1,13 @@
 {
-  "version": "0.8.81",
+  "version": "0.8.82",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Novas noteskins",
+      "items": [
+        "Adicionadas PRIME 2 ALT, HNS 1, PSP 5, XX, XX MOBILE, JUMP e JONATHAN ao menu de noteskins."
+      ]
+    },
     {
       "category": "Noteskin padrão PHOENIX 2",
       "items": [
