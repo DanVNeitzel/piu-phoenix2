@@ -92,6 +92,11 @@
  body.arcade-mobile.desktop-song-select #selector #arrowSongLeft,body.arcade-mobile.desktop-song-select #selector #arrowSongRight{bottom:calc(var(--safe-b) + 34px)}
  body.arcade-mobile.desktop-channel-select #stage{grid-template-columns:repeat(2,minmax(0,1fr))}
 }
+@media(orientation:landscape){
+ body.arcade-mobile #desktop-options{--mobile-control:clamp(44px,5.75vw,88px);top:max(70px,calc(env(safe-area-inset-top) + 64px));bottom:auto;width:max-content;display:flex;flex-direction:row;gap:8px;overflow:visible}
+ body.arcade-mobile #desktop-options button{width:var(--mobile-control);min-width:var(--mobile-control);height:var(--mobile-control);min-height:44px;flex:0 0 var(--mobile-control)}
+ body.arcade-mobile #desktop-options .active-command[data-active-modifier="autoplay"]{width:calc(var(--mobile-control)*1.55);min-width:calc(var(--mobile-control)*1.55);flex-basis:calc(var(--mobile-control)*1.55)}
+}
 @media(max-height:360px) and (orientation:landscape){
  body.arcade-mobile{--cover-h:82px;--bottom-zone:82px;--arrow:44px}
  body.arcade-mobile #desktop-options{top:52px;gap:2px}

@@ -13,6 +13,7 @@
 :is(#desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>img{display:block;width:clamp(30px,4.5svh,42px);height:clamp(30px,4.5svh,42px);object-fit:contain}
 @media(min-width:1024px) and (orientation:landscape){
  #desktop-options,#performance.phoenix-results .result-modifiers{left:.7vw;top:23vh;gap:.7vh}
+ body #desktop-options .active-command[data-active-modifier="autoplay"]{width:96px;min-width:96px}
 }
 @media(max-width:1023px),(orientation:portrait){
  :is(body.arcade-mobile #desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div){width:44px;height:44px;min-height:44px;padding:2px;gap:1px;border-radius:3px;font-size:12px;box-shadow:none}

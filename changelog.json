@@ -1,7 +1,37 @@
 {
-  "version": "0.8.75",
+  "version": "0.8.80",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "AUTOPLAY proporcional por dispositivo",
+      "items": [
+        "No mobile em paisagem, os controles ficam em uma fileira com AUTOPLAY ampliado; no PC, o painel permanece em coluna e apenas o bloco AUTOPLAY recebe largura suficiente para o texto."
+      ]
+    },
+    {
+      "category": "Controles largos exclusivos do mobile",
+      "items": [
+        "Restaurada a disposição original dos controles no PC; a fileira horizontal e o bloco AUTOPLAY ampliado ficam restritos ao mobile."
+      ]
+    },
+    {
+      "category": "Ordem dos controles ajustada",
+      "items": [
+        "Alinhados os controles do PC na ordem SPEED, noteskin, BGA, teclado e AUTOPLAY, seguindo a referência visual."
+      ]
+    },
+    {
+      "category": "Controles do PC em fileira",
+      "items": [
+        "Organizado o painel de opções do PC em uma fileira horizontal no topo, com o bloco AUTOPLAY ampliado e alinhado aos demais controles."
+      ]
+    },
+    {
+      "category": "AUTOPLAY em bloco largo no PC",
+      "items": [
+        "Ajustado o bloco AUTOPLAY no PC para acompanhar os demais controles na mesma fileira, com largura suficiente para exibir AUTOPLAY e ON em duas linhas."
+      ]
+    },
     {
       "category": "Bloco AUTOPLAY ampliado no mobile",
       "items": [
