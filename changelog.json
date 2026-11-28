@@ -1,7 +1,19 @@
 {
-  "version": "0.8.88",
+  "version": "0.8.90",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Command Window unificado",
+      "items": [
+        "O Command Window do celular agora usa o carrossel de comandos do desktop, com alvos de toque maiores e posicionamento adaptado à orientação."
+      ]
+    },
+    {
+      "category": "Espaçamento do Command Window no desktop",
+      "items": [
+        "O painel mantém uma folga ao lado da coluna de comandos, inclusive com o bloco AUTOPLAY visível."
+      ]
+    },
     {
       "category": "Barra do jogador nas seleções",
       "items": [

@@ -84,6 +84,7 @@
  body.arcade-mobile #playerLog .profileUser{width:32px;height:36px;flex-basis:32px}
  body.arcade-mobile #playerLog .nameUser{font-size:9px}body.arcade-mobile #playerLog .levelUser{font-size:7px}
  body.arcade-mobile #desktop-options{top:85px;width:48px;display:flex;flex-direction:column;gap:4px}
+ body.arcade-mobile #desktop-options:has([data-active-modifier="autoplay"]:not([hidden])){width:76px}
  body.arcade-mobile #desktop-options button{flex-shrink:0}
  body.arcade-mobile.desktop-song-select #selector .songDetails{left:10%;width:80%;height:46px}
  body.arcade-mobile #selector .songDetails #t{font-size:12px}

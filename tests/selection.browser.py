@@ -311,8 +311,11 @@ class SelectionBrowserTests(unittest.TestCase):
         self.load()
         self.assertFalse(self.page.evaluate('PiuGameSettings.read().autoplay'))
         self.page.evaluate("PiuMobileCommand.open('autoplay')")
-        self.assertTrue(self.page.evaluate("document.querySelector('.mc-tabs').getBoundingClientRect().bottom<=document.querySelector('#mc-content').getBoundingClientRect().top"))
-        self.page.locator('#mc-content').get_by_role('button',name='ON',exact=True).click()
+        choices = self.page.locator('#mobile-command #cw-choices')
+        self.assertEqual(choices.locator('button').count(), 3)
+        choices.locator('.is-current').click()
+        choices.get_by_text('ON',exact=True).click()
+        choices.locator('.is-current').click()
         self.assertTrue(self.page.evaluate('createSingleConfig().autoplay'))
         self.page.evaluate('PiuMobileCommand.close()')
         for style in ['pump-single','pump-double','pump-halfdouble']:

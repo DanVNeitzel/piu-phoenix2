@@ -3,11 +3,15 @@
   'use strict';
   const desktop = matchMedia('(min-width:1024px) and (orientation:landscape)');
   const original = document.getElementById('commandWindow');
+  const mobileDialog = document.createElement('dialog');
+  mobileDialog.id = 'mobile-command';
+  mobileDialog.setAttribute('aria-label','Command Window');
+  document.body.append(mobileDialog);
   const panel = document.createElement('section');
   panel.id = 'arcade-command'; panel.hidden = true; panel.tabIndex = -1;
   panel.setAttribute('aria-label', 'Command Window');
   panel.setAttribute('aria-describedby', 'cw-instructions');
-  panel.innerHTML = '<header class="cw-heading"><h2>COMMAND</h2><button type="button" id="cw-close" aria-label="Fechar Command Window">×</button></header>' +
+  panel.innerHTML = '<header class="cw-heading"><button type="button" id="cw-back" aria-label="Voltar uma etapa">‹</button><h2>COMMAND</h2><button type="button" id="cw-close" aria-label="Fechar Command Window">×</button></header>' +
     '<div class="cw-content"><div id="cw-readout"></div><div id="cw-choices" class="cw-wheel" role="group" aria-label="Selecionar comando"></div><div id="cw-tabs" class="cw-wheel" role="group" aria-label="Categorias"></div></div>' +
     '<p id="cw-description" role="status" aria-live="polite"></p><span class="visually-hidden" id="cw-instructions">Z e C ou setas esquerda e direita navegam. S ou Enter seleciona. Q, E ou Esc volta ou fecha. Z C Z C Z C abre a janela durante a seleção de música.</span>';
   document.body.append(panel);
@@ -27,6 +31,23 @@
   ];
   let opened = false, detail = false, category = 1, cursor = 0, returnFocus = null, feedback = '';
   let commandModifier = null;
+  let commandRail = null;
+  function positionBesideRail() {
+    const bounds = commandRail?.getBoundingClientRect();
+    if (bounds?.width) {
+      panel.style.setProperty('--cw-rail-right', bounds.right + 'px');
+      mobileDialog.style.setProperty('--cw-rail-right', bounds.right + 'px');
+      mobileDialog.style.setProperty('--cw-rail-bottom', bounds.bottom + 'px');
+    } else {
+      panel.style.removeProperty('--cw-rail-right');
+      mobileDialog.style.removeProperty('--cw-rail-right');
+      mobileDialog.style.removeProperty('--cw-rail-bottom');
+    }
+  }
+  const railObserver = new ResizeObserver(positionBesideRail);
+  window.addEventListener('resize', () => {
+    if (opened) positionBesideRail();
+  });
   const group = () => groups[category];
   const selected = selector => document.querySelector(selector + '.focus')?.value;
   const covers = {'EXCEED2-OLD':'OLD','EXCEED2-FLOWERCARD':'FLOWER','FIESTA-DRUM':'DRUM','FIESTA-LIGHTING':'LIGHTHING',
@@ -40,6 +61,11 @@
     apply(button); localStorage.setItem(key, String(value)); signal();
   }
   function reset() {
+    if (!desktop.matches) {
+      PiuGameSettings.apply(PiuGameSettings.defaults());
+      feedback = 'Comandos restaurados';
+      return;
+    }
     PiuScroll.setMultiplier(1);
     localStorage.setItem('piu_auto_velocity','300');
     choose('.noteskin-option','last_noteskin','PHOENIX2',selectNote);
@@ -60,16 +86,25 @@
         apply:()=>PiuGameSettings.setAutoplay(enabled)}));
       case 'touch': return [
         {label:PiuGameSettings.read().touch?'DESATIVAR':'ATIVAR',help:'Ativar ou desativar controles por toque',apply:()=>PiuGameSettings.apply({...PiuGameSettings.read(),touch:!PiuGameSettings.read().touch})},
-        {label:'AJUSTAR NA TELA',help:'Editar tamanho, posição e transparência antes de jogar',apply:()=>PiuTouchPreview.open(PiuGameSettings.read(),()=>open('touch'))},
+        {label:'AJUSTAR NA TELA',help:'Editar tamanho, posição e transparência antes de jogar',apply:()=>{
+          const trigger = returnFocus;
+          PiuTouchPreview.open(PiuGameSettings.read(),()=>{
+            open('touch',trigger);
+            if (!desktop.matches && opened) begin(false);
+          });
+        }},
       ];
-      case 'speed': return [...document.querySelectorAll('.speed-option')]
-        .sort((a,b) => Number(a.value) - Number(b.value))
-        .map(button => ({label:Number(button.value) + 'X', value:button.value,
-          help:'Note speed ' + button.value + 'X', apply:() => PiuScroll.setMultiplier(button.value)}))
+      case 'speed': return PiuGameSettings.options().speeds
+        .concat(desktop.matches ? [] : PiuScroll.state().multiplier)
+        .filter((speed,index,speeds)=>speeds.indexOf(speed)===index)
+        .sort((a,b)=>a-b)
+        .map(speed => ({label:speed + 'X', value:String(speed),
+          help:'Note speed ' + speed + 'X', apply:() => PiuScroll.setMultiplier(speed)}))
         .concat([{label:'+0.5X',help:'Increase note speed by 0.5X',apply:() => PiuScroll.setMultiplier(Math.min(20,PiuScroll.state().multiplier + 0.5))}]);
       case 'auto': return [-1,-10,-100,100,10,1].map(delta => ({label:String(delta),
         help:'Velocity ' + (delta > 0 ? 'plus ' : 'minus ') + Math.abs(delta),
-        apply:() => PiuScroll.setAutoVelocity(PiuScroll.state().target + delta)}));
+        apply:() => PiuScroll.setAutoVelocity(PiuScroll.state().target + delta)}))
+        .concat(desktop.matches ? [] : [{label:'ATIVAR AV',help:'Usar o BPM configurado',apply:()=>PiuScroll.setAutoVelocity(PiuScroll.state().target)}]);
       case 'judge':
         if (commandModifier === 'hj') return [true,false].map(enabled => ({label:enabled ? 'ON' : 'OFF',value:String(enabled),
           help:enabled ? 'Mude para um julgamento difícil' : 'Usar julgamento normal',apply:() => PiuGameSettings.setHJ(enabled)}));
@@ -102,6 +137,7 @@
         help:delta === 0 ? 'Reset music offset' : 'Music offset ' + (delta > 0 ? '+' : '') + delta + 's', apply:() => {
           PiuGameSettings.setOffset(delta === 0 ? 0 : Number(byId('offset').value || 0) + delta);
         }}));
+      case 'reset': return [{label:'RESTAURAR',help:'Restaura os comandos padrão. Os recordes são preservados.',apply:reset}];
       default: return [];
     }
   }
@@ -109,7 +145,7 @@
     commandModifier = null;
     if (audible) PiuCommandAudio.play('select');
     feedback = '';
-    if (group().id === 'reset') { detail = false; cursor = 0; reset(); render(); return; }
+    if (group().id === 'reset' && desktop.matches) { detail = false; cursor = 0; reset(); render(); return; }
     detail = true;
     const value = {autoplay:String(PiuGameSettings.read().autoplay),speed:String(PiuScroll.state().multiplier),display:selected('.bga-option'),noteskin:PiuGameSettings.read().skin,rush:selected('.rush-option')}[group().id];
     cursor = group().id === 'auto' ? 3 : group().id === 'offset' ? 2 : Math.max(0, options().findIndex(item => item.value === value));
@@ -134,8 +170,13 @@
     else close();
   }
   function wheel(holder, items, index, action, categories = false) {
+    const restoreFocus = !desktop.matches && holder.contains(document.activeElement);
     holder.replaceChildren();
     [-1,0,1].forEach(delta => {
+      if (!desktop.matches && delta !== 0 && (items.length === 1 || (items.length === 2 && (index + delta < 0 || index + delta >= items.length)))) {
+        holder.append(document.createElement('span'));
+        return;
+      }
       const item = items[(index + delta + items.length) % items.length];
       const button = document.createElement('button'); button.type = 'button';
       button.className = 'cw-item' + (delta === 0 ? ' is-current' : '') + (categories ? ' cw-category' : '');
@@ -145,26 +186,38 @@
       const text = document.createElement('strong'); text.textContent = item.label; button.append(text);
       button.addEventListener('click', () => action(delta)); holder.append(button);
     });
+    if (restoreFocus) holder.querySelector('.is-current')?.focus({preventScroll:true});
   }
   function render() {
     if (!opened) return;
     panel.dataset.view = detail ? 'detail' : 'category'; panel.dataset.category = group().id;
+    byId('cw-back').hidden = !detail;
     const readout = byId('cw-readout'); readout.replaceChildren();
     if (detail) {
       const label = document.createElement('span');
-      label.textContent = commandModifier === 'randomNote' ? 'RANDOM NOTE' : commandModifier ? commandModifier.toUpperCase() : {auto:'CURRENT BPM',speed:'CURRENT SPEED',display:'DISPLAY',judge:'JUDGE',noteskin:'NOTE SKIN',rush:'MUSIC RATE',touch:'TOUCHPAD',offset:'OFFSET'}[group().id];
+      label.textContent = commandModifier === 'randomNote' ? 'RANDOM NOTE' : commandModifier ? commandModifier.toUpperCase() : {auto:'CURRENT BPM',speed:'CURRENT SPEED',display:'DISPLAY',judge:'JUDGE',noteskin:'NOTE SKIN',rush:'MUSIC RATE',touch:'TOUCHPAD',offset:'OFFSET',autoplay:'AUTOPLAY',reset:'RESET'}[group().id];
       readout.append(label);
       let value;
+      let slider;
       if (group().id === 'auto') {
         value = document.createElement('input'); value.type = 'number'; value.min = '1'; value.max = '2000'; value.step = '1';
         value.value = String(PiuScroll.state().target); value.setAttribute('aria-label','Auto Velocity BPM');
         value.addEventListener('change', () => { PiuCommandAudio.play('select'); PiuScroll.setAutoVelocity(value.value); render(); });
+      } else if (group().id === 'offset' && !desktop.matches) {
+        value = document.createElement('input'); value.type = 'number'; value.min = '-5'; value.max = '5'; value.step = '0.001';
+        value.value = byId('offset').value; value.setAttribute('aria-label','Offset em segundos');
+        value.addEventListener('change',()=>PiuGameSettings.setOffset(Number(value.value)));
+        slider = document.createElement('input'); slider.type = 'range'; slider.min = value.min; slider.max = value.max; slider.step = value.step;
+        slider.value = value.value; slider.setAttribute('aria-label','Sincronização do áudio');
+        slider.addEventListener('input',()=>{value.value = slider.value;});
+        slider.addEventListener('change',()=>PiuGameSettings.setOffset(Number(slider.value)));
       } else {
         value = document.createElement('strong');
         value.textContent = {judge:commandModifier === 'hj' ? (PiuGameSettings.read().hj ? 'ON' : 'OFF') : (PiuGameSettings.read().hj ? 'HJ' : 'NORMAL'),speed:PiuScroll.state().multiplier + 'X',display:commandModifier ? (PiuGameSettings.read()[commandModifier] ? 'ON' : 'OFF') : (selected('.bga-option') || 'on').toUpperCase(),
-          autoplay:PiuGameSettings.read().autoplay?'ON':'OFF',noteskin:PiuGameSettings.read().skin.replace('EXCEED2-',''),rush:Math.round(Number(selected('.rush-option') || 1) * 100) + '%',touch:PiuGameSettings.read().touch?'ON':'OFF',offset:Number(byId('offset').value || 0) + 's'}[group().id];
+          autoplay:PiuGameSettings.read().autoplay?'ON':'OFF',noteskin:PiuGameSettings.read().skin.replace('EXCEED2-',''),rush:Math.round(Number(selected('.rush-option') || 1) * 100) + '%',touch:PiuGameSettings.read().touch?'ON':'OFF',offset:Number(byId('offset').value || 0) + 's',reset:'PADRÕES'}[group().id];
       }
       readout.append(value);
+      if (slider) readout.append(slider);
       wheel(byId('cw-choices'),options(),cursor, delta => delta === 0 ? apply() : move(delta));
       wheel(byId('cw-tabs'),groups,category, delta => {
         if (delta === 0) { PiuCommandAudio.play('move'); commandModifier = null; detail = false; render(); }
@@ -175,47 +228,84 @@
   }
   function open(id = 'speed', trigger) {
     commandModifier = null;
-    if (!desktop.matches || !allowed()) return;
+    if (!allowed()) return;
     returnFocus = trigger || document.activeElement;
     const prestart=document.querySelector('#confirmPlayModal.show');
-    (prestart || document.body).append(panel);
+    const host = prestart || document.body;
+    if (desktop.matches) host.append(panel);
+    else {
+      host.append(mobileDialog);
+      mobileDialog.append(panel);
+      mobileDialog.dataset.screen = prestart ? 'level' : 'songs';
+    }
+    commandRail = prestart ? prestart.querySelector('.ps-commands') : byId('desktop-options');
+    railObserver.disconnect();
+    if (commandRail) railObserver.observe(commandRail);
+    positionBesideRail();
     if (!opened) PiuCommandAudio.play('open');
     if (id === 'speed' && PiuScroll.state().mode === 'auto') id = 'auto';
     category = Math.max(0,groups.findIndex(item => item.id === id));
     detail = false; feedback = ''; opened = true; panel.hidden = false;
-    document.body.classList.add('command-panel-open'); render(); panel.focus({preventScroll:true});
+    document.body.classList.add('command-panel-open');
+    render();
+    if (!desktop.matches && !mobileDialog.open) mobileDialog.showModal();
+    panel.focus({preventScroll:true});
   }
   function close() {
     if (!opened) return;
     PiuCommandAudio.play('close');
     opened = false; panel.hidden = true; document.body.classList.remove('command-panel-open');
+    railObserver.disconnect();
+    commandRail = null;
+    positionBesideRail();
+    if (mobileDialog.open) mobileDialog.close();
     document.body.append(panel);
+    document.body.append(mobileDialog);
     if (returnFocus?.isConnected) returnFocus.focus({preventScroll:true});
   }
   original.addEventListener('show.bs.modal', event => {
-    if (!desktop.matches || !allowed()) return;
+    if (!allowed()) return;
     event.preventDefault();
     const trigger = event.relatedTarget;
     const category = trigger?.dataset.commandCategory || 'speed';
     open(category,trigger);
   });
   byId('cw-close').addEventListener('click',close);
+  byId('cw-back').addEventListener('click',back);
+  mobileDialog.addEventListener('cancel',event=>{event.preventDefault();back();});
+  let swipeStart = null;
+  const choices = byId('cw-choices');
+  choices.addEventListener('touchstart',event=>{
+    if (desktop.matches || event.touches.length !== 1) {swipeStart = null;return;}
+    const {clientX:x,clientY:y} = event.touches[0];
+    swipeStart = {x,y};
+  },{passive:true});
+  choices.addEventListener('touchend',event=>{
+    if (!swipeStart) return;
+    const {clientX,clientY} = event.changedTouches[0];
+    const dx = clientX - swipeStart.x;
+    const dy = clientY - swipeStart.y;
+    swipeStart = null;
+    if (Math.abs(dx) < 32 || Math.abs(dx) < Math.abs(dy) * 1.4) return;
+    if (event.cancelable) event.preventDefault();
+    move(dx < 0 ? 1 : -1);
+  });
+  choices.addEventListener('touchcancel',()=>{swipeStart = null;});
   panel.addEventListener('click',event => event.stopPropagation());
-  panel.addEventListener('wheel',event => { event.preventDefault(); event.stopPropagation(); move(event.deltaY > 0 ? 1 : -1); },{passive:false});
+  panel.addEventListener('wheel',event => { if(!desktop.matches)return;event.preventDefault();event.stopPropagation();move(event.deltaY > 0 ? 1 : -1); },{passive:false});
   document.addEventListener('show.bs.modal',event => { if (event.target !== original) close(); });
   document.addEventListener('piu:settingschange',render);
   document.addEventListener('keydown',event => {
-    if (document.querySelector('dialog[open]')) return;
-    if (!desktop.matches || event.ctrlKey || event.metaKey || event.altKey) return;
-    if (!opened) return;
+    if (!opened || document.querySelector('dialog[open]:not(#mobile-command)') || event.ctrlKey || event.metaKey || event.altKey || event.isComposing) return;
     if (event.target.tagName === 'INPUT') {
       if (['escape','q','e'].includes(event.key.toLowerCase())) { event.preventDefault(); event.stopImmediatePropagation(); if(!event.repeat)back(); }
-      else if (['enter','s'].includes(event.key.toLowerCase())) { event.preventDefault(); event.stopImmediatePropagation(); if(!event.repeat){PiuCommandAudio.play('select'); PiuScroll.setAutoVelocity(event.target.value); render(); panel.focus();} }
+      else if (['enter','s'].includes(event.key.toLowerCase())) { event.preventDefault(); event.stopImmediatePropagation(); if(!event.repeat){PiuCommandAudio.play('select'); if(group().id==='offset')PiuGameSettings.setOffset(Number(event.target.value));else PiuScroll.setAutoVelocity(event.target.value);render();panel.focus();} }
       else if (['z','c'].includes(event.key.toLowerCase())) { event.preventDefault(); event.stopImmediatePropagation();move(event.key.toLowerCase()==='z'?-1:1);panel.focus(); }
       else event.stopImmediatePropagation();
       return;
     }
     const key = event.key.toLowerCase();
+    if (!desktop.matches && key === 'enter' && event.target.closest('button')) return;
     if (['arrowleft','arrowright','arrowup','arrowdown','q','e','s','enter','escape','z','c'].includes(key)) {
       event.preventDefault(); event.stopImmediatePropagation();
       if (['arrowleft','arrowup','z'].includes(key)) move(-1);
@@ -227,5 +317,6 @@
   desktop.addEventListener('change',close);
   new MutationObserver(() => { if (!allowed()) close(); })
     .observe(document.body,{attributes:true,attributeFilter:['class']});
-  window.PiuCommand = {open,close,isOpen:() => opened};
+  // The legacy mobile entry points share this controller.
+  window.PiuCommand = window.PiuMobileCommand = {open,close,isOpen:() => opened};
 })();
