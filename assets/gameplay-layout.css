@@ -35,6 +35,14 @@ body .options-block-r .active-command small {
     text-wrap: balance
 }
 
+body .options-block-r .active-command[data-active-modifier="autoplay"] small,
+body #game-modifiers .active-command[data-active-modifier="autoplay"] small {
+    white-space: nowrap;
+    overflow-wrap: normal;
+    word-break: keep-all;
+    text-wrap: nowrap
+}
+
 body .options-block-r .active-command strong {
     font-size: .85em
 }

@@ -34,5 +34,6 @@
 #performance.phoenix-results .result-modifiers{justify-content:flex-start;justify-self:start;width:100%}
 .active-command[hidden]{display:none!important}
 .active-command small{white-space:normal;overflow-wrap:anywhere;text-wrap:balance}
+.active-command[data-active-modifier="autoplay"] small{white-space:nowrap;overflow-wrap:normal;word-break:keep-all;text-wrap:nowrap}
 #desktop-options{max-height:calc(100svh - 26vh);overflow-y:auto;overflow-x:hidden;padding:4px}
 #confirmPlayModal .ps-commands{max-height:65%;overflow-y:auto;overflow-x:hidden;padding:4px}

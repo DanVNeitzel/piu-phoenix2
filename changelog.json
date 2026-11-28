@@ -1,7 +1,13 @@
 {
-  "version": "0.8.73",
+  "version": "0.8.74",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Rótulo AUTOPLAY sem quebra",
+      "items": [
+        "Impedida a quebra da palavra AUTOPLAY nos modificadores do HUD, mantendo o rótulo inteiro em uma linha no celular."
+      ]
+    },
     {
       "category": "Resultado desktop no formato arcade",
       "items": [
