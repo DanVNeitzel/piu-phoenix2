@@ -93,5 +93,6 @@
   panel.addEventListener('show.bs.modal',()=>{sync();confirm.hidden=true;status('As alterações são salvas automaticamente.');});
   panel.addEventListener('shown.bs.modal',()=>{panel.querySelector('.settings-body').scrollTop=0;panel.querySelector('.settings-close').focus();});
   ['fullscreenchange','webkitfullscreenchange'].forEach(name=>document.addEventListener(name,sync));
+  PiuAudioCalibration.mount(panel,status);
   sync();
 })();

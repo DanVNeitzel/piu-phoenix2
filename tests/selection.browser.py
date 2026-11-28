@@ -195,6 +195,73 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.goto(self.origin+'/localStage.html?preview=touchpad')
         self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
 
+    def test_guided_audio_calibration_tests_offset_before_saving(self):
+        for viewport, input_type in [({'width':1280,'height':800}, 'keyboard'),
+                                     ({'width':844,'height':390}, 'touch')]:
+            self.page.set_viewport_size(viewport)
+            self.load()
+            self.page.evaluate("""() => {
+              PiuGameSettings.setOffset(0.023);
+              window.calibrationAudio = [];
+              window.AudioContext = class {
+                constructor() {
+                  this.started = performance.now();
+                  this.state = 'suspended';
+                  this.clicks = [];
+                  calibrationAudio.push(this);
+                }
+                get currentTime() { return (performance.now() - this.started)/1000; }
+                async resume() { this.state = 'running'; }
+                async close() { this.state = 'closed'; }
+                createGain() {
+                  return {connect() {}, gain: {setValueAtTime() {}, exponentialRampToValueAtTime() {}}};
+                }
+                createOscillator() {
+                  return {frequency: {}, connect() {}, start: at => this.clicks.push(at), stop() {}};
+                }
+              };
+              bootstrap.Modal.getOrCreateInstance(document.getElementById('settingsMenu')).show();
+            }""")
+            self.page.get_by_role('button', name='Calibrar áudio').click()
+            self.page.clock.install(time='2026-11-28T12:00:00')
+            self.page.clock.pause_at('2026-11-28T12:00:10')
+            tap = self.page.get_by_role('button', name='Marcar batida')
+
+            def run(button, raw_ms, count=12):
+                self.page.get_by_role('button', name=button).click()
+                timeline = self.page.evaluate("""() => {
+                    const {started, clicks} = calibrationAudio.at(-1);
+                    return {started, clicks};
+                }""")
+                self.assertEqual(len(timeline['clicks']), 16)
+                for beat in timeline['clicks'][4:4 + count]:
+                    current = self.page.evaluate('performance.now()')
+                    self.page.clock.fast_forward(round(timeline['started'] + beat * 1000 + raw_ms - current))
+                    if input_type == 'keyboard':
+                        self.page.keyboard.press('Space')
+                    else:
+                        tap.dispatch_event('pointerdown', {'pointerType':'touch','isPrimary':True,'button':0})
+                self.page.clock.fast_forward(10000)
+                self.assertEqual(self.page.evaluate('calibrationAudio.at(-1).state'), 'closed')
+
+            run('Iniciar medição', 117, count=3)
+            self.assertTrue(self.page.get_by_text('Poucas batidas registradas', exact=False).is_visible())
+            self.assertFalse(self.page.get_by_role('button', name='Salvar offset').is_visible())
+            run('Iniciar medição', 117)
+            self.assertEqual(self.page.locator('[data-calibration-suggestion]').inner_text(), '+47 ms')
+            run('Testar sugestão', 120)
+            self.assertIn('atual +27 ms · com a sugestão +3 ms',
+                          self.page.locator('.calibration-status').inner_text())
+            self.assertEqual(self.page.evaluate('createSingleConfig().offset'), 0.023)
+            self.page.get_by_role('button', name='Salvar offset').click()
+            self.assertEqual(self.page.evaluate('createSingleConfig().offset'), 0.047)
+            self.assertEqual(self.page.evaluate("localStorage.getItem('last_offset')"), '0.047')
+            self.page.get_by_role('button', name='Testar sugestão').click()
+            self.page.evaluate("bootstrap.Modal.getInstance(document.getElementById('settingsMenu')).hide()")
+            self.assertEqual(self.page.evaluate('calibrationAudio.at(-1).state'), 'closed')
+            self.page.clock.resume()
+        self.assertFalse(self.errors)
+
     def test_autoplay_command_perfects_holds_and_result_without_saved_data(self):
         self.page.set_viewport_size({'width':844,'height':390})
         self.load()

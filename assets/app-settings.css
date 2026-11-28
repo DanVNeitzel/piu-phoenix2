@@ -35,6 +35,19 @@
 #settingsMenu .settings-key-input{width:44px;height:44px;padding:4px;box-sizing:border-box;background:#04100a;border:1px solid #91b558;border-radius:3px;color:#f1ffbc;text-align:center;font:700 20px/1 system-ui}
 #settingsMenu .settings-key-ul{grid-column:1;grid-row:1}#settingsMenu .settings-key-ur{grid-column:3;grid-row:1}#settingsMenu .settings-key-c{grid-column:2;grid-row:2;border-color:#d5c44e;background:#332d10}#settingsMenu .settings-key-dl{grid-column:1;grid-row:3}#settingsMenu .settings-key-dr{grid-column:3;grid-row:3}
 #settingsMenu :is(button,input,summary):focus-visible{outline:2px solid #fff;outline-offset:3px}
+#settingsMenu .calibration-expanded{grid-column:1 / -1}
+#settingsMenu .calibration-expanded .calibration-intro{display:none}
+#settingsMenu .calibration-values{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 12px}
+#settingsMenu .calibration-values>div{flex:1;min-width:110px;padding:8px 12px;border:1px solid #496a3d;border-radius:4px;background:#0b1811}
+#settingsMenu .calibration-values dt{font-size:13px;color:#adbea9}
+#settingsMenu .calibration-values dd{margin:0;color:#edfac7;font-size:19px;font-weight:700;font-variant-numeric:tabular-nums}
+#settingsMenu .calibration-run:not([hidden]){display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+#settingsMenu .calibration-run progress{flex:1 1 90px;accent-color:#b1f16a}
+#settingsMenu .calibration-count,#settingsMenu .calibration-feedback{font-size:13px;color:#e0f5b7;font-variant-numeric:tabular-nums}
+#settingsMenu .calibration-tap{min-width:134px;user-select:none}
+#settingsMenu .calibration-status{margin-bottom:12px;color:#eef6d4}
+#settingsMenu .calibration-status:empty{margin:0}
+#settingsMenu .calibration-save{background:#d6e94a;border-color:#edf48f;color:#15200c}
 @media(orientation:portrait),(max-width:600px){
  #settingsMenu.modal .modal-dialog{width:calc(100% - 16px)!important;height:calc(100svh - 16px);margin:8px auto!important}
  #settingsMenu .settings-header{padding:12px 14px}#settingsMenu .settings-header h2{font-size:21px}

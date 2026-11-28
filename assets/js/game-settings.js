@@ -31,6 +31,12 @@
     return {speeds:values('.speed-option').map(Number),rush:values('.rush-option').map(Number),skins:values('.noteskin-option').map(value => ({value,cover:covers[value] || value}))};
   }
   function skinImage(value) { return 'assets/img/CW_settings/noteskin_cover/' + (covers[value] || value) + '.png'; }
+  function setOffset(seconds) {
+    const value = String(Math.round(bounded(seconds,-5,5,0) * 1000) / 1000);
+    localStorage.setItem('last_offset',value);
+    document.getElementById('offset').value = value;
+    PiuScroll.changed();
+  }
   function apply(state) {
     const choose = (selector,key,value,select) => {
       const button = [...document.querySelectorAll(selector)].find(el => el.value === String(value));
@@ -45,7 +51,7 @@
     if (typeof state.randomNote === 'boolean') setRandomNote(state.randomNote);
     if (typeof state.autoplay === 'boolean') setAutoplay(state.autoplay);
     const input = (id,value) => { const el=document.getElementById(id);el.value=String(value);el.dispatchEvent(new Event('change',{bubbles:true})); };
-    input('offset',bounded(state.offset,-5,5,0));
+    setOffset(state.offset);
     input('touchpadSize',Math.round(bounded(state.size,0,6,1)));
     const touch = document.getElementById('touchInput');touch.checked=!!state.touch;touch.dispatchEvent(new Event('change',{bubbles:true}));
     localStorage.setItem('piu_auto_velocity',String(Math.round(bounded(state.av,1,2000,300))));
@@ -79,5 +85,5 @@
     localStorage.setItem('piu_autoplay',String(enabled === true));
     PiuScroll.changed();
   }
-  root.PiuGameSettings = {read,apply,defaults,options,skinImage,setVanish,setFD,setHJ,setRandomNote,setAutoplay,resolveNoteskin};
+  root.PiuGameSettings = {read,apply,defaults,options,skinImage,setVanish,setFD,setHJ,setRandomNote,setAutoplay,resolveNoteskin,setOffset};
 })(globalThis);

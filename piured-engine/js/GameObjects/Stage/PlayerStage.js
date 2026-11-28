@@ -59,7 +59,7 @@ class PlayerStage extends GameObject {
         this._object = new THREE.Object3D() ;
         this._scaled_object = new THREE.Object3D() ;
         this._scaled_object.add(this._object) ;
-        this.keyboardLag = 0.07;
+        this.keyboardLag = StageConfig.inputCompensationSeconds;
         this.accuracyMargin = playerConfig.accuracyMargin ;
         this.lifebarOrientation = lifebarOrientation ;
         this.playBackSpeed = playBackSpeed ;

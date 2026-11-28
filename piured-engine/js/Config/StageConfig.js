@@ -49,6 +49,8 @@
  */
 class StageConfig {
 
+    static inputCompensationSeconds = 0.07;
+
     _SSCFile ;
     _audioFile ;
     _playBackSpeed ;

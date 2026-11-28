@@ -13,7 +13,7 @@ function saveSettings(){
  catch(error){showNotification('N\u00e3o foi poss\u00edvel salvar as configura\u00e7\u00f5es locais.','error');return false}
 }
 function speedLabel(s){return s.mode==='auto'?'AV '+s.av:'SPEED X'+s.speed}
-function summary(s){return speedLabel(s)+' · BGA '+s.bga.toUpperCase()+' · RUSH '+Math.round(s.rush*100)+'% · OFFSET '+s.offset.toFixed(1)+'s'}
+function summary(s){return speedLabel(s)+' · BGA '+s.bga.toUpperCase()+' · RUSH '+Math.round(s.rush*100)+'% · OFFSET '+s.offset.toFixed(3)+'s'}
 function button(label,handler,className='mc-option'){const b=document.createElement('button');b.type='button';b.className=className;b.textContent=label;b.onclick=()=>{if(className!=='mc-category')PiuCommandAudio.play('select');handler();if(className!=='mc-category'&&className!=='mc-preview')saveSettings()};return b}
 function selectOption(label,value,selected,action){const b=button(label,()=>{action(value);renderContent()});b.classList.toggle('selected',selected);b.setAttribute('aria-pressed',String(selected));return b}
 function grid(className='mc-grid'){const e=document.createElement('div');e.className=className;$('#mc-content').append(e);return e}
@@ -28,7 +28,23 @@ function renderContent(){const content=$('#mc-content');content.replaceChildren(
  if(activeGroup==='display'){const heading=document.createElement('h4');heading.textContent='RANDOM NOTE';content.append(heading);const list=grid();for(const enabled of [true,false])list.append(selectOption(enabled?'ON':'OFF',enabled,draft.randomNote===enabled,v=>draft.randomNote=v));help('ON: escolhe um tema de nota aleatório a cada partida. OFF: usa o tema selecionado.')}
  if(activeGroup==='judge'){const heading=document.createElement('h4');heading.textContent='HJ';content.append(heading);const list=grid();for(const enabled of [true,false])list.append(selectOption(enabled?'ON':'OFF',enabled,draft.hj===enabled,v=>draft.hj=v));help('HJ ON: mude para um julgamento difícil. OFF: julgamento normal.')}
  if(activeGroup==='rush'){const list=grid();for(const v of options.rush)list.append(selectOption(Math.round(v*100)+'%',v,draft.rush===v,v=>draft.rush=v));help('Altera a velocidade de reprodução da música: 80% a 150%.')}
- if(activeGroup==='offset'){numeric('DELAY (s)',draft.offset,-5,5,.1,v=>draft.offset=Math.round(v*10)/10);const range=document.createElement('input');range.type='range';range.min=-5;range.max=5;range.step=.1;range.value=draft.offset;range.setAttribute('aria-label','Sincronização do áudio');range.onchange=()=>PiuCommandAudio.play('select');range.oninput=()=>{PiuCommandAudio.play('move');draft.offset=Number(range.value);$('#mc-offset-label').textContent=draft.offset.toFixed(1)+'s';saveSettings()};content.append(range);const label=document.createElement('p');label.id='mc-offset-label';label.textContent=draft.offset.toFixed(1)+'s';content.append(label);help('Ajuste de sincronização do áudio, como no menu anterior.')}
+ if(activeGroup==='offset'){
+   numeric('DELAY (s)',draft.offset,-5,5,.001,v=>draft.offset=Math.round(v*1000)/1000);
+   const range=document.createElement('input');
+   range.type='range';range.min=-5;range.max=5;range.step=.001;range.value=draft.offset;
+   range.setAttribute('aria-label','Sincronização do áudio');
+   range.onchange=()=>PiuCommandAudio.play('select');
+   range.oninput=()=>{
+     PiuCommandAudio.play('move');
+     draft.offset=Number(range.value);
+     $('#mc-offset-label').textContent=draft.offset.toFixed(3)+'s';
+     saveSettings();
+   };
+   content.append(range);
+   const label=document.createElement('p');
+   label.id='mc-offset-label';label.textContent=draft.offset.toFixed(3)+'s';content.append(label);
+   help('Ajuste a sincronização do áudio. Para medir com um metrônomo, abra Configurações.');
+ }
  if(activeGroup==='touch'){const row=document.createElement('label');row.className='mc-setting';row.textContent='ACTIVATE TOUCHPAD';const input=document.createElement('input');input.type='checkbox';input.checked=draft.touch;input.onchange=()=>{PiuCommandAudio.play('select');draft.touch=input.checked;saveSettings()};row.append(input);content.append(row);const previewButton=button('AJUSTAR NA TELA',previewTouchpad,'mc-preview');previewButton.id='mc-touch-preview';content.append(previewButton);help('Ajuste tamanho, posição e transparência antes de jogar. A prévia não inicia a música. Ative o touchpad para usá-lo na partida.')}
  if(activeGroup==='reset'){help('Restaura os comandos padrão. Histórico e recordes são preservados.');content.append(button('RESTAURAR PADRÕES',()=>{draft=PiuGameSettings.defaults();renderContent()},'reset'))}
  updateSummary();

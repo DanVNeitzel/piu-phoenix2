@@ -1,7 +1,13 @@
 {
-  "version": "0.8.84",
+  "version": "0.8.85",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Calibração guiada de áudio",
+      "items": [
+        "Adicionado metrônomo nas Configurações para medir a sincronia pelo teclado ou toque, testar a sugestão e salvar o offset com precisão de milissegundos."
+      ]
+    },
     {
       "category": "Command Window no desktop",
       "items": [

@@ -100,9 +100,7 @@
         apply:() => choose('.rush-option','last_playback',button.value,selectRush)}));
       case 'offset': return [-0.1,-0.01,0,0.01,0.1].map(delta => ({label:delta === 0 ? 'RESET' : (delta > 0 ? '+' : '') + delta + 's',
         help:delta === 0 ? 'Reset music offset' : 'Music offset ' + (delta > 0 ? '+' : '') + delta + 's', apply:() => {
-          const value = delta === 0 ? 0 : Math.max(-5,Math.min(5,Number(byId('offset').value || 0) + delta));
-          byId('offset').step = '0.01'; byId('offset').value = String(Math.round(value * 100) / 100);
-          localStorage.setItem('last_offset',byId('offset').value); signal();
+          PiuGameSettings.setOffset(delta === 0 ? 0 : Number(byId('offset').value || 0) + delta);
         }}));
       default: return [];
     }
