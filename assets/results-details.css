@@ -183,8 +183,9 @@
   #performance.phoenix-results .result-current #plateResult{max-width:280px}
   #performance.phoenix-results .result-comparison{height:min(58dvh,560px);align-self:center;grid-template-rows:var(--result-badge) minmax(0,1fr);gap:clamp(6px,1dvh,12px)}
   #performance.phoenix-results #resultLevelBadge{position:static;align-self:auto;justify-self:start;transform:none;margin:0 0 0 8px}
-  #performance.phoenix-results .result-level strong{font-size:clamp(14px,4dvh,30px)}
-  #performance.phoenix-results .result-level span{font-size:clamp(6px,1.5dvh,10px)}
+  #performance.phoenix-results .result-level strong{font-size:clamp(24px,4.8dvh,44px)}
+  #performance.phoenix-results .result-level span{font-size:clamp(9px,1.6dvh,14px)}
+  #performance.phoenix-results .result-level.half span{font-size:clamp(8px,1.4dvh,12px)}
   #performance.phoenix-results .result-judgments tbody :is(td,th){font-size:clamp(13px,2.5dvh,21px)}
   #performance.phoenix-results .result-judgments tbody td:first-child{padding-left:10px}
   #performance.phoenix-results.has-no-best .result-judgments tr>:first-child{width:20%}

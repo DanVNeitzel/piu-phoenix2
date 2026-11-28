@@ -1,7 +1,13 @@
 {
-  "version": "0.8.85",
+  "version": "0.8.86",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Selo de nível no resultado do desktop",
+      "items": [
+        "Ampliados o nome do modo e o número dentro do selo de nível no resultado do desktop."
+      ]
+    },
     {
       "category": "Calibração guiada de áudio",
       "items": [
