@@ -4,24 +4,28 @@ class LFBarElectric extends GameObject {
         super(resourceManager);
         this._active=false;this._time=0;this._elapsed=0;this._life=0.5;
         const width=kind==='double'?8:4,height=68/194;
-        // All expensive canvas strokes and blurs are baked at build time.
-        // Changing a frame updates one uniform, never uploads another texture.
-        this._texture=new THREE.TextureLoader().load('assets/img/gameplay/life-electric-'+(kind==='double'?'double':'single')+'.png');
+        // Both widths use the supplied 4×6 sheet. Frame changes only update a uniform.
+        this._texture=new THREE.TextureLoader().load('assets/img/gameplay/life-electric-shared.png');
         this._texture.minFilter=THREE.LinearFilter;
         this._texture.magFilter=THREE.LinearFilter;
         this._texture.generateMipmaps=false;
         this._motion=matchMedia('(prefers-reduced-motion:reduce)');
         const material=new THREE.ShaderMaterial({
-            uniforms:{electricMap:{value:this._texture},electricFrame:{value:0},lifeFill:{value:this._life}},
+            uniforms:{
+                electricMap:{value:this._texture},electricFrame:{value:0},lifeFill:{value:this._life},
+                electricOverscan:{value:new THREE.Vector2(1.12,2.6)}
+            },
             vertexShader:`varying vec2 electricUv;
+                uniform vec2 electricOverscan;
                 void main(){
                     electricUv=uv;
                     vec3 expanded=position;
-                    expanded.xy*=vec2(1.12,2.8);
+                    expanded.xy*=electricOverscan;
                     gl_Position=projectionMatrix*modelViewMatrix*vec4(expanded,1.0);
                 }`,
             fragmentShader:`uniform sampler2D electricMap;
-                uniform float electricFrame;uniform float lifeFill;varying vec2 electricUv;
+                uniform float electricFrame;uniform float lifeFill;uniform vec2 electricOverscan;
+                varying vec2 electricUv;
                 vec3 energyColor(float x){
                     if(x<.2)return mix(vec3(.929,.145,.980),vec3(.510,.239,1.),x/.2);
                     if(x<.4)return mix(vec3(.510,.239,1.),vec3(.188,.906,1.),(x-.2)/.2);
@@ -30,12 +34,16 @@ class LFBarElectric extends GameObject {
                     return mix(vec3(.941,1.,.690),vec3(1.,.345,.624),(x-.78)/.22);
                 }
                 void main(){
-                    vec2 frame=vec2(mod(electricFrame,4.),5.-floor(electricFrame/4.));
-                    vec4 energy=texture2D(electricMap,(frame+electricUv)/vec2(4.,6.));
+                    // The 543×60 cells start at y=181 in the 2172×724 source.
+                    // Sample between pixel centers so linear filtering stays inside the cell.
+                    vec2 cell=vec2(mod(electricFrame,4.)*543.,181.+floor(electricFrame/4.)*60.);
+                    vec2 pixel=cell+.5+vec2(electricUv.x,1.-electricUv.y)*vec2(542.,59.);
+                    vec4 energy=texture2D(electricMap,vec2(pixel.x/2172.,1.-pixel.y/724.));
                     vec3 color=energy.rgb*energy.a;float alpha=energy.a;
                     // The fill is separate from the baked arcs so every life change is immediate.
-                    float x=(electricUv.x-.074107)/.851786;
-                    if(x>=0.&&x<=lifeFill&&electricUv.y>=.410714&&electricUv.y<=.589286){
+                    vec2 barUv=(electricUv-.5)*electricOverscan+.5;
+                    float x=(barUv.x-.023)/.954;
+                    if(x>=0.&&x<=lifeFill&&barUv.y>=.25&&barUv.y<=.75){
                         color=1.-(1.-color)*(1.-energyColor(x)*.8);
                         alpha=1.-(1.-alpha)*.2;
                     }

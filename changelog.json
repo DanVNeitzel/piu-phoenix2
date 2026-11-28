@@ -1,7 +1,13 @@
 {
-  "version": "0.8.86",
+  "version": "0.8.87",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Efeito elétrico da barra de vida",
+      "items": [
+        "Aplicada a nova animação de 24 quadros da barra de vida no Single e no Double, com recorte alinhado à moldura."
+      ]
+    },
     {
       "category": "Selo de nível no resultado do desktop",
       "items": [
