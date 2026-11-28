@@ -1,7 +1,13 @@
 {
-  "version": "0.8.83",
+  "version": "0.8.84",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Command Window no desktop",
+      "items": [
+        "Ampliadas ligeiramente a largura e a altura da janela de comandos no desktop."
+      ]
+    },
     {
       "category": "Alinhamento da PRIME 2 ALT",
       "items": [
