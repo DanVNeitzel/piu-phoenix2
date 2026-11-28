@@ -1,7 +1,13 @@
 {
-  "version": "0.8.90",
+  "version": "0.8.91",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Navegação do Command Window",
+      "items": [
+        "No celular, o painel flutua sobre a seleção sem rolagem. Trocar de categoria recolhe as opções e volta à fileira principal."
+      ]
+    },
     {
       "category": "Command Window unificado",
       "items": [

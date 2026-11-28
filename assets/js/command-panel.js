@@ -34,15 +34,8 @@
   let commandRail = null;
   function positionBesideRail() {
     const bounds = commandRail?.getBoundingClientRect();
-    if (bounds?.width) {
-      panel.style.setProperty('--cw-rail-right', bounds.right + 'px');
-      mobileDialog.style.setProperty('--cw-rail-right', bounds.right + 'px');
-      mobileDialog.style.setProperty('--cw-rail-bottom', bounds.bottom + 'px');
-    } else {
-      panel.style.removeProperty('--cw-rail-right');
-      mobileDialog.style.removeProperty('--cw-rail-right');
-      mobileDialog.style.removeProperty('--cw-rail-bottom');
-    }
+    if (bounds?.width) panel.style.setProperty('--cw-rail-right', bounds.right + 'px');
+    else panel.style.removeProperty('--cw-rail-right');
   }
   const railObserver = new ResizeObserver(positionBesideRail);
   window.addEventListener('resize', () => {
@@ -220,8 +213,13 @@
       if (slider) readout.append(slider);
       wheel(byId('cw-choices'),options(),cursor, delta => delta === 0 ? apply() : move(delta));
       wheel(byId('cw-tabs'),groups,category, delta => {
-        if (delta === 0) { PiuCommandAudio.play('move'); commandModifier = null; detail = false; render(); }
-        else { PiuCommandAudio.play('move'); category = (category + delta + groups.length) % groups.length; begin(false); }
+        PiuCommandAudio.play('move');
+        category = (category + delta + groups.length) % groups.length;
+        commandModifier = null;
+        detail = false;
+        feedback = '';
+        render();
+        byId('cw-choices').querySelector('.is-current')?.focus({preventScroll:true});
       },true);
     } else wheel(byId('cw-choices'),groups,category, delta => delta === 0 ? begin() : move(delta),true);
     byId('cw-description').textContent = feedback || (detail ? options()[cursor]?.help : group().help) || '';
@@ -232,13 +230,14 @@
     returnFocus = trigger || document.activeElement;
     const prestart=document.querySelector('#confirmPlayModal.show');
     const host = prestart || document.body;
-    if (desktop.matches) host.append(panel);
-    else {
+    if (desktop.matches) {
+      host.append(panel);
+      commandRail = prestart ? prestart.querySelector('.ps-commands') : byId('desktop-options');
+    } else {
       host.append(mobileDialog);
       mobileDialog.append(panel);
-      mobileDialog.dataset.screen = prestart ? 'level' : 'songs';
+      commandRail = null;
     }
-    commandRail = prestart ? prestart.querySelector('.ps-commands') : byId('desktop-options');
     railObserver.disconnect();
     if (commandRail) railObserver.observe(commandRail);
     positionBesideRail();

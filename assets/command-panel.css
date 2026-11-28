@@ -36,16 +36,16 @@
   #arcade-command .cw-item:focus-visible,#cw-close:focus-visible,#cw-back:focus-visible,#cw-readout input:focus-visible{outline:2px solid #fff;outline-offset:-3px}
 
 @media(max-width:1023px),(orientation:portrait){
+  html:has(#mobile-command[open]){overflow:hidden;overscroll-behavior:none}
   #mobile-command{
     --cw-safe-left:max(10px,env(safe-area-inset-left));
     --cw-safe-right:max(10px,env(safe-area-inset-right));
+    --cw-safe-top:max(10px,env(safe-area-inset-top));
     --cw-safe-bottom:max(10px,env(safe-area-inset-bottom));
-    --cw-mobile-left:max(var(--cw-safe-left),calc(var(--cw-rail-right,0px) + 10px));
-    --cw-mobile-top:max(68px,calc(env(safe-area-inset-top) + 52px));
-    position:fixed;inset:auto;top:var(--cw-mobile-top);left:var(--cw-mobile-left);
-    width:min(380px,calc(100vw - var(--cw-mobile-left) - var(--cw-safe-right)));
-    height:min(352px,calc(100dvh - var(--cw-mobile-top) - var(--cw-safe-bottom)));
-    max-width:none;max-height:none;margin:0;padding:0;border:0;overflow:visible;
+    position:fixed;inset:var(--cw-safe-top) var(--cw-safe-right) var(--cw-safe-bottom) var(--cw-safe-left);
+    width:min(380px,calc(100vw - var(--cw-safe-left) - var(--cw-safe-right)));
+    height:min(352px,calc(100dvh - var(--cw-safe-top) - var(--cw-safe-bottom)));
+    max-width:none;max-height:none;margin:auto;padding:0;border:0;overflow:visible;
     color:#fff;background:transparent;
   }
   #mobile-command::backdrop{background:#0006}
@@ -62,23 +62,22 @@
   }
   #mobile-command #cw-close{right:-4px}
   #mobile-command #cw-back:not([hidden]){display:block;left:-4px}
-  #mobile-command .cw-content{justify-content:safe center;gap:6px;overscroll-behavior:contain}
+  #mobile-command .cw-content{justify-content:safe center;gap:6px;overflow:clip}
   #mobile-command .cw-wheel{min-height:44px;gap:4px}
   #mobile-command .cw-item{min-height:44px;padding:3px;touch-action:manipulation}
-  #mobile-command #cw-choices .cw-item{touch-action:pan-y}
+  #mobile-command #cw-choices .cw-item{touch-action:none}
   #mobile-command #cw-readout{min-height:42px;padding:2px 3px}
   #mobile-command #cw-readout>input{min-height:27px;font-size:18px}
   #mobile-command #cw-readout>input[type=range]{appearance:auto;accent-color:#b5ff44}
   #mobile-command #cw-description{min-height:44px;margin:7px 0 0;padding:5px 6px}
   #mobile-command .cw-item img{height:clamp(22px,6dvh,38px)}
 }
-@media(max-width:1023px) and (orientation:landscape){
-  #mobile-command{
-    --cw-mobile-top:max(10px,env(safe-area-inset-top));
-    height:min(302px,calc(100dvh - var(--cw-mobile-top) - var(--cw-safe-bottom)));
-  }
-  #mobile-command[data-screen=songs]{
-    --cw-mobile-left:max(var(--cw-safe-left),calc((100vw - 380px)/2));
-    --cw-mobile-top:max(env(safe-area-inset-top),min(calc(var(--cw-rail-bottom,0px) + 8px),calc(100dvh - 175px)));
-  }
+@media(max-width:1023px) and (orientation:landscape) and (max-height:300px){
+  #mobile-command .cw-heading{flex-basis:38px}
+  #mobile-command :is(#cw-close,#cw-back){top:50%;transform:translateY(-50%)}
+  #mobile-command .cw-content{gap:3px}
+  #mobile-command #cw-description{min-height:34px;margin-top:4px}
+  #mobile-command #cw-readout{min-height:38px}
+  #mobile-command #arcade-command[data-category=offset][data-view=detail] #cw-readout{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:center}
+  #mobile-command #arcade-command[data-category=offset] #cw-readout>span{grid-column:1/-1}
 }

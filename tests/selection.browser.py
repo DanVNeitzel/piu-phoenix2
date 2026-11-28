@@ -306,6 +306,32 @@ class SelectionBrowserTests(unittest.TestCase):
             self.page.clock.resume()
         self.assertFalse(self.errors)
 
+    def test_command_category_switch_collapses_details_without_mobile_scroll(self):
+        self.load()
+        for width,height in [(1280,800),(844,390),(568,280),(390,844)]:
+            self.page.set_viewport_size({'width':width,'height':height})
+            self.page.evaluate("() => new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)))")
+            for category in ('offset','noteskin'):
+                self.page.evaluate('PiuCommand.close()')
+                self.page.evaluate("category=>PiuCommand.open(category)",category)
+                self.page.locator('#cw-choices .is-current').click()
+                self.assertTrue(self.page.locator('#cw-tabs').is_visible())
+                if width < 1024:
+                    self.assertTrue(self.page.evaluate("""() => {
+                      const content=document.querySelector('.cw-content');
+                      const panel=document.querySelector('#mobile-command').getBoundingClientRect();
+                      return content.scrollHeight<=content.clientHeight+1
+                        && panel.top>=0 && panel.bottom<=innerHeight;
+                    }"""),(width,height,category))
+            self.page.locator('#cw-tabs button').filter(has_text='RUSH').click()
+            self.assertFalse(self.page.locator('#cw-tabs').is_visible())
+            self.assertFalse(self.page.locator('#cw-readout').is_visible())
+            self.assertEqual(self.page.locator('#cw-choices .is-current').inner_text(),'RUSH')
+            self.page.locator('#cw-choices .is-current').click()
+            self.assertTrue(self.page.locator('#cw-tabs').is_visible())
+            self.page.evaluate('PiuCommand.close()')
+        self.assertFalse(self.errors)
+
     def test_autoplay_command_perfects_holds_and_result_without_saved_data(self):
         self.page.set_viewport_size({'width':844,'height':390})
         self.load()
