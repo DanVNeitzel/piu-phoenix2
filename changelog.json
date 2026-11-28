@@ -1,7 +1,13 @@
 {
-  "version": "0.8.82",
+  "version": "0.8.83",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Alinhamento da PRIME 2 ALT",
+      "items": [
+        "Corrigidos os seis quadros das setas Up Right e Down Right para alinhar as notas com as respectivas pistas e os holds."
+      ]
+    },
     {
       "category": "Novas noteskins",
       "items": [

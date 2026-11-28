@@ -66,7 +66,8 @@ class ResourceManager {
         }
 
         let stepDic = {};
-        const texture=path=>new PNGTexture(path+(noteskinId==='PHOENIX2'?'?v=0.8.58':''));
+        const textureVersion = {'PHOENIX2': '0.8.58', 'PUMP-PRIME2-ALT': '0.8.83'}[noteskinId];
+        const texture = path => new PNGTexture(path + (textureVersion ? '?v=' + textureVersion : ''));
         // StepNotes
 
         stepDic['SDL'] = texture(noteskinPath + '/DownLeft TapNote 3x2.PNG');

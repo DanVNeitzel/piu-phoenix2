@@ -8,6 +8,9 @@ ROOT = Path(__file__).resolve().parents[1]
 SOURCE = ROOT / 'assets/img/pump'
 DIRECTIONS = ('DownLeft', 'UpLeft', 'Center', 'UpRight', 'DownRight')
 MIRRORED = {'UpRight': 'UpLeft', 'DownRight': 'DownLeft'}
+# Match the visible bounds of the right taps to their mirrored left taps.
+# The hold bodies and caps already use the correct horizontal anchors.
+PRIME2_ALT_TAP_OFFSETS = {'UpRight': (3, -1), 'DownRight': (11, 3)}
 PACKS = {
     'PUMP-PRIME2-ALT': ('prime_2', 'PRIME 2 ALT', False),
     'PUMP-HNS1': ('hns_1', 'HNS 1', True),
@@ -55,6 +58,15 @@ def atlas(images, columns, rows):
     return result
 
 
+def shift_frames(images, offset):
+    shifted = []
+    for image in images:
+        frame = Image.new('RGBA', image.size)
+        frame.paste(image, offset)
+        shifted.append(frame)
+    return shifted
+
+
 def square(image):
     if image.height == image.width:
         return image
@@ -78,6 +90,8 @@ def convert(name, mirror):
         taps = frames(find(source, f'{tap_direction} Tap Note'))
         if tap_direction != direction:
             taps = [ImageOps.mirror(tap) for tap in taps]
+        if name == 'prime_2' and direction in PRIME2_ALT_TAP_OFFSETS:
+            taps = shift_frames(taps, PRIME2_ALT_TAP_OFFSETS[direction])
         textures[f'{direction} TapNote 3x2.PNG'] = atlas(sample(taps, 6), 3, 2)
         bodies = frames(find(source, f'{direction} Hold Body Active'))
         caps = frames(find(source, f'{direction} Hold BottomCap Active'))
