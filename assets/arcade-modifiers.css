@@ -16,6 +16,7 @@
 }
 @media(max-width:1023px),(orientation:portrait){
  :is(body.arcade-mobile #desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div){width:44px;height:44px;min-height:44px;padding:2px;gap:1px;border-radius:3px;font-size:12px;box-shadow:none}
+ body.arcade-mobile #desktop-options .active-command[data-active-modifier="autoplay"]{width:68px;min-width:68px;flex:0 0 68px}
  :is(body.arcade-mobile #desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>:is(small,span:first-child){font-size:9px}
  :is(body.arcade-mobile #desktop-options button,#performance.phoenix-results .result-modifier,#confirmPlayModal .ps-commands>div)>img{width:34px;height:34px}
  #performance.phoenix-results .result-modifiers{gap:4px}

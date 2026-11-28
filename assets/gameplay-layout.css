@@ -43,6 +43,15 @@ body #game-modifiers .active-command[data-active-modifier="autoplay"] small {
     text-wrap: nowrap
 }
 
+@media(max-width:1023px),(orientation:portrait) {
+    body .options-block-r .active-command[data-active-modifier="autoplay"],
+    body #game-modifiers .active-command[data-active-modifier="autoplay"] {
+        width: 68px !important;
+        min-width: 68px !important;
+        flex: 0 0 68px;
+    }
+}
+
 body .options-block-r .active-command strong {
     font-size: .85em
 }

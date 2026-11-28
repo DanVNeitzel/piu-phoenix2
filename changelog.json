@@ -1,7 +1,13 @@
 {
-  "version": "0.8.74",
+  "version": "0.8.75",
   "date": "2026-11-27",
   "updates": [
+    {
+      "category": "Bloco AUTOPLAY ampliado no mobile",
+      "items": [
+        "Aumentada a largura do bloco AUTOPLAY no mobile para manter a palavra completa na primeira linha e o estado ON na segunda."
+      ]
+    },
     {
       "category": "Rótulo AUTOPLAY sem quebra",
       "items": [
