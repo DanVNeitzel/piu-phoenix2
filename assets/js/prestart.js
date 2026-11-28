@@ -3,7 +3,12 @@
   'use strict';
   const modal=document.getElementById('confirmPlayModal');
   const byId=id=>document.getElementById(id);
+  const playerBar=byId('playerLog'),playerSlot=byId('ps-player-slot'),playerMode=byId('levelUserGame');
+  const playerActions=playerBar.querySelectorAll('button[data-bs-toggle="modal"]');
+  const playerHome=document.createComment('player bar home');
+  playerBar.after(playerHome);
   const state={ssc:null,starting:false,returnFocus:null,charts:[],imageVersion:0};
+  let basePlayerMode='',playerPanel=null,returningFromPanel=null;
   let confirmationVersion=0,finishConfirmationSound=null;
   const confirmationAudio=new Audio('assets/sounds/PHOENIX_2_DONE_SELECT_MUSIC.mp3');
   confirmationAudio.preload='none';confirmationAudio.volume=1;
@@ -67,8 +72,8 @@
     byId('ps-type').textContent=label;byId('ps-level').textContent=level.COOP?'×'+level.COOP.count:String(level.METER).padStart(2,'0');
     byId('ps-large-level').classList.toggle('ps-coop',!!level.COOP);
     PiuCoop.applyBadge(byId('ps-large-level'),level.COOP);
-    modal.querySelector('.ps-profile span').textContent=level.COOP?level.COOP.count+' JOGADORES · EQUIPE':'SINGLE PLAYER';
-    modal.querySelector('.ps-sp').textContent=level.COOP?'CO':'SP';
+    if(playerBar.parentElement===playerSlot)
+      playerMode.textContent=level.COOP?level.COOP.count+' JOGADORES · EQUIPE':basePlayerMode;
     let panel=byId('ps-coop-panel');
     if(!panel){
       panel=document.createElement('div');panel.id='ps-coop-panel';panel.className='coop-panel';
@@ -121,7 +126,6 @@
     state.ssc=sscpath;
     byId('ps-title').textContent=selsong.meta.TITLE || song.name;
     byId('ps-artist').textContent=selsong.meta.ARTIST || '';
-    byId('ps-player').textContent=byId('nameUserGame').textContent || 'PIUWEB';byId('ps-avatar').src=byId('profileUserGame').src;
     const commands=PiuGameSettings.read();
     if(selsong.levels[chart_level].COOP){commands.skin=PiuCoop.noteskin;commands.randomNote=false;}
     PiuActiveModifiers.render(modal.querySelector('.ps-commands'),commands,{tag:'div',onSelect:openCommand});
@@ -137,6 +141,43 @@
   }
   function close() {
     bootstrap.Modal.getInstance(modal)?.hide();
+  }
+  function restorePlayerBar() {
+    playerHome.before(playerBar);
+    playerMode.textContent=basePlayerMode;
+    playerActions.forEach(button=>button.setAttribute('data-bs-toggle','modal'));
+  }
+  // Bootstrap permits one modal at a time. Keep the chart selected while a player panel is open.
+  playerBar.addEventListener('click',event=>{
+    if(!isOpen())return;
+    const trigger=event.target.closest('button[data-bs-target]');
+    if(!trigger)return;
+    event.preventDefault();event.stopPropagation();
+    if(state.starting || playerPanel)return;
+    const target=document.querySelector(trigger.dataset.bsTarget);
+    if(!target)return;
+    playerPanel={trigger,returnFocus:state.returnFocus,ssc:state.ssc,scroll:byId('ps-screen').scrollTop};
+    close();
+    if(target.id==='playerDetailsWindow')getInfoPlayer();
+    bootstrap.Modal.getOrCreateInstance(target).show(trigger);
+  },true);
+  document.addEventListener('hidden.bs.modal',event=>{
+    if(!playerPanel || event.target===modal)return;
+    // Let links between profile, history and settings finish opening the next panel.
+    setTimeout(()=>{
+      if(!playerPanel || document.querySelector('.modal.show'))return;
+      const previous=playerPanel;
+      playerPanel=null;
+      if(previous.ssc!==sscpath)return;
+      returningFromPanel=previous;
+      bootstrap.Modal.getOrCreateInstance(modal).show(previous.returnFocus);
+      returningFromPanel=null;
+    },0);
+  },true);
+  function returnToPlayerCommand() {
+    if(!playerPanel)return false;
+    playerPanel.command=true;
+    return true;
   }
   function playConfirmationSound() {
     return new Promise(resolve=>{
@@ -188,18 +229,30 @@
   modal.addEventListener('show.bs.modal',event=>{
     state.returnFocus=event.relatedTarget || document.activeElement;
     root.PiuCommand?.close();root.PiuMobileCommand?.close();
-    if(!populate()) {event.preventDefault();return;}
+    basePlayerMode=playerMode.textContent;
+    playerSlot.append(playerBar);
+    playerActions.forEach(button=>button.removeAttribute('data-bs-toggle'));
+    if(!populate()) {restorePlayerBar();event.preventDefault();return;}
     setStarting(false);document.body.classList.add('prestart-open');
     commandSequence='';
-    obj.pause();obj.src='assets/sounds/PHOENIX_2_PRE_SELECT_MUSIC.mp3';obj.volume=1;
-    obj.play().catch(()=>{});
+    if(!returningFromPanel){
+      obj.pause();obj.src='assets/sounds/PHOENIX_2_PRE_SELECT_MUSIC.mp3';obj.volume=1;
+      obj.play().catch(()=>{});
+    }
   });
-  modal.addEventListener('shown.bs.modal',()=>{byId('ps-screen').scrollTop=0;centerChart();modal.focus({preventScroll:true});});
+  modal.addEventListener('shown.bs.modal',()=>{
+    const previous=returningFromPanel;
+    byId('ps-screen').scrollTop=previous?.scroll || 0;
+    centerChart();
+    (previous?.trigger || modal).focus({preventScroll:true});
+    if(previous?.command)openCommand('speed',previous.trigger);
+  });
   modal.addEventListener('hidden.bs.modal',()=>{
     root.PiuCommand?.close();root.PiuMobileCommand?.close();commandSequence='';
     confirmationVersion++;finishConfirmationSound?.();
     document.body.classList.remove('prestart-open');
-    if(!state.starting && state.returnFocus?.isConnected) state.returnFocus.focus({preventScroll:true});
+    restorePlayerBar();
+    if(!playerPanel && !state.starting && state.returnFocus?.isConnected) state.returnFocus.focus({preventScroll:true});
     setStarting(false);
   });
   document.addEventListener('piu:levelchange',()=>{if(isOpen()) updateChart();});
@@ -233,5 +286,5 @@
       event.preventDefault();event.stopImmediatePropagation();
     }
   },true);
-  root.PiuPrestart={populate,refreshRecords,start,close,isOpen,openCommand};
+  root.PiuPrestart={populate,refreshRecords,start,close,isOpen,openCommand,returnToPlayerCommand};
 })(globalThis);

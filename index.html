@@ -57,9 +57,9 @@
 <link rel="stylesheet" href="assets/mobile-command.css?v=0.8.54">
 <link rel="stylesheet" href="assets/results-mobile.css?v=0.8.33">
 <link rel="stylesheet" href="assets/score-share.css">
-<link rel="stylesheet" href="assets/prestart.css">
+<link rel="stylesheet" href="assets/prestart.css?v=0.8.88">
 <link rel="stylesheet" href="assets/selection-background.css">
-<link rel="stylesheet" href="assets/arcade-typography.css">
+<link rel="stylesheet" href="assets/arcade-typography.css?v=0.8.88">
 <link rel="stylesheet" href="assets/arcade-modifiers.css">
 <link rel="stylesheet" href="assets/channel-label.css">
 <link rel="stylesheet" href="assets/arcade-arrows.css">
@@ -79,7 +79,7 @@
 <body id="activeScreen">
 
   <section class="black_screen arcade-opening" aria-label="Abertura arcade">
-    <p class="arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.87</span><br>Developed by Daniel Neitzel</p>
+    <p class="arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.88</span><br>Developed by Daniel Neitzel</p>
     <img class="arcade-opening-logo" src="assets/img/mainLogo_phx2.png" alt="Pump It Up Phoenix 2">
     <button type="button" id="arcade-insert" class="arcade-start-pad"><img class="arcade-prompt" src="assets/img/phx2/press_center_step.png" alt="Press Center Step"><img class="arcade-pad" src="assets/img/phx2/step.png" alt=""><strong>TOQUE PARA ATIVAR</strong><span>ou pressione ENTER</span></button>
     <p class="arcade-opening-footer">FREE PLAY · RECORDES LOCAIS</p>
@@ -230,7 +230,7 @@
 
     <div class="col-12 d-grid my-4 gap-3">
       <div class="col-12 startGameTitle">
-        <span class="versionCode arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.87</span><br>Developed by Daniel Neitzel</span>
+        <span class="versionCode arcade-build">PIUWEB PHOENIX 2<br><span data-app-version>v0.8.88</span><br>Developed by Daniel Neitzel</span>
         <img class="logoTitle arcade-opening-logo" src="assets/img/mainLogo_phx2.png" alt="Pump It Up Phoenix 2">
         <button id="btnModalLogin"
           class="arcade-start-pad" type="button" onclick="PiuOpening.start()">
@@ -357,24 +357,24 @@
                   <div class="exp-text" id="expText">XP ??? / ???</div>
                 </div>
 
-                <span id="playerSettings" class="sound-open-cw border-pulse-btn-b" data-bs-toggle="modal"
+                <button type="button" aria-label="Configurações" id="playerSettings" class="sound-open-cw border-pulse-btn-b" data-bs-toggle="modal"
                   data-bs-target="#settingsMenu">
                   <span class="material-symbols-outlined">
                     settings
                   </span>
-                </span>
+                </button>
 
-                <span id="playerHistory" class="sound-open-cw border-pulse-btn-b" title="Histórico"
+                <button type="button" aria-label="Histórico" id="playerHistory" class="sound-open-cw border-pulse-btn-b" title="Histórico"
                   data-bs-toggle="modal" data-bs-target="#historyModal" onclick="getHistory(); populateHistoryModal();">
                   <span class="material-symbols-outlined">history</span>
-                </span>
+                </button>
 
-                <span onclick="getInfoPlayer();" id="playerDetails" class="sound-open-cw border-pulse-btn-b"
+                <button type="button" aria-label="Estatísticas" onclick="getInfoPlayer();" id="playerDetails" class="sound-open-cw border-pulse-btn-b"
                   data-bs-toggle="modal" data-bs-target="#playerDetailsWindow">
                   <span class="material-symbols-outlined">
                     bar_chart
                   </span>
-                </span>
+                </button>
 
                 <span onclick="logout()" id="playerLogout"
                   class="btn-piu btn-command-piu-red border-pulse-btn-red btn-block sound-open-cw">
@@ -725,7 +725,7 @@
               <img id="ps-background" class="ps-song-background" alt="" aria-hidden="true"><div class="ps-song-shade" aria-hidden="true"></div>
               <header class="ps-topbar">
                 <button type="button" class="ps-corner" id="ps-back" aria-label="Cancelar e voltar às músicas"><img src="assets/img/phx2/arrow_red_shift_l.png" alt=""></button>
-                <div class="ps-profile"><img id="ps-avatar" src="assets/img/avatar/default.png" alt=""><div><strong id="ps-player">PIUWEB</strong><span>SINGLE PLAYER</span></div><b class="ps-sp">SP</b></div>
+                <div id="ps-player-slot"></div>
                 <button type="button" class="ps-corner ps-enter" id="ps-enter" aria-label="Cancelar e voltar às músicas"><img src="assets/img/phx2/arrow_red_shift_r.png" alt=""></button>
               </header>
               <section class="ps-scene" aria-label="Imagem da música selecionada">
@@ -1279,11 +1279,11 @@
 <script src="assets/js/control-mode.js"></script>
 <script src="assets/js/active-modifiers.js?v=0.8.54"></script>
 <script src="assets/js/arrow-feedback.js"></script>
-<script src="assets/js/desktop.js?v=0.8.31"></script>
+<script src="assets/js/desktop.js?v=0.8.88"></script>
 <script src="assets/js/command-audio.js"></script>
 <script src="assets/js/command-panel.js?v=0.8.85"></script>
 <script src="assets/js/mobile-command.js?v=0.8.85"></script>
-<script src="assets/js/prestart.js?v=0.8.24"></script>
+<script src="assets/js/prestart.js?v=0.8.88"></script>
 <script src="assets/js/arcade-opening.js?v=0.8.40"></script>
 <script src="assets/js/app-update.js"></script>
 <script src="piured-engine/js/Config/StageConfig.js?v=0.8.85"></script>

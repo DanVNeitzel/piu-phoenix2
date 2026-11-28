@@ -50,7 +50,7 @@
   menu.querySelectorAll('[data-player-action]').forEach(button=>button.addEventListener('click',()=>{
     menu.addEventListener('hidden.bs.modal',()=>{
       const action=button.dataset.playerAction;
-      if(action==='command') { window.PiuMobileCommand?.open();return; }
+      if(action==='command') { if(!window.PiuPrestart?.returnToPlayerCommand())window.PiuMobileCommand?.open();return; }
       if(action==='history') {getHistory();populateHistoryModal();}
       if(action==='details') getInfoPlayer();
       bootstrap.Modal.getOrCreateInstance(byId({history:'historyModal',details:'playerDetailsWindow',settings:'settingsMenu'}[action])).show();

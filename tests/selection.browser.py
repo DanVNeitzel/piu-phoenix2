@@ -195,6 +195,50 @@ class SelectionBrowserTests(unittest.TestCase):
         self.page.goto(self.origin+'/localStage.html?preview=touchpad')
         self.page.wait_for_function("typeof engine!=='undefined' && engine?.stage?._playerStages[0]?.padReceptors['0']")
 
+    def test_player_bar_is_shared_by_song_and_level_selection(self):
+        self.load()
+        page = self.page
+        for width, height in [(1522,921),(844,390),(390,844)]:
+            page.set_viewport_size({'width':width,'height':height})
+            bar = page.locator('#playerLog')
+            original = bar.bounding_box()
+            styles = lambda: bar.evaluate("""el => {
+              const style = selector => getComputedStyle(el.querySelector(selector));
+              return [style('#expText').fontFamily,style('#playerSettings span').color];
+            }""")
+            original_styles = styles()
+            page.evaluate("""() => {
+              window.testPlayerBar = document.getElementById('playerLog');
+              bootstrap.Modal.getOrCreateInstance(document.getElementById('confirmPlayModal')).show();
+            }""")
+            page.locator('#ps-player-slot #playerLog').wait_for()
+            self.assertTrue(page.evaluate("testPlayerBar===document.getElementById('playerLog')"))
+            moved = bar.bounding_box()
+            self.assertEqual(styles(),original_styles)
+            for key in ('x','y','width','height'):
+                self.assertAlmostEqual(original[key],moved[key],delta=1,msg=(width,height,key))
+            chart = page.evaluate('chart_level')
+            if width >= 1024:
+                page.locator('#playerSettings').focus()
+                page.keyboard.press('Enter')
+                page.locator('#settingsMenu.show #settings-changelog').click()
+                page.locator('#changelogModal.show').wait_for()
+                page.evaluate('closeChangelog()')
+                page.wait_for_function("document.activeElement.id==='playerSettings' && PiuPrestart.isOpen()")
+                page.locator('#playerHistory').click()
+                page.locator('#historyModal.show [data-view="profile"]').click()
+                page.locator('#playerDetailsWindow.show .pp-done').click()
+                page.locator('#ps-player-slot #playerLog').wait_for()
+            else:
+                page.locator('#mobile-player-menu-trigger').click()
+                page.locator('#mobile-player-menu.show [data-player-action="command"]').click()
+                page.locator('#confirmPlayModal #mobile-command[open]').wait_for()
+                page.evaluate('PiuMobileCommand.close()')
+            self.assertEqual(page.evaluate('chart_level'),chart)
+            page.locator('#ps-back').click()
+            self.assertEqual(bar.evaluate('el=>el.parentElement.id'),'screenshotShare')
+        self.assertFalse(self.errors)
+
     def test_guided_audio_calibration_tests_offset_before_saving(self):
         for viewport, input_type in [({'width':1280,'height':800}, 'keyboard'),
                                      ({'width':844,'height':390}, 'touch')]:

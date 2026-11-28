@@ -1,7 +1,13 @@
 {
-  "version": "0.8.87",
+  "version": "0.8.88",
   "date": "2026-11-28",
   "updates": [
+    {
+      "category": "Barra do jogador nas seleções",
+      "items": [
+        "Unificada a barra do jogador entre a seleção de música e de nível, incluindo os atalhos de perfil, configurações e histórico."
+      ]
+    },
     {
       "category": "Efeito elétrico da barra de vida",
       "items": [
