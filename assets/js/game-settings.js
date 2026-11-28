@@ -10,7 +10,7 @@
   function selectedNoteskin() {
     const saved = localStorage.getItem('last_noteskin');
     const skins = [...document.querySelectorAll('.noteskin-option')];
-    return skins.find(button => button.value === saved)?.value || value('.noteskin-option') || 'EXCEED2-OLD';
+    return skins.find(button => button.value === saved)?.value || value('.noteskin-option') || 'PHOENIX2';
   }
   function touchStyle() {
     return (typeof selsong!=='undefined' && typeof chart_level!=='undefined' && selsong?.levels[chart_level]?.STEPSTYPE) ||
@@ -18,7 +18,7 @@
   }
   function defaults() {
     const touch = matchMedia('(pointer:coarse)').matches || /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    return {mode:'multiplier',speed:1,av:300,skin:'EXCEED2-OLD',bga:'on',vanish:false,fd:false,hj:false,randomNote:false,autoplay:false,rush:1,offset:0,touch,size:touch ? 1 : 0,touchLayoutStyle:touchStyle(),touchLayout:PiuTouchLayout.defaults()};
+    return {mode:'multiplier',speed:1,av:300,skin:'PHOENIX2',bga:'on',vanish:false,fd:false,hj:false,randomNote:false,autoplay:false,rush:1,offset:0,touch,size:touch ? 1 : 0,touchLayoutStyle:touchStyle(),touchLayout:PiuTouchLayout.defaults()};
   }
   function read() {
     const scroll = PiuScroll.state();

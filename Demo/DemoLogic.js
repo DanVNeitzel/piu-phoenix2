@@ -313,7 +313,7 @@ document.addEventListener('DOMContentLoaded', function() { selectionReady = read
 let inputTouch = localStorage.getItem("inputTouch") !== null ? JSON.parse(localStorage.getItem("inputTouch")) : false;
 $("#touchInput").prop('checked', inputTouch);
 
-let default_noteskin = localStorage.getItem("last_noteskin") !== null ? localStorage.getItem("last_noteskin") : "EXCEED2-OLD";
+let default_noteskin = localStorage.getItem("last_noteskin") !== null ? localStorage.getItem("last_noteskin") : "PHOENIX2";
 $("#noteskin").val(default_noteskin);
 
 let default_speed = localStorage.getItem("last_speed") !== null ? parseFloat(localStorage.getItem("last_speed")) : 3;

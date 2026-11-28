@@ -42,7 +42,7 @@
   function reset() {
     PiuScroll.setMultiplier(1);
     localStorage.setItem('piu_auto_velocity','300');
-    choose('.noteskin-option','last_noteskin','EXCEED2-OLD',selectNote);
+    choose('.noteskin-option','last_noteskin','PHOENIX2',selectNote);
     choose('.bga-option','last_bga','on',selectBGA);
     PiuGameSettings.setVanish(false);
     PiuGameSettings.setFD(false);

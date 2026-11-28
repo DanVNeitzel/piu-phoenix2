@@ -243,7 +243,7 @@
 
     function playCurrentStats() {
       let imgPath = 'assets/img/noteskin/';
-      let noteskin = config?.noteskin || localStorage.getItem("last_noteskin");
+      let noteskin = config?.noteskin || localStorage.getItem("last_noteskin") || 'PHOENIX2';
       let speed = config?.speed || localStorage.getItem("last_speed");
       let bga = config?.bga || localStorage.getItem("last_bga");
       let rush = String(config?.playback ?? localStorage.getItem("last_playback"));

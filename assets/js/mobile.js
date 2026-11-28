@@ -1060,7 +1060,7 @@ function initLocalSettings() {
     if (localStorage.getItem('last_song') === null) localStorage.setItem('last_song', '0');
     if (localStorage.getItem('last_stage') === null) localStorage.setItem('last_stage', '0');
     if (localStorage.getItem('last_level') === null) localStorage.setItem('last_level', '0');
-    if (localStorage.getItem('last_noteskin') === null) localStorage.setItem('last_noteskin', 'EXCEED2-OLD');
+    if (localStorage.getItem('last_noteskin') === null) localStorage.setItem('last_noteskin', 'PHOENIX2');
     if (localStorage.getItem('last_speed') === null) localStorage.setItem('last_speed', '1');
     if (localStorage.getItem('last_bga') === null) localStorage.setItem('last_bga', 'on');
     if (localStorage.getItem('last_playback') === null) localStorage.setItem('last_playback', '1');
